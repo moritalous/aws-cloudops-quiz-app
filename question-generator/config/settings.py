@@ -5,7 +5,8 @@ This module provides centralized settings management with support for
 environment variables, configuration files, and runtime overrides.
 """
 
-from pydantic import BaseSettings, Field
+from pydantic_settings import BaseSettings
+from pydantic import Field
 from typing import Optional
 from pathlib import Path
 import json

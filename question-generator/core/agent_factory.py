@@ -18,8 +18,8 @@ from strands.tools.mcp import MCPClient
 from mcp import stdio_client, StdioServerParameters
 
 # Local imports
-from ..config import AgentConfig, BedrockConfig, MCPConfig
-from .error_handling import BedrockConnectionError, MCPConnectionError, retry_with_backoff
+from config import AgentConfig, BedrockConfig, MCPConfig
+from core.error_handling import BedrockConnectionError, MCPConnectionError, retry_with_backoff
 
 logger = logging.getLogger(__name__)
 
@@ -46,21 +46,27 @@ def create_bedrock_model(config: BedrockConfig, boto_session: Optional[boto3.Ses
             boto_session = boto3.Session(region_name=config.region_name)
         
         # Create BedrockModel with configuration
-        bedrock_model = BedrockModel(
-            model_id=config.model_id,
-            boto_session=boto_session,
-            region_name=config.region_name,
-            streaming=config.streaming,
-            temperature=config.temperature,
-            max_tokens=config.max_tokens,
-            top_p=config.top_p,
-            stop_sequences=config.stop_sequences,
-            cache_prompt=config.cache_prompt,
-            cache_tools=config.cache_tools,
-            guardrail_id=config.guardrail_id,
-            guardrail_version=config.guardrail_version,
-            guardrail_trace=config.guardrail_trace,
-        )
+        # Note: Don't pass region_name if boto_session is provided
+        bedrock_kwargs = {
+            "model_id": config.model_id,
+            "streaming": config.streaming,
+            "temperature": config.temperature,
+            "max_tokens": config.max_tokens,
+            "top_p": config.top_p,
+            "stop_sequences": config.stop_sequences,
+            "cache_prompt": config.cache_prompt,
+            "cache_tools": config.cache_tools,
+            "guardrail_id": config.guardrail_id,
+            "guardrail_version": config.guardrail_version,
+            "guardrail_trace": config.guardrail_trace,
+        }
+        
+        if boto_session is not None:
+            bedrock_kwargs["boto_session"] = boto_session
+        else:
+            bedrock_kwargs["region_name"] = config.region_name
+        
+        bedrock_model = BedrockModel(**bedrock_kwargs)
         
         logger.info(f"Successfully created Bedrock model: {config.model_id}")
         return bedrock_model

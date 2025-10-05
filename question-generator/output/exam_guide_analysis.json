@@ -1,0 +1,427 @@
+{
+  "total_questions": 200,
+  "exam_code": "SOA-C03",
+  "exam_title": "AWS Certified CloudOps Engineer - Associate",
+  "domains": [
+    {
+      "domain": "monitoring",
+      "domain_name": "Monitoring, Logging, Analysis, Remediation, and Performance Optimization",
+      "weight": 22.0,
+      "target_questions": 44,
+      "tasks": [
+        {
+          "task_id": "monitoring-task1",
+          "description": "Implement metrics, alarms, and filters by using AWS monitoring and logging services",
+          "weight_percentage": 35.0,
+          "skills": [
+            {
+              "skill_id": "monitoring-1.1",
+              "description": "Configure AWS monitoring and logging using AWS services",
+              "aws_services": [
+                "CloudWatch",
+                "CloudTrail",
+                "Amazon Managed Service for Prometheus"
+              ],
+              "difficulty": "medium",
+              "keywords": [
+                "metrics",
+                "logging",
+                "monitoring",
+                "alerts"
+              ]
+            },
+            {
+              "skill_id": "monitoring-1.2",
+              "description": "Configure and manage CloudWatch agent for metrics and logs collection",
+              "aws_services": [
+                "CloudWatch",
+                "EC2",
+                "ECS",
+                "EKS"
+              ],
+              "difficulty": "medium",
+              "keywords": [
+                "agent configuration",
+                "metrics collection",
+                "log aggregation"
+              ]
+            }
+          ],
+          "estimated_questions": 15
+        },
+        {
+          "task_id": "monitoring-task2",
+          "description": "Identify and remediate issues by using monitoring and availability metrics",
+          "weight_percentage": 30.0,
+          "skills": [
+            {
+              "skill_id": "monitoring-2.1",
+              "description": "Analyze performance metrics and automate remediation strategies",
+              "aws_services": [
+                "CloudWatch",
+                "Lambda",
+                "Systems Manager",
+                "EventBridge"
+              ],
+              "difficulty": "hard",
+              "keywords": [
+                "automation",
+                "remediation",
+                "performance analysis"
+              ]
+            }
+          ],
+          "estimated_questions": 14
+        },
+        {
+          "task_id": "monitoring-task3",
+          "description": "Implement performance optimization strategies",
+          "weight_percentage": 35.0,
+          "skills": [
+            {
+              "skill_id": "monitoring-3.1",
+              "description": "Optimize compute resources and remediate performance problems",
+              "aws_services": [
+                "EC2",
+                "CloudWatch",
+                "Systems Manager"
+              ],
+              "difficulty": "hard",
+              "keywords": [
+                "performance optimization",
+                "resource utilization",
+                "cost optimization"
+              ]
+            }
+          ],
+          "estimated_questions": 15
+        }
+      ],
+      "key_services": [
+        "Amazon CloudWatch",
+        "AWS CloudTrail",
+        "Amazon EventBridge",
+        "AWS Systems Manager",
+        "Amazon SNS",
+        "Amazon RDS",
+        "Amazon EC2",
+        "Amazon EBS",
+        "Amazon S3"
+      ],
+      "complexity_level": "intermediate"
+    },
+    {
+      "domain": "reliability",
+      "domain_name": "Reliability and Business Continuity",
+      "weight": 22.0,
+      "target_questions": 44,
+      "tasks": [
+        {
+          "task_id": "reliability-task1",
+          "description": "Implement scalability and elasticity",
+          "weight_percentage": 35.0,
+          "skills": [
+            {
+              "skill_id": "reliability-1.1",
+              "description": "Configure and manage scaling mechanisms in compute environments",
+              "aws_services": [
+                "Auto Scaling",
+                "EC2",
+                "ECS"
+              ],
+              "difficulty": "medium",
+              "keywords": [
+                "auto scaling",
+                "elasticity",
+                "capacity management"
+              ]
+            }
+          ],
+          "estimated_questions": 15
+        },
+        {
+          "task_id": "reliability-task2",
+          "description": "Implement highly available and resilient environments",
+          "weight_percentage": 35.0,
+          "skills": [
+            {
+              "skill_id": "reliability-2.1",
+              "description": "Configure and troubleshoot ELB and Route 53 health checks",
+              "aws_services": [
+                "Elastic Load Balancing",
+                "Route 53"
+              ],
+              "difficulty": "hard",
+              "keywords": [
+                "high availability",
+                "health checks",
+                "load balancing"
+              ]
+            }
+          ],
+          "estimated_questions": 15
+        },
+        {
+          "task_id": "reliability-task3",
+          "description": "Implement backup and restore strategies",
+          "weight_percentage": 30.0,
+          "skills": [
+            {
+              "skill_id": "reliability-3.1",
+              "description": "Automate snapshots and backups for AWS resources",
+              "aws_services": [
+                "AWS Backup",
+                "RDS",
+                "EBS",
+                "S3"
+              ],
+              "difficulty": "medium",
+              "keywords": [
+                "backup automation",
+                "disaster recovery",
+                "RTO",
+                "RPO"
+              ]
+            }
+          ],
+          "estimated_questions": 14
+        }
+      ],
+      "key_services": [
+        "AWS Auto Scaling",
+        "Amazon RDS",
+        "Amazon DynamoDB",
+        "AWS Backup",
+        "Elastic Load Balancing",
+        "Amazon Route 53"
+      ],
+      "complexity_level": "advanced"
+    },
+    {
+      "domain": "deployment",
+      "domain_name": "Deployment, Provisioning, and Automation",
+      "weight": 22.0,
+      "target_questions": 44,
+      "tasks": [
+        {
+          "task_id": "deployment-task1",
+          "description": "Provision and maintain cloud resources",
+          "weight_percentage": 60.0,
+          "skills": [
+            {
+              "skill_id": "deployment-1.1",
+              "description": "Create and manage AMIs and container images",
+              "aws_services": [
+                "EC2 Image Builder",
+                "ECR"
+              ],
+              "difficulty": "medium",
+              "keywords": [
+                "AMI management",
+                "container images",
+                "image building"
+              ]
+            }
+          ],
+          "estimated_questions": 26
+        },
+        {
+          "task_id": "deployment-task2",
+          "description": "Automate the management of existing resources",
+          "weight_percentage": 40.0,
+          "skills": [
+            {
+              "skill_id": "deployment-2.1",
+              "description": "Use AWS services to automate operational processes",
+              "aws_services": [
+                "Systems Manager",
+                "Lambda",
+                "EventBridge"
+              ],
+              "difficulty": "hard",
+              "keywords": [
+                "automation",
+                "operational processes",
+                "event-driven"
+              ]
+            }
+          ],
+          "estimated_questions": 18
+        }
+      ],
+      "key_services": [
+        "AWS CloudFormation",
+        "AWS CDK",
+        "AWS Systems Manager",
+        "AWS Lambda",
+        "EC2 Image Builder"
+      ],
+      "complexity_level": "intermediate"
+    },
+    {
+      "domain": "security",
+      "domain_name": "Security and Compliance",
+      "weight": 16.0,
+      "target_questions": 32,
+      "tasks": [
+        {
+          "task_id": "security-task1",
+          "description": "Implement and manage security and compliance tools and policies",
+          "weight_percentage": 50.0,
+          "skills": [
+            {
+              "skill_id": "security-1.1",
+              "description": "Implement IAM features and policies",
+              "aws_services": [
+                "IAM",
+                "CloudTrail",
+                "IAM Access Analyzer"
+              ],
+              "difficulty": "hard",
+              "keywords": [
+                "access management",
+                "authentication",
+                "authorization"
+              ]
+            }
+          ],
+          "estimated_questions": 16
+        },
+        {
+          "task_id": "security-task2",
+          "description": "Implement strategies to protect data and infrastructure",
+          "weight_percentage": 50.0,
+          "skills": [
+            {
+              "skill_id": "security-2.1",
+              "description": "Implement and enforce data protection mechanisms",
+              "aws_services": [
+                "KMS",
+                "ACM",
+                "Secrets Manager"
+              ],
+              "difficulty": "hard",
+              "keywords": [
+                "encryption",
+                "data protection",
+                "secrets management"
+              ]
+            }
+          ],
+          "estimated_questions": 16
+        }
+      ],
+      "key_services": [
+        "AWS IAM",
+        "AWS KMS",
+        "AWS Security Hub",
+        "AWS Config",
+        "AWS CloudTrail"
+      ],
+      "complexity_level": "advanced"
+    },
+    {
+      "domain": "networking",
+      "domain_name": "Networking and Content Delivery",
+      "weight": 18.0,
+      "target_questions": 36,
+      "tasks": [
+        {
+          "task_id": "networking-task1",
+          "description": "Implement and optimize networking features and connectivity",
+          "weight_percentage": 40.0,
+          "skills": [
+            {
+              "skill_id": "networking-1.1",
+              "description": "Configure VPC and networking components",
+              "aws_services": [
+                "VPC",
+                "Route Tables",
+                "Security Groups"
+              ],
+              "difficulty": "hard",
+              "keywords": [
+                "networking",
+                "routing",
+                "security groups"
+              ]
+            }
+          ],
+          "estimated_questions": 14
+        },
+        {
+          "task_id": "networking-task2",
+          "description": "Configure domains, DNS services, and content delivery",
+          "weight_percentage": 30.0,
+          "skills": [
+            {
+              "skill_id": "networking-2.1",
+              "description": "Configure DNS and content delivery services",
+              "aws_services": [
+                "Route 53",
+                "CloudFront"
+              ],
+              "difficulty": "medium",
+              "keywords": [
+                "DNS",
+                "content delivery",
+                "routing policies"
+              ]
+            }
+          ],
+          "estimated_questions": 11
+        },
+        {
+          "task_id": "networking-task3",
+          "description": "Troubleshoot network connectivity issues",
+          "weight_percentage": 30.0,
+          "skills": [
+            {
+              "skill_id": "networking-3.1",
+              "description": "Diagnose and resolve network connectivity problems",
+              "aws_services": [
+                "VPC Flow Logs",
+                "CloudWatch",
+                "Network Analyzer"
+              ],
+              "difficulty": "hard",
+              "keywords": [
+                "troubleshooting",
+                "connectivity",
+                "network logs"
+              ]
+            }
+          ],
+          "estimated_questions": 11
+        }
+      ],
+      "key_services": [
+        "Amazon VPC",
+        "Amazon Route 53",
+        "AWS CloudFront",
+        "AWS Transit Gateway",
+        "AWS WAF"
+      ],
+      "complexity_level": "advanced"
+    }
+  ],
+  "exam_info": {
+    "passing_score": 720,
+    "exam_duration_minutes": 130,
+    "question_types": [
+      "multiple choice",
+      "multiple response"
+    ],
+    "total_questions": 65,
+    "scored_questions": 50,
+    "unscored_questions": 15
+  },
+  "analysis_metadata": {
+    "version": "1.1",
+    "analysis_date": "2024-02-13",
+    "source": "AWS Certified CloudOps Engineer - Associate (SOA-C03) Exam Guide",
+    "total_skills_identified": 14,
+    "total_tasks_identified": 13,
+    "coverage_completeness": 28.000000000000004
+  }
+}

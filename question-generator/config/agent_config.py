@@ -17,7 +17,7 @@ class BedrockConfig(BaseModel):
     
     model_id: str = Field(
         description="Bedrock model identifier",
-        default="openai.gpt-oss-120b-1:0"
+        default="anthropic.claude-3-5-sonnet-20241022-v2:0"
     )
     region_name: str = Field(
         description="AWS region for Bedrock service",
@@ -63,11 +63,11 @@ class BedrockConfig(BaseModel):
     )
     cache_prompt: Optional[str] = Field(
         description="Cache point type for system prompt",
-        default="default"
+        default=None
     )
     cache_tools: Optional[str] = Field(
         description="Cache point type for tools",
-        default="default"
+        default=None
     )
     retry_attempts: int = Field(
         description="Number of retry attempts for failed requests",
@@ -90,9 +90,10 @@ class BedrockConfig(BaseModel):
     
     @validator('model_id')
     def validate_model_id(cls, v):
-        """Validate that model ID is for OpenAI models."""
-        if not v.startswith('openai.'):
-            raise ValueError('Model ID must be for OpenAI models (openai.*)')
+        """Validate that model ID is supported."""
+        supported_prefixes = ['openai.', 'anthropic.', 'us.', 'eu.']
+        if not any(v.startswith(prefix) for prefix in supported_prefixes):
+            raise ValueError(f'Model ID must start with one of: {supported_prefixes}')
         return v
     
     @validator('region_name')

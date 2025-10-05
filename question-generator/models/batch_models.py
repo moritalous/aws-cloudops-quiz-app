@@ -6,7 +6,7 @@ state analysis, and progress reporting throughout the question generation proces
 """
 
 from pydantic import BaseModel, Field, validator
-from typing import List, Dict, Optional, Literal
+from typing import List, Dict, Optional, Literal, Any
 from datetime import datetime
 
 
@@ -169,7 +169,7 @@ class BatchPlan(BaseModel):
         description="Strategic notes for question generation",
         default_factory=list
     )
-    quality_requirements: Dict[str, any] = Field(
+    quality_requirements: Dict[str, Any] = Field(
         description="Specific quality requirements for this batch",
         default_factory=lambda: {
             "min_technical_accuracy": 8,
@@ -242,7 +242,7 @@ class ProgressReport(BaseModel):
         description="Quality metrics across completed questions",
         default_factory=dict
     )
-    performance_metrics: Dict[str, any] = Field(
+    performance_metrics: Dict[str, Any] = Field(
         description="Performance and efficiency metrics",
         default_factory=dict
     )

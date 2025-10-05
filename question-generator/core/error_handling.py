@@ -53,6 +53,11 @@ class NonRetryableError(QuestionGenerationError):
     pass
 
 
+class ExamGuideAnalysisError(QuestionGenerationError):
+    """Exception raised when exam guide analysis fails."""
+    pass
+
+
 def is_retryable_error(error: Exception) -> bool:
     """
     Determine if an error is retryable.

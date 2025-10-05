@@ -7,7 +7,7 @@ overall question quality metrics.
 """
 
 from pydantic import BaseModel, Field, validator
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
 from datetime import datetime
 
 
@@ -175,7 +175,7 @@ class BatchValidation(BaseModel):
         description="Recommendations for improvement",
         default_factory=list
     )
-    validation_summary: Dict[str, any] = Field(
+    validation_summary: Dict[str, Any] = Field(
         description="Summary statistics for the batch",
         default_factory=dict
     )
