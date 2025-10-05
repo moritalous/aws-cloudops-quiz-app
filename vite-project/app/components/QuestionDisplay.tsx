@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import type { Question } from '~/types';
 
 interface QuestionDisplayProps {
@@ -92,13 +91,20 @@ export function QuestionDisplay({
         </h2>
         
         {question.type === 'multiple' && (
-          <div className="flex items-center p-2 sm:p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600 dark:text-amber-400 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="flex items-center p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+            <svg className="w-5 h-5 text-amber-600 dark:text-amber-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <p className="text-responsive-xs text-amber-800 dark:text-amber-200">
-              複数の選択肢を選択してください
-            </p>
+            <div>
+              <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                複数の選択肢を選択してください
+              </p>
+              {Array.isArray(selectedAnswer) && selectedAnswer.length > 0 && (
+                <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
+                  選択済み: {selectedAnswer.length}個
+                </p>
+              )}
+            </div>
           </div>
         )}
       </header>
@@ -116,7 +122,9 @@ export function QuestionDisplay({
               className={`
                 flex items-start p-3 sm:p-4 border rounded-lg cursor-pointer transition-all duration-200 touch-friendly
                 ${isSelected 
-                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-400' 
+                  ? question.type === 'multiple'
+                    ? 'border-green-500 bg-green-50 dark:bg-green-900/20 dark:border-green-400 shadow-sm'
+                    : 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-400 shadow-sm'
                   : 'border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
                 }
                 ${(disabled || showResult) ? 'cursor-not-allowed opacity-60' : 'hover:shadow-sm active:scale-95'}
@@ -127,7 +135,7 @@ export function QuestionDisplay({
                 name={question.type === 'single' ? `question-${question.id}` : `answer-${question.id}`}
                 value={optionValue}
                 checked={isSelected}
-                onChange={(e) => {
+                onChange={() => {
                   if (question.type === 'single') {
                     handleSingleAnswerSelect(optionValue);
                   } else {
@@ -135,7 +143,14 @@ export function QuestionDisplay({
                   }
                 }}
                 disabled={disabled || showResult}
-                className="radio-base mt-0.5 sm:mt-1 mr-3 flex-shrink-0"
+                className={`
+                  mt-0.5 sm:mt-1 mr-3 flex-shrink-0 w-4 h-4 sm:w-5 sm:h-5
+                  ${question.type === 'single' 
+                    ? 'text-blue-600 focus:ring-blue-500 focus:ring-2' 
+                    : 'text-blue-600 focus:ring-blue-500 focus:ring-2 rounded'
+                  }
+                  ${(disabled || showResult) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                `}
                 aria-describedby={`option-${index}-text`}
               />
               <span 

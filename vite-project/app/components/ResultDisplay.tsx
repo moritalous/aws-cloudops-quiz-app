@@ -121,7 +121,9 @@ export function ResultDisplay({
 
       {/* Options with Explanations */}
       <div className="card-base bg-gray-50 dark:bg-gray-800/50">
-        <h4 className="font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4 text-responsive-base">選択肢の解説</h4>
+        <h4 className="font-bold text-lg text-gray-900 dark:text-white mb-4 border-b border-gray-300 dark:border-gray-600 pb-2">
+          <span className="text-gray-800 dark:text-gray-100">選択肢の解説</span>
+        </h4>
         <div className="space-y-2 sm:space-y-3">
           {question.options.map((option, index) => {
             const explanation = getExplanationForOption(option);
@@ -158,11 +160,11 @@ export function ResultDisplay({
 
       {/* Detailed Explanation */}
       <div className="card-base">
-        <h4 className="font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4 flex items-center text-responsive-base">
-          <svg className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <h4 className="font-bold text-lg text-gray-900 dark:text-white mb-4 flex items-center border-b border-gray-200 dark:border-gray-600 pb-2">
+          <svg className="w-5 h-5 text-blue-600 dark:text-blue-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          詳細解説
+          <span className="text-blue-900 dark:text-blue-100">詳細解説</span>
         </h4>
         <div className="prose prose-sm sm:prose-base max-w-none dark:prose-invert">
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-responsive-sm">
@@ -174,11 +176,11 @@ export function ResultDisplay({
       {/* Learning Resources */}
       {question.learningResources && question.learningResources.length > 0 && (
         <div className="card-base bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
-          <h4 className="font-semibold text-blue-900 dark:text-blue-200 mb-3 sm:mb-4 flex items-center text-responsive-base">
-            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <h4 className="font-bold text-lg text-blue-900 dark:text-blue-200 mb-4 flex items-center border-b border-blue-300 dark:border-blue-700 pb-2">
+            <svg className="w-5 h-5 text-blue-600 dark:text-blue-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
-            学習リソース
+            <span className="text-blue-800 dark:text-blue-100">学習リソース</span>
           </h4>
           <div className="space-y-2 sm:space-y-3">
             {question.learningResources.map((resource, index) => (
@@ -227,7 +229,9 @@ export function ResultDisplay({
       {/* Related Services */}
       {question.relatedServices && question.relatedServices.length > 0 && (
         <div className="card-base bg-gray-50 dark:bg-gray-800/50">
-          <h5 className="font-medium text-gray-900 dark:text-white mb-2 sm:mb-3 text-responsive-sm">関連サービス:</h5>
+          <h5 className="font-bold text-base text-gray-900 dark:text-white mb-3 border-b border-gray-300 dark:border-gray-600 pb-2">
+            <span className="text-gray-800 dark:text-gray-100">関連サービス</span>
+          </h5>
           <div className="flex flex-wrap gap-1 sm:gap-2">
             {question.relatedServices.map((service, index) => (
               <span

@@ -80,9 +80,12 @@ export function QuizScreen({ questions, config, onComplete }: QuizScreenProps) {
       isCorrect = selectedAnswer === correctAnswer;
     } else {
       // For multiple choice, compare arrays
-      const userAnswers = Array.isArray(selectedAnswer) ? selectedAnswer.sort() : [selectedAnswer].sort();
-      const correctAnswers = Array.isArray(correctAnswer) ? correctAnswer.sort() : [correctAnswer].sort();
-      isCorrect = JSON.stringify(userAnswers) === JSON.stringify(correctAnswers);
+      const userAnswers = Array.isArray(selectedAnswer) ? [...selectedAnswer].sort() : [selectedAnswer].sort();
+      const correctAnswers = Array.isArray(correctAnswer) ? [...correctAnswer].sort() : [correctAnswer].sort();
+      
+      // Both arrays must have the same length and contain the same elements
+      isCorrect = userAnswers.length === correctAnswers.length && 
+                  userAnswers.every((answer, index) => answer === correctAnswers[index]);
     }
 
     const newAnswer: Answer = {
