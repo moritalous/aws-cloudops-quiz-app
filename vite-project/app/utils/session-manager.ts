@@ -193,9 +193,9 @@ export class SessionManager {
   static validateSession(session: SessionData): boolean {
     try {
       return (
-        session.sessionId &&
+        !!session.sessionId &&
         session.startedAt instanceof Date &&
-        session.mode &&
+        !!session.mode &&
         Array.isArray(session.answers) &&
         Array.isArray(session.usedQuestionIds) &&
         typeof session.currentQuestionIndex === 'number'
@@ -307,7 +307,7 @@ export class SessionManager {
    */
   private static generateSessionId(): string {
     const timestamp = Date.now();
-    const random = Math.random().toString(36).substr(2, 9);
+    const random = Math.random().toString(36).substring(2, 11);
     return `session_${timestamp}_${random}`;
   }
 
