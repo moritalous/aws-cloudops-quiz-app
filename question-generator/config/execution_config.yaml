@@ -1,0 +1,274 @@
+# AWS CloudOps Question Generation System Configuration
+# This file contains all configuration settings for the AI automation flow
+
+# Domain Configuration - Based on SOA-C03 Exam Guide
+domains:
+  monitoring:
+    name: "Monitoring, Logging, and Remediation"
+    target_questions: 44  # 22% of 200 questions
+    weight_percentage: 22.0
+    priority: 1
+    difficulty_distribution:
+      easy: 0.3
+      medium: 0.5
+      hard: 0.2
+    question_types:
+      single: 0.8
+      multiple: 0.2
+    focus_topics:
+      - "CloudWatch"
+      - "CloudTrail"
+      - "AWS Config"
+      - "Systems Manager"
+      - "X-Ray"
+    aws_services:
+      - "CloudWatch"
+      - "CloudTrail"
+      - "Config"
+      - "Systems Manager"
+      - "X-Ray"
+      - "EventBridge"
+    enabled: true
+
+  reliability:
+    name: "Reliability and Business Continuity"
+    target_questions: 44  # 22% of 200 questions
+    weight_percentage: 22.0
+    priority: 1
+    difficulty_distribution:
+      easy: 0.3
+      medium: 0.5
+      hard: 0.2
+    question_types:
+      single: 0.8
+      multiple: 0.2
+    focus_topics:
+      - "Backup and Restore"
+      - "Disaster Recovery"
+      - "High Availability"
+      - "Auto Scaling"
+      - "Multi-AZ Deployments"
+    aws_services:
+      - "Backup"
+      - "RDS"
+      - "EC2"
+      - "ELB"
+      - "Auto Scaling"
+      - "Route 53"
+      - "S3"
+    enabled: true
+
+  deployment:
+    name: "Deployment, Provisioning, and Automation"
+    target_questions: 44  # 22% of 200 questions
+    weight_percentage: 22.0
+    priority: 1
+    difficulty_distribution:
+      easy: 0.3
+      medium: 0.5
+      hard: 0.2
+    question_types:
+      single: 0.8
+      multiple: 0.2
+    focus_topics:
+      - "CloudFormation"
+      - "CodeDeploy"
+      - "Systems Manager"
+      - "Elastic Beanstalk"
+      - "OpsWorks"
+    aws_services:
+      - "CloudFormation"
+      - "CodeDeploy"
+      - "CodePipeline"
+      - "CodeCommit"
+      - "Elastic Beanstalk"
+      - "Systems Manager"
+      - "OpsWorks"
+    enabled: true
+
+  security:
+    name: "Security and Compliance"
+    target_questions: 32  # 16% of 200 questions
+    weight_percentage: 16.0
+    priority: 2
+    difficulty_distribution:
+      easy: 0.25
+      medium: 0.55
+      hard: 0.2
+    question_types:
+      single: 0.8
+      multiple: 0.2
+    focus_topics:
+      - "IAM"
+      - "Security Groups"
+      - "NACLs"
+      - "KMS"
+      - "CloudTrail"
+      - "Config Rules"
+    aws_services:
+      - "IAM"
+      - "KMS"
+      - "CloudTrail"
+      - "Config"
+      - "Security Hub"
+      - "GuardDuty"
+      - "Inspector"
+    enabled: true
+
+  networking:
+    name: "Networking and Content Delivery"
+    target_questions: 36  # 18% of 200 questions
+    weight_percentage: 18.0
+    priority: 2
+    difficulty_distribution:
+      easy: 0.3
+      medium: 0.5
+      hard: 0.2
+    question_types:
+      single: 0.8
+      multiple: 0.2
+    focus_topics:
+      - "VPC"
+      - "Subnets"
+      - "Route Tables"
+      - "CloudFront"
+      - "Route 53"
+      - "ELB"
+      - "Direct Connect"
+    aws_services:
+      - "VPC"
+      - "CloudFront"
+      - "Route 53"
+      - "ELB"
+      - "Direct Connect"
+      - "API Gateway"
+      - "Transit Gateway"
+    enabled: true
+
+# Batch Processing Configuration
+batch:
+  batch_size: 10                    # Questions per batch
+  total_batches: 19                 # Total batches (189 questions / 10)
+  strategy: "sequential"            # sequential, parallel, adaptive, priority
+  max_parallel_batches: 3           # Max batches to process in parallel
+  retry_attempts: 3                 # Retry attempts per batch
+  retry_delay_seconds: 5.0          # Delay between retries
+  timeout_minutes: 30               # Timeout per batch
+  validation_threshold: 7.0         # Minimum validation score
+  auto_recovery: true               # Enable automatic recovery
+  checkpoint_frequency: 1           # Save state every N batches
+
+# AI Agent Configuration
+agents:
+  exam_analyzer:
+    enabled: true
+    temperature: 0.3                # Lower temperature for analysis
+    max_tokens: 3000
+    timeout_seconds: 180
+    retry_attempts: 3
+    custom_system_prompt: null
+    model_overrides: {}
+
+  batch_manager:
+    enabled: true
+    temperature: 0.5
+    max_tokens: 2000
+    timeout_seconds: 120
+    retry_attempts: 3
+    custom_system_prompt: null
+    model_overrides: {}
+
+  aws_knowledge_agent:
+    enabled: true
+    temperature: 0.4
+    max_tokens: 4000
+    timeout_seconds: 300            # Longer timeout for research
+    retry_attempts: 3
+    custom_system_prompt: null
+    model_overrides: {}
+
+  question_generator:
+    enabled: true
+    temperature: 0.7                # Higher temperature for creativity
+    max_tokens: 4000
+    timeout_seconds: 240
+    retry_attempts: 3
+    custom_system_prompt: null
+    model_overrides: {}
+
+  quality_validator:
+    enabled: true
+    temperature: 0.2                # Very low temperature for validation
+    max_tokens: 3000
+    timeout_seconds: 180
+    retry_attempts: 3
+    custom_system_prompt: null
+    model_overrides: {}
+
+  japanese_optimizer:
+    enabled: true
+    temperature: 0.6
+    max_tokens: 3000
+    timeout_seconds: 150
+    retry_attempts: 3
+    custom_system_prompt: null
+    model_overrides: {}
+
+  database_integrator:
+    enabled: true
+    temperature: 0.1                # Minimal temperature for integration
+    max_tokens: 2000
+    timeout_seconds: 120
+    retry_attempts: 3
+    custom_system_prompt: null
+    model_overrides: {}
+
+# Quality Validation Configuration
+quality:
+  min_technical_accuracy: 8.0       # Minimum technical accuracy score (0-10)
+  min_clarity_score: 7.5           # Minimum clarity score (0-10)
+  min_explanation_score: 8.0       # Minimum explanation quality score (0-10)
+  min_japanese_quality: 7.0        # Minimum Japanese language quality (0-10)
+  enable_duplicate_detection: true  # Enable duplicate question detection
+  similarity_threshold: 0.85       # Similarity threshold for duplicates
+  require_learning_resources: true  # Require learning resources for each question
+  validate_aws_services: true      # Validate AWS service references
+
+# Database Configuration
+database:
+  database_path: "output/questions.json"     # Path to questions database
+  backup_directory: "backups"               # Backup directory
+  auto_backup: true                         # Create automatic backups
+  backup_retention_days: 30                 # Keep backups for N days
+  validate_schema: true                     # Validate JSON schema
+  enable_rollback: true                     # Enable rollback functionality
+  compression_enabled: false                # Enable backup compression
+
+# Monitoring and Logging Configuration
+monitoring:
+  log_level: "INFO"                         # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  log_file: "logs/question_generation.log"  # Log file path
+  enable_real_time_monitoring: true         # Enable real-time progress monitoring
+  progress_update_interval: 30              # Progress update interval (seconds)
+  enable_metrics_collection: true           # Collect performance metrics
+  metrics_file: "logs/metrics.json"         # Metrics file path
+  enable_performance_profiling: false       # Enable detailed performance profiling
+
+# Execution Configuration
+execution:
+  mode: "full_auto"                         # full_auto, semi_auto, manual, debug, recovery
+  enable_pause_resume: true                 # Enable pause/resume functionality
+  state_file: "execution_state.json"        # Execution state file
+  max_execution_time_hours: 24              # Maximum execution time
+  resource_limits:
+    max_memory_mb: 4096                     # Maximum memory usage
+    max_cpu_percent: 80                     # Maximum CPU usage
+    max_concurrent_agents: 5                # Maximum concurrent agents
+  notification_settings:
+    enable_notifications: false             # Enable notifications
+    email_on_completion: false              # Send email on completion
+    email_on_error: true                    # Send email on error
+    webhook_url: null                       # Webhook URL for notifications
+
+# Configuration metadata
+saved_at: "2024-01-01T00:00:00"
