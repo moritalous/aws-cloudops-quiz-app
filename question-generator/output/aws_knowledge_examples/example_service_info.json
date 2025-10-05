@@ -1,0 +1,26 @@
+{
+  "service_name": "Amazon CloudWatch",
+  "service_code": "cloudwatch",
+  "category": "Management & Governance",
+  "description": "Amazon CloudWatch is a monitoring and observability service...",
+  "key_features": [
+    "Real-time monitoring",
+    "Custom metrics",
+    "Automated actions"
+  ],
+  "use_cases": [
+    "Application monitoring",
+    "Infrastructure monitoring",
+    "Log analysis"
+  ],
+  "best_practices": [
+    "Use custom metrics for application-specific monitoring",
+    "Set up appropriate alarm thresholds"
+  ],
+  "regional_availability": [
+    "us-east-1",
+    "us-west-2",
+    "eu-west-1"
+  ],
+  "global_service": false
+}

@@ -260,6 +260,19 @@ class AgentFactory:
         logger.info("Created document researcher agent with MCP tools")
         return agent
     
+    def create_aws_knowledge_agent(self):
+        """
+        Create an AWS Knowledge MCP integration agent.
+        
+        Returns:
+            AWSKnowledgeAgent instance for comprehensive AWS knowledge retrieval
+        """
+        from core.aws_knowledge_agent import AWSKnowledgeAgent
+        
+        aws_knowledge_agent = AWSKnowledgeAgent(self.config)
+        logger.info("Created AWS Knowledge MCP integration agent")
+        return aws_knowledge_agent
+    
     def create_question_generator(self) -> Agent:
         """
         Create an agent specialized for question generation.

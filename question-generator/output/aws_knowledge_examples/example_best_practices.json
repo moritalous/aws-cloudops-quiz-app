@@ -1,0 +1,20 @@
+{
+  "topic": "CloudWatch monitoring and alerting",
+  "extraction_timestamp": "2024-01-15T10:30:00Z",
+  "general_best_practices": [
+    "Monitor key performance indicators (KPIs)",
+    "Use composite alarms for complex scenarios"
+  ],
+  "security_considerations": [
+    "Use IAM roles for CloudWatch access",
+    "Enable CloudTrail for API logging"
+  ],
+  "cost_optimization": [
+    "Use metric filters to reduce log ingestion costs",
+    "Set appropriate retention periods"
+  ],
+  "well_architected_principles": [
+    "Operational Excellence: Automate monitoring",
+    "Reliability: Set up multi-region monitoring"
+  ]
+}

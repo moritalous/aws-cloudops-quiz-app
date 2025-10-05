@@ -92,10 +92,12 @@
   - 状態管理機能のテストを作成
   - _要件: 1.1, 1.2, 1.3, 1.4_
 
-- [-] 4. AWS Knowledge MCP Server統合Agentの実装
+- [x] 4. AWS Knowledge MCP Server統合Agentの実装
 
 
-- [-] 4.1 AWS Knowledge MCP統合Agentの作成
+
+- [x] 4.1 AWS Knowledge MCP統合Agentの作成
+
 
   - **MCP統合調査**: mcp_strands_agents_*ツールでMCPツール統合の最新方法を確認
   - **AWS Knowledge MCP調査**: AWS Knowledge MCP Server（https://knowledge-mcp.global.api.aws）の機能と使用方法を調査
@@ -116,6 +118,7 @@
   - ドキュメント抽出精度のテストを実装
   - エラーハンドリングとリトライのテストを作成
   - _要件: 6.1, 6.2, 6.3, 6.4, 6.5_
+
 
 - [ ] 5. AI問題生成Agentの実装
 

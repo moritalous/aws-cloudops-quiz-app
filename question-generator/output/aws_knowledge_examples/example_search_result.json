@@ -1,0 +1,27 @@
+{
+  "query": "CloudWatch monitoring best practices",
+  "total_results": 15,
+  "search_timestamp": "2024-01-15T10:30:00Z",
+  "results": [
+    {
+      "title": "Amazon CloudWatch Best Practices",
+      "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_best_practices.html",
+      "content": "# CloudWatch Best Practices\n\nThis guide covers best practices...",
+      "document_type": "documentation",
+      "related_services": [
+        "CloudWatch",
+        "EC2",
+        "Lambda"
+      ],
+      "key_concepts": [
+        "Metrics",
+        "Alarms",
+        "Dashboards"
+      ]
+    }
+  ],
+  "recommended_follow_up": [
+    "CloudWatch Logs best practices",
+    "CloudWatch alarms configuration"
+  ]
+}
