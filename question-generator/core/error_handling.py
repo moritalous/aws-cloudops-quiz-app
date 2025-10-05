@@ -343,3 +343,82 @@ def handle_error(
         True if operation should continue, False if it should stop
     """
     return get_error_handler().handle_error(error, context, operation, critical)
+
+
+def handle_agent_errors(func: Callable) -> Callable:
+    """
+    Decorator for handling agent-specific errors with appropriate logging and retry logic.
+    
+    This decorator provides comprehensive error handling for agent operations,
+    including automatic retry for retryable errors and graceful degradation.
+    
+    Args:
+        func: The function to decorate
+    
+    Returns:
+        Decorated function with error handling
+    """
+    @wraps(func)
+    async def async_wrapper(*args, **kwargs) -> Any:
+        try:
+            return await func(*args, **kwargs)
+        except Exception as e:
+            # Determine context from function name and arguments
+            context = f"Agent.{func.__name__}"
+            operation = "agent_operation"
+            
+            # Log the error with context
+            logger.error(f"Agent error in {context}: {e}", exc_info=True)
+            
+            # Handle specific error types
+            if isinstance(e, (BedrockConnectionError, MCPConnectionError)):
+                # Connection errors - wrap in retryable error for retry logic
+                raise RetryableError(f"Connection error in {context}: {e}") from e
+            
+            elif isinstance(e, ValidationError):
+                # Validation errors - usually not retryable
+                raise NonRetryableError(f"Validation error in {context}: {e}") from e
+            
+            elif isinstance(e, QuestionGenerationError):
+                # Already a known error type, re-raise as-is
+                raise
+            
+            else:
+                # Unknown error - wrap in general error
+                raise QuestionGenerationError(f"Unexpected error in {context}: {e}") from e
+    
+    @wraps(func)
+    def sync_wrapper(*args, **kwargs) -> Any:
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            # Determine context from function name and arguments
+            context = f"Agent.{func.__name__}"
+            operation = "agent_operation"
+            
+            # Log the error with context
+            logger.error(f"Agent error in {context}: {e}", exc_info=True)
+            
+            # Handle specific error types
+            if isinstance(e, (BedrockConnectionError, MCPConnectionError)):
+                # Connection errors - wrap in retryable error for retry logic
+                raise RetryableError(f"Connection error in {context}: {e}") from e
+            
+            elif isinstance(e, ValidationError):
+                # Validation errors - usually not retryable
+                raise NonRetryableError(f"Validation error in {context}: {e}") from e
+            
+            elif isinstance(e, QuestionGenerationError):
+                # Already a known error type, re-raise as-is
+                raise
+            
+            else:
+                # Unknown error - wrap in general error
+                raise QuestionGenerationError(f"Unexpected error in {context}: {e}") from e
+    
+    # Return appropriate wrapper based on whether function is async
+    import asyncio
+    if asyncio.iscoroutinefunction(func):
+        return async_wrapper
+    else:
+        return sync_wrapper

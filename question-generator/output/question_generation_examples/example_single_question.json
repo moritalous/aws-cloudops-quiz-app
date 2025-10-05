@@ -1,0 +1,57 @@
+{
+  "id": "q_example_001",
+  "domain": "security",
+  "difficulty": "medium",
+  "type": "multiple",
+  "question": "あなたは大手金融機関のクラウドエンジニアとして、機密性の高い顧客データを保管するAmazon S3バケットのセキュリティ強化を担当することになりました。以下の要件を満たすために、最適なセキュリティ対策の組み合わせを選択してください。\n\n要件：\n• 保存データの機密性を確実に保護すること\n• すべてのアクセス操作の詳細な監査ログを取得すること\n• 重要データの誤削除を確実に防止すること\n• 不正アクセスを迅速に検知し、担当者へ通知すること",
+  "options": [
+    "AWS KMSを使用したS3バケットの暗号化を実施し、AWS CloudTrailでAPI操作のログを記録する",
+    "S3アクセスログを有効化し、Amazon CloudWatchアラームで異常なアクセスパターンを監視する",
+    "バケットポリシーでパブリックアクセスをブロックし、VPCエンドポイント経由のアクセスのみを許可する",
+    "S3バケットでバージョニングを有効化し、MFA Delete保護を設定する",
+    "IAMポリシーで最小権限の原則を適用し、タグベースのアクセス制御（TBAC）を実装する"
+  ],
+  "correct_answer": [
+    "A",
+    "B",
+    "D"
+  ],
+  "explanation": "この問題は、機密データを保管するS3バケットに対する包括的なセキュリティ対策の実装方法を問うものです。\n\n【正解の選択肢の詳細解説】\n\nA. AWS KMSによる暗号化とCloudTrailログの記録\n• AWS KMSを使用したサーバーサイド暗号化により、保存データの機密性を確実に保護できます\n• CloudTrailによってすべてのAPI操作が記録され、誰が、いつ、どのような操作を行ったかを正確に追跡できます\n\nB. S3アクセスログとCloudWatch監視の組み合わせ\n• S3アクセスログにより、バケットへのすべてのアクセス要求（成功/失敗含む）を詳細に記録できます\n• CloudWatchアラームを設定することで、不正アクセスなどの異常なパターンを自動検知し、即座に通知を受けることが可能です\n\nD. バージョニングとMFA Deleteの設定\n• バージョニング機能により、誤って削除されたオブジェクトでも以前のバージョンから復元が可能です\n• MFA Delete保護により、重要なオブジェクトの削除時に多要素認証が要求され、意図しない削除を確実に防止できます\n\n【不正解の選択肢について】\n\nC. VPCエンドポイントの利用\n• パブリックアクセスのブロックとVPCエンドポイントの使用は有効なセキュリティ対策ですが\n• 要件で求められている暗号化やログ記録、誤削除防止には対応していません\n\nE. IAMポリシーとタグベースのアクセス制御\n• アクセス制御の基本として重要ですが\n• 主要要件である暗号化、ログ記録、誤削除防止には直接対応していません\n\n【要件との対応】\n1. データの機密性保護 → AWS KMS暗号化（A）\n2. 詳細な監査ログ取得 → CloudTrail（A）とS3アクセスログ（B）\n3. 誤削除防止 → バージョニングとMFA Delete（D）\n4. 不正アクセスの検知・通知 → CloudWatchアラーム（B）\n\nこれらの対策を組み合わせることで、要件に示されたすべてのセキュリティ要件を満たすことができます。",
+  "learning_resources": [
+    {
+      "title": "Amazon S3のセキュリティのベストプラクティス",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-best-practices.html",
+      "type": "documentation",
+      "description": "S3のセキュリティ設定に関する包括的なガイドライン"
+    },
+    {
+      "title": "AWS Well-Architected Framework - セキュリティの柱",
+      "url": "https://docs.aws.amazon.com/wellarchitected/latest/security-pillar/welcome.html",
+      "type": "best-practice",
+      "description": "AWSにおけるセキュリティのベストプラクティス"
+    },
+    {
+      "title": "Amazon S3のモニタリングとログ記録",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/monitoring-overview.html",
+      "type": "documentation",
+      "description": "S3のモニタリングとログ記録オプションの詳細"
+    }
+  ],
+  "related_services": [
+    "Amazon S3",
+    "AWS KMS",
+    "AWS CloudTrail",
+    "Amazon CloudWatch"
+  ],
+  "tags": [
+    "security",
+    "encryption",
+    "monitoring",
+    "access-control",
+    "data-protection"
+  ],
+  "task_reference": null,
+  "skill_reference": "SEC 3.0 - Implement data protection mechanisms",
+  "scenario": null,
+  "created_at": "2025-10-05T23:59:02.587573"
+}
