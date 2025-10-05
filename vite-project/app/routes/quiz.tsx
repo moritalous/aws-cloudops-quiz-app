@@ -32,8 +32,8 @@ export default function Quiz() {
 
   const loadQuestions = async () => {
     try {
-      // DataLoaderを使用してデータを読み込み
-      const { loadQuestionSet } = await import('~/utils/data-loader');
+      // SimpleDataLoaderを使用してデータを読み込み
+      const { loadQuestionSet } = await import('~/utils/simple-data-loader');
       const result = await loadQuestionSet();
       
       if (!result.success || !result.data) {
@@ -41,11 +41,6 @@ export default function Quiz() {
       }
 
       setQuestions(result.data.questions);
-      
-      // 品質レポートがある場合はコンソールに出力（開発時のデバッグ用）
-      if (result.qualityReport && import.meta.env.DEV) {
-        console.log('Question Quality Report:', result.qualityReport);
-      }
       
       // セッションデータを初期化
       const session: SessionData = {

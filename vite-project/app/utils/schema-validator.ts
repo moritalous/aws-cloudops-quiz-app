@@ -1,14 +1,23 @@
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import type { QuestionSet } from '~/types';
-import questionSchema from '~/schemas/question-schema.json';
 
 // AJVインスタンスを作成し、フォーマット検証を追加
 const ajv = new Ajv({ allErrors: true });
 addFormats(ajv);
 
-// スキーマをコンパイル
-const validateQuestionSet = ajv.compile(questionSchema);
+// スキーマを動的に読み込む
+let questionSchema: any = null;
+let validateQuestionSet: any = null;
+
+async function loadSchema() {
+  if (!questionSchema) {
+    const response = await fetch('/schemas/question-schema.json');
+    questionSchema = await response.json();
+    validateQuestionSet = ajv.compile(questionSchema);
+  }
+  return validateQuestionSet;
+}
 
 export interface ValidationError {
   field: string;
@@ -24,74 +33,90 @@ export interface ValidationResult {
 /**
  * 問題セットデータをJSONスキーマで検証する
  */
-export function validateQuestionSetData(data: any): ValidationResult {
-  const isValid = validateQuestionSet(data);
-  
-  if (isValid) {
+export async function validateQuestionSetData(data: any): Promise<ValidationResult> {
+  try {
+    const validator = await loadSchema();
+    const isValid = validator(data);
+    
+    if (isValid) {
+      return {
+        isValid: true,
+        errors: []
+      };
+    }
+
+    const errors: ValidationError[] = [];
+    
+    if (validator.errors) {
+      for (const error of validator.errors) {
+        errors.push({
+          field: error.instancePath || error.schemaPath,
+          message: error.message || 'Validation error',
+          value: error.data
+        });
+      }
+    }
+
     return {
-      isValid: true,
-      errors: []
+      isValid: false,
+      errors
+    };
+  } catch (error) {
+    return {
+      isValid: false,
+      errors: [{ field: 'schema', message: 'Failed to load schema: ' + (error instanceof Error ? error.message : 'Unknown error') }]
     };
   }
-
-  const errors: ValidationError[] = [];
-  
-  if (validateQuestionSet.errors) {
-    for (const error of validateQuestionSet.errors) {
-      errors.push({
-        field: error.instancePath || error.schemaPath,
-        message: error.message || 'Validation error',
-        value: error.data
-      });
-    }
-  }
-
-  return {
-    isValid: false,
-    errors
-  };
 }
 
 /**
  * 個別の問題データを検証する
  */
-export function validateQuestion(question: any): ValidationResult {
-  // 問題スキーマの定義部分を使用
-  const questionSchemaDefinition = questionSchema.definitions?.question;
-  
-  if (!questionSchemaDefinition) {
+export async function validateQuestion(question: any): Promise<ValidationResult> {
+  try {
+    await loadSchema(); // スキーマを読み込み
+    
+    const questionSchemaDefinition = questionSchema.definitions?.question;
+    
+    if (!questionSchemaDefinition) {
+      return {
+        isValid: false,
+        errors: [{ field: 'schema', message: 'Question schema definition not found' }]
+      };
+    }
+
+    const validateSingleQuestion = ajv.compile(questionSchemaDefinition);
+    const isValid = validateSingleQuestion(question);
+
+    if (isValid) {
+      return {
+        isValid: true,
+        errors: []
+      };
+    }
+
+    const errors: ValidationError[] = [];
+    
+    if (validateSingleQuestion.errors) {
+      for (const error of validateSingleQuestion.errors) {
+        errors.push({
+          field: error.instancePath || error.schemaPath,
+          message: error.message || 'Validation error',
+          value: error.data
+        });
+      }
+    }
+
     return {
       isValid: false,
-      errors: [{ field: 'schema', message: 'Question schema definition not found' }]
+      errors
     };
-  }
-
-  const validateSingleQuestion = ajv.compile(questionSchemaDefinition);
-  const isValid = validateSingleQuestion(question);
-
-  if (isValid) {
+  } catch (error) {
     return {
-      isValid: true,
-      errors: []
+      isValid: false,
+      errors: [{ field: 'schema', message: 'Failed to validate question: ' + (error instanceof Error ? error.message : 'Unknown error') }]
     };
   }
-
-  const errors: ValidationError[] = [];
-  
-  if (validateSingleQuestion.errors) {
-    for (const error of validateSingleQuestion.errors) {
-      errors.push({
-        field: error.instancePath || error.schemaPath,
-        message: error.message || 'Validation error',
-        value: error.data
-      });
-    }
-  }
-
-  return {
-    isValid: false,
-    errors
-  };
 }
 
 /**
@@ -196,9 +221,9 @@ export function validateLearningResourceUrls(data: QuestionSet): ValidationResul
 /**
  * 包括的な問題セット検証
  */
-export function validateQuestionSetComprehensive(data: any): ValidationResult {
+export async function validateQuestionSetComprehensive(data: any): Promise<ValidationResult> {
   // 1. JSONスキーマ検証
-  const schemaResult = validateQuestionSetData(data);
+  const schemaResult = await validateQuestionSetData(data);
   if (!schemaResult.isValid) {
     return schemaResult;
   }

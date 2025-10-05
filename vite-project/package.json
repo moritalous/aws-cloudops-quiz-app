@@ -18,6 +18,7 @@
     "@react-router/node": "^7.9.2",
     "@react-router/serve": "^7.9.2",
     "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
     "isbot": "^5.1.31",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

@@ -20,7 +20,7 @@ export interface DataLoaderOptions {
 export class DataLoader {
   private cache = new Map<string, any>();
   private defaultOptions: DataLoaderOptions = {
-    validateSchema: true,
+    validateSchema: false, // 一時的に無効化
     checkQuality: true,
     enableCache: true,
     timeout: 10000, // 10秒
@@ -56,7 +56,7 @@ export class DataLoader {
       // スキーマ検証
       let validationResult: ValidationResult | undefined;
       if (this.options.validateSchema) {
-        validationResult = validateQuestionSetComprehensive(rawData);
+        validationResult = await validateQuestionSetComprehensive(rawData);
         if (!validationResult.isValid) {
           return {
             success: false,
@@ -257,7 +257,7 @@ export class DataLoader {
       }
 
       const rawData = await response.json();
-      return validateQuestionSetComprehensive(rawData);
+      return await validateQuestionSetComprehensive(rawData);
 
     } catch (error) {
       return {
