@@ -1,0 +1,254 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2025-01-15T10:00:00Z",
+  "totalQuestions": 10,
+  "domains": {
+    "monitoring": 3,
+    "reliability": 3,
+    "deployment": 2,
+    "security": 1,
+    "networking": 1
+  },
+  "questions": [
+    {
+      "id": "q001",
+      "domain": "monitoring",
+      "difficulty": "medium",
+      "type": "single",
+      "question": "あなたの会社では、EC2インスタンスのCPU使用率が80%を超えた場合にアラートを受信したいと考えています。この要件を満たすために最も適切なAWSサービスはどれですか？",
+      "options": [
+        "A. Amazon CloudWatch",
+        "B. AWS CloudTrail",
+        "C. AWS Config",
+        "D. Amazon Inspector"
+      ],
+      "correctAnswer": "A",
+      "explanation": "Amazon CloudWatchは、AWSリソースのメトリクスを監視し、指定した閾値を超えた場合にアラームを発生させることができます。CPU使用率などのEC2メトリクスを監視し、80%を超えた場合にSNS通知やAutoScalingアクションをトリガーできます。",
+      "learningResources": [
+        {
+          "title": "Amazon CloudWatch User Guide",
+          "url": "https://docs.aws.amazon.com/cloudwatch/",
+          "type": "documentation"
+        }
+      ],
+      "relatedServices": ["EC2", "SNS", "Auto Scaling"],
+      "tags": ["monitoring", "alarms", "cpu"]
+    },
+    {
+      "id": "q002",
+      "domain": "monitoring",
+      "difficulty": "hard",
+      "type": "single",
+      "question": "マルチリージョンのWebアプリケーションで、各リージョンのCloudWatchメトリクスを統合して監視したい場合、最も効率的なアプローチはどれですか？",
+      "options": [
+        "A. 各リージョンでCloudWatchダッシュボードを個別に作成する",
+        "B. CloudWatch Insightsを使用してクロスリージョンクエリを実行する",
+        "C. AWS Systems Managerを使用してメトリクスを集約する",
+        "D. カスタムメトリクスを使用して全リージョンのデータを一つのリージョンに送信する"
+      ],
+      "correctAnswer": "B",
+      "explanation": "CloudWatch Insightsは、複数のリージョンにわたってログデータをクエリできる機能を提供します。クロスリージョンクエリを使用することで、異なるリージョンのCloudWatchログを統合して分析できます。",
+      "learningResources": [
+        {
+          "title": "CloudWatch Insights User Guide",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AnalyzingLogData.html",
+          "type": "documentation"
+        }
+      ],
+      "relatedServices": ["CloudWatch", "CloudWatch Logs"],
+      "tags": ["monitoring", "multi-region", "insights"]
+    },
+    {
+      "id": "q003",
+      "domain": "monitoring",
+      "difficulty": "easy",
+      "type": "single",
+      "question": "AWS CloudTrailの主な目的は何ですか？",
+      "options": [
+        "A. EC2インスタンスのパフォーマンスメトリクスを監視する",
+        "B. AWSアカウント内のAPI呼び出しを記録する",
+        "C. アプリケーションログを集約する",
+        "D. ネットワークトラフィックを分析する"
+      ],
+      "correctAnswer": "B",
+      "explanation": "AWS CloudTrailは、AWSアカウント内で行われるAPI呼び出しを記録し、監査証跡を提供するサービスです。誰が、いつ、どのようなアクションを実行したかを追跡できます。",
+      "learningResources": [
+        {
+          "title": "AWS CloudTrail User Guide",
+          "url": "https://docs.aws.amazon.com/cloudtrail/",
+          "type": "documentation"
+        }
+      ],
+      "relatedServices": ["CloudTrail", "S3", "CloudWatch"],
+      "tags": ["monitoring", "audit", "api-calls"]
+    },
+    {
+      "id": "q004",
+      "domain": "reliability",
+      "difficulty": "medium",
+      "type": "single",
+      "question": "Auto Scalingグループで、インスタンスの起動に失敗した場合の対処として最も適切なのはどれですか？",
+      "options": [
+        "A. 手動でインスタンスを起動する",
+        "B. Auto Scalingグループが自動的に代替インスタンスを起動する",
+        "C. CloudWatchアラームを設定して通知を受ける",
+        "D. Elastic Load Balancerの設定を変更する"
+      ],
+      "correctAnswer": "B",
+      "explanation": "Auto Scalingグループは、インスタンスの起動に失敗した場合、自動的に代替インスタンスの起動を試行します。これにより、指定された容量を維持しようとします。",
+      "learningResources": [
+        {
+          "title": "Amazon EC2 Auto Scaling User Guide",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/",
+          "type": "documentation"
+        }
+      ],
+      "relatedServices": ["Auto Scaling", "EC2", "ELB"],
+      "tags": ["reliability", "auto-scaling", "high-availability"]
+    },
+    {
+      "id": "q005",
+      "domain": "reliability",
+      "difficulty": "hard",
+      "type": "single",
+      "question": "RDSデータベースの高可用性を実現するために、Multi-AZ配置を使用する場合の主な利点は何ですか？",
+      "options": [
+        "A. 読み取り性能が向上する",
+        "B. データベースの容量が2倍になる",
+        "C. 自動フェイルオーバーによりダウンタイムが最小化される",
+        "D. バックアップの作成が不要になる"
+      ],
+      "correctAnswer": "C",
+      "explanation": "RDS Multi-AZ配置では、プライマリデータベースに障害が発生した場合、自動的にスタンバイインスタンスにフェイルオーバーされます。これにより、ダウンタイムを最小限に抑えることができます。",
+      "learningResources": [
+        {
+          "title": "Amazon RDS Multi-AZ Deployments",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html",
+          "type": "documentation"
+        }
+      ],
+      "relatedServices": ["RDS", "Multi-AZ"],
+      "tags": ["reliability", "database", "high-availability", "failover"]
+    },
+    {
+      "id": "q006",
+      "domain": "reliability",
+      "difficulty": "medium",
+      "type": "single",
+      "question": "Elastic Load Balancerのヘルスチェックが失敗したインスタンスに対して、どのような動作が行われますか？",
+      "options": [
+        "A. インスタンスが自動的に再起動される",
+        "B. トラフィックの送信が停止される",
+        "C. インスタンスが終了される",
+        "D. アラートが管理者に送信される"
+      ],
+      "correctAnswer": "B",
+      "explanation": "Elastic Load Balancerは、ヘルスチェックが失敗したインスタンスに対してトラフィックの送信を停止します。インスタンスが再び健全になると、トラフィックの送信が再開されます。",
+      "learningResources": [
+        {
+          "title": "Elastic Load Balancing User Guide",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/",
+          "type": "documentation"
+        }
+      ],
+      "relatedServices": ["ELB", "EC2", "Auto Scaling"],
+      "tags": ["reliability", "load-balancing", "health-check"]
+    },
+    {
+      "id": "q007",
+      "domain": "deployment",
+      "difficulty": "medium",
+      "type": "single",
+      "question": "AWS CodeDeployでBlue/Greenデプロイメントを実行する際の主な利点は何ですか？",
+      "options": [
+        "A. デプロイメント時間が短縮される",
+        "B. リソースコストが削減される",
+        "C. ダウンタイムなしでデプロイメントが可能",
+        "D. 設定が簡単になる"
+      ],
+      "correctAnswer": "C",
+      "explanation": "Blue/Greenデプロイメントでは、新しいバージョン（Green）を別の環境にデプロイし、テスト後にトラフィックを切り替えます。これにより、ダウンタイムなしでデプロイメントが可能になります。",
+      "learningResources": [
+        {
+          "title": "AWS CodeDeploy User Guide",
+          "url": "https://docs.aws.amazon.com/codedeploy/",
+          "type": "documentation"
+        }
+      ],
+      "relatedServices": ["CodeDeploy", "ELB", "Auto Scaling"],
+      "tags": ["deployment", "blue-green", "zero-downtime"]
+    },
+    {
+      "id": "q008",
+      "domain": "deployment",
+      "difficulty": "easy",
+      "type": "single",
+      "question": "AWS CloudFormationテンプレートの主な形式はどれですか？",
+      "options": [
+        "A. XML",
+        "B. JSON または YAML",
+        "C. CSV",
+        "D. HTML"
+      ],
+      "correctAnswer": "B",
+      "explanation": "AWS CloudFormationテンプレートは、JSONまたはYAML形式で記述できます。どちらの形式でも同じ機能を提供し、インフラストラクチャをコードとして定義できます。",
+      "learningResources": [
+        {
+          "title": "AWS CloudFormation User Guide",
+          "url": "https://docs.aws.amazon.com/cloudformation/",
+          "type": "documentation"
+        }
+      ],
+      "relatedServices": ["CloudFormation"],
+      "tags": ["deployment", "infrastructure-as-code", "templates"]
+    },
+    {
+      "id": "q009",
+      "domain": "security",
+      "difficulty": "medium",
+      "type": "single",
+      "question": "EC2インスタンスへの不正なSSHアクセス試行を検出し、自動的にセキュリティグループを更新して該当IPアドレスをブロックしたい場合、最も適切なソリューションはどれですか？",
+      "options": [
+        "A. AWS WAFとCloudWatchアラームを組み合わせる",
+        "B. Amazon GuardDutyとAWS Lambdaを組み合わせる",
+        "C. AWS Configルールを使用してコンプライアンス違反を検出する",
+        "D. VPC Flow LogsとAmazon Athenaを使用して分析する"
+      ],
+      "correctAnswer": "B",
+      "explanation": "Amazon GuardDutyは、機械学習を使用して悪意のあるアクティビティや不正な動作を検出します。GuardDutyが不正なSSHアクセスを検出した際に、EventBridge経由でLambda関数をトリガーし、自動的にセキュリティグループを更新してIPアドレスをブロックできます。",
+      "learningResources": [
+        {
+          "title": "Amazon GuardDuty User Guide",
+          "url": "https://docs.aws.amazon.com/guardduty/",
+          "type": "documentation"
+        }
+      ],
+      "relatedServices": ["GuardDuty", "Lambda", "EventBridge", "EC2"],
+      "tags": ["security", "intrusion-detection", "automation"]
+    },
+    {
+      "id": "q010",
+      "domain": "networking",
+      "difficulty": "medium",
+      "type": "single",
+      "question": "VPCで異なるアベイラビリティゾーン間の通信を有効にするために必要なコンポーネントは何ですか？",
+      "options": [
+        "A. Internet Gateway",
+        "B. NAT Gateway",
+        "C. Route Table",
+        "D. VPC Peering"
+      ],
+      "correctAnswer": "C",
+      "explanation": "VPC内の異なるアベイラビリティゾーン間の通信は、適切に設定されたRoute Tableによって制御されます。Route Tableは、ネットワークトラフィックの経路を決定します。",
+      "learningResources": [
+        {
+          "title": "Amazon VPC User Guide",
+          "url": "https://docs.aws.amazon.com/vpc/",
+          "type": "documentation"
+        }
+      ],
+      "relatedServices": ["VPC", "Route Table", "Subnet"],
+      "tags": ["networking", "vpc", "routing"]
+    }
+  ]
+}

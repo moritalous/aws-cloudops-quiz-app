@@ -1,4 +1,53 @@
-# Welcome to React Router!
+# AWS CloudOps 試験対策アプリ
+
+AWS Certified CloudOps Engineer - Associate試験対策のためのSingle Page Application (SPA)です。
+
+## 機能
+
+- **10問セットモード**: 10問の問題で集中学習
+- **エンドレスモード**: 時間制限なしの継続学習
+- **即座のフィードバック**: 各問題に詳細な解説付き
+- **レスポンシブデザイン**: デスクトップ・スマートフォン対応
+- **セッション管理**: ブラウザリロード時に初期化
+
+## 技術スタック
+
+- React 19 + TypeScript
+- React Router v7
+- Tailwind CSS
+- Vite
+- Vitest (テスト)
+
+## 開発
+
+```bash
+# 依存関係のインストール
+npm install
+
+# 開発サーバー起動
+npm run dev
+
+# ビルド
+npm run build
+
+# テスト実行
+npm run test
+
+# リント
+npm run lint
+```
+
+## プロジェクト構造
+
+```
+app/
+├── components/     # 再利用可能なUIコンポーネント
+├── hooks/         # カスタムReactフック
+├── routes/        # ページコンポーネント
+├── types/         # TypeScript型定義
+├── utils/         # ユーティリティ関数
+└── app.css        # グローバルスタイル
+```
 
 A modern, production-ready template for building full-stack React applications using React Router.
 

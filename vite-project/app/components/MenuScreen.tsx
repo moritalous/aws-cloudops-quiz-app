@@ -1,14 +1,25 @@
-import type { Route } from "./+types/home";
-import { Link } from "react-router";
+import { Link } from 'react-router';
+import type { QuizConfig } from '~/types';
 
-export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "AWS CloudOps試験対策" },
-    { name: "description", content: "AWS Certified CloudOps Engineer - Associate試験対策アプリケーション" },
-  ];
+interface MenuScreenProps {
+  onStart: (config: QuizConfig) => void;
 }
 
-export default function Home() {
+export function MenuScreen({ onStart }: MenuScreenProps) {
+  const handleStartSet = () => {
+    onStart({
+      mode: 'set',
+      questionCount: 10,
+    });
+  };
+
+  const handleStartEndless = () => {
+    onStart({
+      mode: 'endless',
+      questionCount: 0,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="max-w-4xl mx-auto px-4 py-12">
@@ -34,12 +45,12 @@ export default function Home() {
             <p className="text-gray-600 mb-6">
               10問の問題に挑戦して、正答率を確認できます。短時間で集中して学習したい方におすすめです。
             </p>
-            <Link
-              to="/quiz?mode=set&count=10"
+            <button
+              onClick={handleStartSet}
               className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
             >
               10問セットを開始
-            </Link>
+            </button>
           </div>
 
           <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
@@ -49,12 +60,12 @@ export default function Home() {
             <p className="text-gray-600 mb-6">
               時間制限なしで連続して問題に取り組めます。じっくりと学習を進めたい方におすすめです。
             </p>
-            <Link
-              to="/quiz?mode=endless"
+            <button
+              onClick={handleStartEndless}
               className="inline-block bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
             >
               エンドレスモードを開始
-            </Link>
+            </button>
           </div>
         </div>
 
