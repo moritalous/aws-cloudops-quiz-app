@@ -1,0 +1,62 @@
+{
+  "timestamp": "2025-10-05T23:34:02.284728",
+  "current_state": {
+    "total_questions": 11,
+    "existing_questions": 11,
+    "generated_questions": 0,
+    "domain_distribution": {
+      "monitoring": 3,
+      "reliability": 2,
+      "deployment": 2,
+      "security": 2,
+      "networking": 2
+    },
+    "domain_targets": {
+      "monitoring": 44,
+      "reliability": 44,
+      "deployment": 44,
+      "security": 32,
+      "networking": 36
+    },
+    "domain_remaining": {
+      "monitoring": 41,
+      "reliability": 42,
+      "deployment": 42,
+      "security": 30,
+      "networking": 34
+    },
+    "difficulty_distribution": {
+      "easy": 4,
+      "medium": 5,
+      "hard": 2
+    },
+    "difficulty_targets": {
+      "easy": 60,
+      "medium": 100,
+      "hard": 40
+    },
+    "difficulty_remaining": {
+      "easy": 56,
+      "medium": 95,
+      "hard": 38
+    },
+    "question_type_distribution": {
+      "single": 9,
+      "multiple": 2
+    },
+    "question_type_targets": {
+      "single": 160,
+      "multiple": 40
+    },
+    "covered_topics": [
+      "test"
+    ],
+    "covered_services": [
+      "EC2",
+      "CloudWatch"
+    ],
+    "last_updated": "2025-10-05T23:33:52.974830",
+    "completion_percentage": 5.5
+  },
+  "current_batch_plan": null
+}

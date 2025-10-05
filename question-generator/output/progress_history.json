@@ -1,0 +1,65 @@
+{
+  "timestamp": "2025-10-05T23:34:18.622844",
+  "progress_history": [
+    {
+      "current_progress": 5.5,
+      "questions_completed": 11,
+      "questions_remaining": 189,
+      "batches_completed": 1,
+      "remaining_batches": 19,
+      "domain_progress": {
+        "monitoring": 6.8,
+        "reliability": 4.5,
+        "deployment": 4.5,
+        "security": 6.3,
+        "networking": 5.6
+      },
+      "difficulty_progress": {
+        "easy": 6.7,
+        "medium": 5.0,
+        "hard": 5.0
+      },
+      "quality_metrics": {
+        "average_quality_score": 0.0,
+        "batch_success_rate": 100.0
+      },
+      "performance_metrics": {
+        "total_time_spent": 0,
+        "average_batch_time": 0,
+        "questions_per_hour": 0,
+        "batch_success_rate": 100.0
+      },
+      "estimated_total_time": 2400,
+      "estimated_remaining_time": 2268,
+      "current_velocity": 0.0,
+      "bottlenecks_identified": [
+        "初期フェーズのため実績データが不足",
+        "全てのドメインで進捗率が10%未満",
+        "難易度バランスの偏り（medium偏重）"
+      ],
+      "recommendations": [
+        "次バッチでは未カバーのAWSサービスを優先的に扱う",
+        "難易度バランスを考慮し、特にeasy問題の生成を増やす",
+        "monitoring, reliabilityドメインの問題生成を優先する",
+        "品質メトリクスの測定基準を確立する"
+      ],
+      "next_batch_preview": "次バッチでは以下に注力:\n1. Easy難易度の問題を4-5問\n2. Monitoring, Reliabilityドメインからの問題を優先\n3. 未カバーのAWSサービス（S3, Lambda等）の導入\n4. Multiple choice形式の問題を2-3問含める",
+      "milestone_status": {
+        "initial_setup": true,
+        "first_batch": true,
+        "25_percent": false,
+        "50_percent": false,
+        "75_percent": false,
+        "completion": false
+      },
+      "risk_assessment": {
+        "schedule": "現在の進捗率が低く、加速が必要",
+        "quality": "品質メトリクスの基準未確立",
+        "coverage": "ドメインカバレッジの不均衡",
+        "resource": "生成速度の実績データ不足",
+        "quality_risk": "high"
+      },
+      "generated_at": "2025-10-05T23:33:52.974830"
+    }
+  ]
+}
