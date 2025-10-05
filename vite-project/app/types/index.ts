@@ -78,9 +78,4 @@ export interface AppError {
   timestamp: Date;
 }
 
-export enum ErrorTypes {
-  NETWORK_ERROR = 'NETWORK_ERROR',
-  DATA_LOAD_ERROR = 'DATA_LOAD_ERROR',
-  SESSION_ERROR = 'SESSION_ERROR',
-  VALIDATION_ERROR = 'VALIDATION_ERROR'
-}
+export type ErrorTypes = 'NETWORK_ERROR' | 'DATA_LOAD_ERROR' | 'SESSION_ERROR' | 'VALIDATION_ERROR' | 'COMPONENT_ERROR';

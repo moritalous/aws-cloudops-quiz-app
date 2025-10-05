@@ -1,4 +1,5 @@
 import type { QuestionSet, Question } from '~/types';
+import { ErrorHandler } from './error-handler';
 
 export interface SimpleLoadResult<T> {
   success: boolean;
@@ -48,6 +49,8 @@ export class SimpleDataLoader {
       };
 
     } catch (error) {
+      // ErrorHandlerを使用してエラーを処理
+      ErrorHandler.handleDataLoadError(error);
       return this.handleError(error, 'Failed to load question set');
     }
   }
@@ -74,6 +77,8 @@ export class SimpleDataLoader {
       };
 
     } catch (error) {
+      // ErrorHandlerを使用してエラーを処理
+      ErrorHandler.handleDataLoadError(error);
       return this.handleError(error, `Failed to load questions for domain ${domain}`);
     }
   }
@@ -113,8 +118,11 @@ export class SimpleDataLoader {
     } catch (error) {
       clearTimeout(timeoutId);
       if (error instanceof Error && error.name === 'AbortError') {
-        throw new Error(`Request timeout after ${timeout}ms`);
+        const timeoutError = new Error(`Request timeout after ${timeout}ms`);
+        ErrorHandler.handleNetworkError(timeoutError);
+        throw timeoutError;
       }
+      ErrorHandler.handleNetworkError(error);
       throw error;
     }
   }

@@ -1,4 +1,6 @@
 import type { SessionData, Answer, QuizStatistics } from '~/types';
+import { SessionRecovery } from './session-recovery';
+import { ErrorHandler } from './error-handler';
 
 export class SessionManager {
   private static readonly SESSION_KEY = 'cloudops_quiz_session';
@@ -28,37 +30,57 @@ export class SessionManager {
   }
 
   /**
-   * 現在のセッションを取得する
+   * 現在のセッションを取得する（復旧機能付き）
    */
   static getSession(): SessionData | null {
     try {
       const data = sessionStorage.getItem(this.SESSION_KEY);
-      if (!data) return null;
+      
+      if (data) {
+        const session = JSON.parse(data);
+        // Date オブジェクトを復元
+        session.startedAt = new Date(session.startedAt);
+        session.answers = session.answers.map((answer: any) => ({
+          ...answer,
+          answeredAt: new Date(answer.answeredAt),
+        }));
 
-      const session = JSON.parse(data);
-      // Date オブジェクトを復元
-      session.startedAt = new Date(session.startedAt);
-      session.answers = session.answers.map((answer: any) => ({
-        ...answer,
-        answeredAt: new Date(answer.answeredAt),
-      }));
+        // セッションが有効な場合はそのまま返す
+        if (SessionRecovery.validateSession(session)) {
+          return session;
+        }
+      }
 
-      return session;
+      // セッションが無効または存在しない場合は復旧を試行
+      console.log('Attempting session recovery...');
+      const recoveredSession = SessionRecovery.attemptRecovery();
+      
+      if (recoveredSession) {
+        console.log('Session recovered successfully');
+        return recoveredSession;
+      }
+
+      return null;
     } catch (error) {
       console.warn('Failed to parse session data:', error);
+      ErrorHandler.handleSessionError(error);
       this.clearSession();
       return null;
     }
   }
 
   /**
-   * セッションを保存する
+   * セッションを保存する（バックアップ付き）
    */
   static saveSession(session: SessionData): void {
     try {
       sessionStorage.setItem(this.SESSION_KEY, JSON.stringify(session));
+      
+      // 自動バックアップを作成
+      SessionRecovery.createBackup(session);
     } catch (error) {
       console.error('Failed to save session:', error);
+      ErrorHandler.handleSessionError(error);
     }
   }
 
