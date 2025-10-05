@@ -58,31 +58,76 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 試験ドメイン情報 */}
+        {/* ドメイン別学習 */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <h3 className="text-xl font-semibold text-gray-900 mb-4">
+            ドメイン別学習
+          </h3>
+          <p className="text-gray-600 mb-6">
+            特定のドメインに集中して学習したい場合は、以下から選択してください。
+          </p>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <Link
+              to="/quiz?mode=set&count=10&domain=monitoring"
+              className="border-l-4 border-blue-500 pl-4 py-3 hover:bg-blue-50 transition-colors rounded-r"
+            >
+              <h4 className="font-medium text-gray-900">監視・ロギング</h4>
+              <p className="text-sm text-gray-600">20% - CloudWatch, CloudTrail</p>
+            </Link>
+            <Link
+              to="/quiz?mode=set&count=10&domain=reliability"
+              className="border-l-4 border-green-500 pl-4 py-3 hover:bg-green-50 transition-colors rounded-r"
+            >
+              <h4 className="font-medium text-gray-900">信頼性・継続性</h4>
+              <p className="text-sm text-gray-600">32% - Auto Scaling, ELB</p>
+            </Link>
+            <Link
+              to="/quiz?mode=set&count=10&domain=deployment"
+              className="border-l-4 border-yellow-500 pl-4 py-3 hover:bg-yellow-50 transition-colors rounded-r"
+            >
+              <h4 className="font-medium text-gray-900">デプロイメント</h4>
+              <p className="text-sm text-gray-600">20% - CodeDeploy, CloudFormation</p>
+            </Link>
+            <Link
+              to="/quiz?mode=set&count=10&domain=security"
+              className="border-l-4 border-red-500 pl-4 py-3 hover:bg-red-50 transition-colors rounded-r"
+            >
+              <h4 className="font-medium text-gray-900">セキュリティ</h4>
+              <p className="text-sm text-gray-600">16% - IAM, GuardDuty</p>
+            </Link>
+            <Link
+              to="/quiz?mode=set&count=10&domain=networking"
+              className="border-l-4 border-purple-500 pl-4 py-3 hover:bg-purple-50 transition-colors rounded-r"
+            >
+              <h4 className="font-medium text-gray-900">ネットワーク</h4>
+              <p className="text-sm text-gray-600">12% - VPC, Route Tables</p>
+            </Link>
+          </div>
+        </div>
+
+        {/* 試験情報 */}
         <div className="bg-white rounded-lg shadow-md p-6">
           <h3 className="text-xl font-semibold text-gray-900 mb-4">
-            試験ドメイン
+            試験について
           </h3>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="border-l-4 border-blue-500 pl-4">
-              <h4 className="font-medium text-gray-900">監視・ロギング</h4>
-              <p className="text-sm text-gray-600">20%</p>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <h4 className="font-medium text-gray-900 mb-2">試験形式</h4>
+              <ul className="text-sm text-gray-600 space-y-1">
+                <li>• 選択問題（単一回答・複数回答）</li>
+                <li>• 試験時間: 180分</li>
+                <li>• 問題数: 65問</li>
+                <li>• 合格点: 720/1000点</li>
+              </ul>
             </div>
-            <div className="border-l-4 border-green-500 pl-4">
-              <h4 className="font-medium text-gray-900">信頼性・継続性</h4>
-              <p className="text-sm text-gray-600">32%</p>
-            </div>
-            <div className="border-l-4 border-yellow-500 pl-4">
-              <h4 className="font-medium text-gray-900">デプロイメント</h4>
-              <p className="text-sm text-gray-600">20%</p>
-            </div>
-            <div className="border-l-4 border-red-500 pl-4">
-              <h4 className="font-medium text-gray-900">セキュリティ</h4>
-              <p className="text-sm text-gray-600">16%</p>
-            </div>
-            <div className="border-l-4 border-purple-500 pl-4">
-              <h4 className="font-medium text-gray-900">ネットワーク</h4>
-              <p className="text-sm text-gray-600">12%</p>
+            <div>
+              <h4 className="font-medium text-gray-900 mb-2">学習のコツ</h4>
+              <ul className="text-sm text-gray-600 space-y-1">
+                <li>• 各ドメインをバランスよく学習</li>
+                <li>• 実際のAWSサービスを触って理解</li>
+                <li>• 間違えた問題は解説をしっかり読む</li>
+                <li>• 定期的に復習を行う</li>
+              </ul>
             </div>
           </div>
         </div>

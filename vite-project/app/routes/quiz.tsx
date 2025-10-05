@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router';
 import type { Route } from "./+types/quiz";
-import type { Question, QuizConfig, SessionData, Answer } from '~/types';
+import type { Question, Answer } from '~/types';
 import { QuestionLoadingSpinner, DataLoadErrorDisplay } from '~/components';
+import { useQuizSession } from '~/hooks';
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -15,24 +16,35 @@ export default function Quiz() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string>('');
   const [showResult, setShowResult] = useState(false);
-  const [sessionData, setSessionData] = useState<SessionData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // URLパラメータから設定を取得
   const mode = searchParams.get('mode') as 'set' | 'endless' || 'set';
   const count = parseInt(searchParams.get('count') || '10');
+  const domainFilter = searchParams.get('domain') || undefined;
+
+  // セッション管理フック
+  const {
+    session,
+    startSession,
+    addAnswer,
+    getNextQuestion,
+    statistics,
+    progress,
+    endSession,
+  } = useQuizSession();
 
   useEffect(() => {
-    loadQuestions();
+    initializeQuiz();
   }, []);
 
-  const loadQuestions = async () => {
+  const initializeQuiz = async () => {
     try {
-      // SimpleDataLoaderを使用してデータを読み込み
+      // データを読み込み
       const { loadQuestionSet } = await import('~/utils/simple-data-loader');
       const result = await loadQuestionSet();
       
@@ -42,21 +54,40 @@ export default function Quiz() {
 
       setQuestions(result.data.questions);
       
-      // セッションデータを初期化
-      const session: SessionData = {
-        sessionId: `session_${Date.now()}`,
-        startedAt: new Date(),
+      // セッションを開始
+      startSession({
         mode,
-        targetQuestionCount: mode === 'set' ? count : undefined,
-        currentQuestionIndex: 0,
-        answers: [],
-        usedQuestionIds: [],
-      };
-      setSessionData(session);
+        targetCount: mode === 'set' ? count : undefined,
+        domainFilter,
+      });
+      
       setLoading(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : '不明なエラーが発生しました');
       setLoading(false);
+    }
+  };
+
+  // セッションが開始されたら最初の問題を取得
+  useEffect(() => {
+    if (session && questions.length > 0 && !currentQuestion) {
+      const nextQuestion = getNextQuestion(questions);
+      setCurrentQuestion(nextQuestion);
+    }
+  }, [session, questions, currentQuestion, getNextQuestion]);
+
+  const loadNextQuestion = () => {
+    if (!session) return;
+
+    const question = getNextQuestion(questions);
+    if (question) {
+      setCurrentQuestion(question);
+      setSelectedAnswer('');
+      setShowResult(false);
+    } else {
+      // 問題がない場合は完了
+      endSession();
+      navigate('/result', { state: { session, statistics } });
     }
   };
 
@@ -65,40 +96,33 @@ export default function Quiz() {
   };
 
   const handleSubmitAnswer = () => {
-    if (!selectedAnswer || !sessionData) return;
+    if (!selectedAnswer || !currentQuestion) return;
 
-    const currentQuestion = questions[currentQuestionIndex];
     const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
     
-    const newAnswer: Answer = {
+    // セッションに回答を追加
+    addAnswer({
       questionId: currentQuestion.id,
       userAnswer: selectedAnswer,
       correctAnswer: currentQuestion.correctAnswer,
       isCorrect,
-      answeredAt: new Date(),
-    };
+    });
 
-    const updatedSession = {
-      ...sessionData,
-      answers: [...sessionData.answers, newAnswer],
-      usedQuestionIds: [...sessionData.usedQuestionIds, currentQuestion.id],
-    };
-
-    setSessionData(updatedSession);
     setShowResult(true);
   };
 
   const handleNextQuestion = () => {
-    if (mode === 'set' && currentQuestionIndex + 1 >= count) {
-      // 10問セット完了
-      navigate('/result', { state: { sessionData } });
+    if (!session) return;
+
+    // 10問セット完了チェック
+    if (mode === 'set' && progress && progress.isComplete) {
+      endSession();
+      navigate('/result', { state: { session, statistics } });
       return;
     }
 
-    // 次の問題へ
-    setCurrentQuestionIndex(prev => prev + 1);
-    setSelectedAnswer('');
-    setShowResult(false);
+    // 次の問題を読み込み
+    loadNextQuestion();
   };
 
   if (loading) {
@@ -111,52 +135,61 @@ export default function Quiz() {
         onRetry={() => {
           setError(null);
           setLoading(true);
-          loadQuestions();
+          initializeQuiz();
         }}
       />
     );
   }
 
-  if (currentQuestionIndex >= questions.length) {
+  if (!currentQuestion) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            すべての問題が完了しました
+            問題を読み込み中...
           </h2>
-          <button
-            onClick={() => navigate('/result', { state: { sessionData } })}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            結果を見る
-          </button>
         </div>
       </div>
     );
   }
 
-  const currentQuestion = questions[currentQuestionIndex];
-  const progress = mode === 'set' ? ((currentQuestionIndex + 1) / count) * 100 : 0;
+  const progressPercentage = progress?.percentage || 0;
+  const currentCount = progress?.current || 0;
+  const totalCount = progress?.total || count;
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4">
         {/* プログレスバー */}
-        {mode === 'set' && (
+        {mode === 'set' && progress && (
           <div className="mb-6">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm font-medium text-gray-700">
-                問題 {currentQuestionIndex + 1} / {count}
+                問題 {currentCount + 1} / {totalCount}
               </span>
               <span className="text-sm text-gray-500">
-                {Math.round(progress)}%
+                {Math.round(progressPercentage)}%
               </span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div
                 className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${progress}%` }}
+                style={{ width: `${progressPercentage}%` }}
               />
+            </div>
+          </div>
+        )}
+
+        {/* エンドレスモード用の統計表示 */}
+        {mode === 'endless' && statistics && (
+          <div className="mb-6 bg-white rounded-lg shadow-sm p-4">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-gray-700">
+                回答数: {statistics.totalQuestions}
+              </span>
+              <span className="text-sm font-medium text-gray-700">
+                正答率: {Math.round(statistics.accuracy)}%
+              </span>
             </div>
           </div>
         )}
@@ -256,12 +289,27 @@ export default function Quiz() {
                 回答する
               </button>
             ) : (
-              <button
-                onClick={handleNextQuestion}
-                className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
-              >
-                {mode === 'set' && currentQuestionIndex + 1 >= count ? '結果を見る' : '次の問題'}
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleNextQuestion}
+                  className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  {mode === 'set' && progress?.isComplete ? '結果を見る' : '次の問題'}
+                </button>
+
+                {/* エンドレスモード用の終了ボタン */}
+                {mode === 'endless' && (
+                  <button
+                    onClick={() => {
+                      endSession();
+                      navigate('/result', { state: { session, statistics } });
+                    }}
+                    className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    終了する
+                  </button>
+                )}
+              </div>
             )}
           </div>
         </div>
