@@ -28,7 +28,7 @@ export function useErrorHandler() {
 
   // トーストを追加
   const addToast = useCallback((message: string, type: ErrorTypes) => {
-    const id = `toast-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const id = `toast-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
     const newToast: Toast = { id, message, type };
 
     setToasts((prev) => [...prev, newToast]);
