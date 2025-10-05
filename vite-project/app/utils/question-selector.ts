@@ -29,26 +29,30 @@ export class QuestionSelector {
     const {
       avoidRecentQuestions = true,
       recentQuestionWindow = 5,
-      maxRetries = 3
+      maxRetries = 3,
     } = options;
 
     // フィルタリング
     let availableQuestions = this.filterQuestions(questions, filter);
 
     // 使用済み問題を除外
-    availableQuestions = availableQuestions.filter(q => !usedQuestionIds.includes(q.id));
+    availableQuestions = availableQuestions.filter(
+      (q) => !usedQuestionIds.includes(q.id)
+    );
 
     // 最近の問題を避ける
     if (avoidRecentQuestions && usedQuestionIds.length > 0) {
       const recentIds = usedQuestionIds.slice(-recentQuestionWindow);
-      availableQuestions = availableQuestions.filter(q => !recentIds.includes(q.id));
+      availableQuestions = availableQuestions.filter(
+        (q) => !recentIds.includes(q.id)
+      );
     }
 
     // 利用可能な問題がない場合の処理
     if (availableQuestions.length === 0) {
       // 使用済み問題をリセットして再試行
       availableQuestions = this.filterQuestions(questions, filter);
-      
+
       if (availableQuestions.length === 0) {
         return null; // フィルター条件に合う問題が存在しない
       }
@@ -56,7 +60,9 @@ export class QuestionSelector {
 
     // 難易度の優先度を適用
     if (options.preferDifficulty) {
-      const preferredQuestions = availableQuestions.filter(q => q.difficulty === options.preferDifficulty);
+      const preferredQuestions = availableQuestions.filter(
+        (q) => q.difficulty === options.preferDifficulty
+      );
       if (preferredQuestions.length > 0) {
         availableQuestions = preferredQuestions;
       }
@@ -87,7 +93,12 @@ export class QuestionSelector {
 
     // 通常の選択
     for (let i = 0; i < count; i++) {
-      const question = this.selectRandomQuestion(questions, usedIds, filter, options);
+      const question = this.selectRandomQuestion(
+        questions,
+        usedIds,
+        filter,
+        options
+      );
       if (question) {
         selectedQuestions.push(question);
         usedIds.push(question.id);
@@ -114,8 +125,8 @@ export class QuestionSelector {
 
     // 利用可能なドメインを取得
     const availableQuestions = this.filterQuestions(questions, filter);
-    const domains = [...new Set(availableQuestions.map(q => q.domain))];
-    
+    const domains = [...new Set(availableQuestions.map((q) => q.domain))];
+
     if (domains.length === 0) return [];
 
     // 各ドメインから選択する問題数を計算
@@ -126,17 +137,17 @@ export class QuestionSelector {
     for (let i = 0; i < domains.length; i++) {
       const domain = domains[i];
       const domainQuestionCount = questionsPerDomain + (i < remainder ? 1 : 0);
-      
+
       const domainFilter = { ...filter, domain };
-      
+
       for (let j = 0; j < domainQuestionCount; j++) {
         const question = this.selectRandomQuestion(
-          questions, 
-          usedIds, 
-          domainFilter, 
+          questions,
+          usedIds,
+          domainFilter,
           options
         );
-        
+
         if (question) {
           selectedQuestions.push(question);
           usedIds.push(question.id);
@@ -146,7 +157,12 @@ export class QuestionSelector {
 
     // 不足分をランダムに補完
     while (selectedQuestions.length < count) {
-      const question = this.selectRandomQuestion(questions, usedIds, filter, options);
+      const question = this.selectRandomQuestion(
+        questions,
+        usedIds,
+        filter,
+        options
+      );
       if (question) {
         selectedQuestions.push(question);
         usedIds.push(question.id);
@@ -171,7 +187,12 @@ export class QuestionSelector {
       domain: session.domainFilter,
     };
 
-    return this.selectRandomQuestion(questions, session.usedQuestionIds, filter, options);
+    return this.selectRandomQuestion(
+      questions,
+      session.usedQuestionIds,
+      filter,
+      options
+    );
   }
 
   /**
@@ -183,11 +204,13 @@ export class QuestionSelector {
     count: number = 5
   ): Question[] {
     // 間違えた問題のIDを取得
-    const incorrectAnswers = session.answers.filter(a => !a.isCorrect);
-    const incorrectQuestionIds = incorrectAnswers.map(a => a.questionId);
+    const incorrectAnswers = session.answers.filter((a) => !a.isCorrect);
+    const incorrectQuestionIds = incorrectAnswers.map((a) => a.questionId);
 
     // 間違えた問題を取得
-    const incorrectQuestions = questions.filter(q => incorrectQuestionIds.includes(q.id));
+    const incorrectQuestions = questions.filter((q) =>
+      incorrectQuestionIds.includes(q.id)
+    );
 
     // 最大count個まで選択
     const selectedCount = Math.min(count, incorrectQuestions.length);
@@ -207,7 +230,7 @@ export class QuestionSelector {
       easy: 0,
       medium: 0,
       hard: 0,
-      total: questions.length
+      total: questions.length,
     };
 
     for (const question of questions) {
@@ -220,7 +243,9 @@ export class QuestionSelector {
   /**
    * ドメイン別の問題分布を取得
    */
-  static getDomainDistribution(questions: Question[]): { [domain: string]: number } {
+  static getDomainDistribution(questions: Question[]): {
+    [domain: string]: number;
+  } {
     const distribution: { [domain: string]: number } = {};
 
     for (const question of questions) {
@@ -233,10 +258,13 @@ export class QuestionSelector {
   /**
    * 問題をフィルタリング
    */
-  private static filterQuestions(questions: Question[], filter?: QuestionFilter): Question[] {
+  private static filterQuestions(
+    questions: Question[],
+    filter?: QuestionFilter
+  ): Question[] {
     if (!filter) return questions;
 
-    return questions.filter(question => {
+    return questions.filter((question) => {
       // ドメインフィルター
       if (filter.domain && question.domain !== filter.domain) {
         return false;
@@ -254,7 +282,9 @@ export class QuestionSelector {
 
       // タグフィルター
       if (filter.tags && filter.tags.length > 0) {
-        const hasMatchingTag = filter.tags.some(tag => question.tags.includes(tag));
+        const hasMatchingTag = filter.tags.some((tag) =>
+          question.tags.includes(tag)
+        );
         if (!hasMatchingTag) {
           return false;
         }
@@ -285,7 +315,7 @@ export class QuestionSelector {
    * 問題の重複チェック
    */
   static checkDuplicates(questions: Question[]): string[] {
-    const ids = questions.map(q => q.id);
+    const ids = questions.map((q) => q.id);
     const duplicates: string[] = [];
     const seen = new Set<string>();
 
@@ -312,20 +342,26 @@ export class QuestionSelector {
     availableQuestions: number;
     usedQuestions: number;
     usagePercentage: number;
-    domainBreakdown: { [domain: string]: { total: number; used: number; available: number } };
+    domainBreakdown: {
+      [domain: string]: { total: number; used: number; available: number };
+    };
   } {
     const filteredQuestions = this.filterQuestions(questions, filter);
-    const availableQuestions = filteredQuestions.filter(q => !usedQuestionIds.includes(q.id));
-    
-    const domainBreakdown: { [domain: string]: { total: number; used: number; available: number } } = {};
-    
+    const availableQuestions = filteredQuestions.filter(
+      (q) => !usedQuestionIds.includes(q.id)
+    );
+
+    const domainBreakdown: {
+      [domain: string]: { total: number; used: number; available: number };
+    } = {};
+
     for (const question of filteredQuestions) {
       if (!domainBreakdown[question.domain]) {
         domainBreakdown[question.domain] = { total: 0, used: 0, available: 0 };
       }
-      
+
       domainBreakdown[question.domain].total++;
-      
+
       if (usedQuestionIds.includes(question.id)) {
         domainBreakdown[question.domain].used++;
       } else {
@@ -337,10 +373,11 @@ export class QuestionSelector {
       totalQuestions: filteredQuestions.length,
       availableQuestions: availableQuestions.length,
       usedQuestions: usedQuestionIds.length,
-      usagePercentage: filteredQuestions.length > 0 
-        ? (usedQuestionIds.length / filteredQuestions.length) * 100 
-        : 0,
-      domainBreakdown
+      usagePercentage:
+        filteredQuestions.length > 0
+          ? (usedQuestionIds.length / filteredQuestions.length) * 100
+          : 0,
+      domainBreakdown,
     };
   }
 }

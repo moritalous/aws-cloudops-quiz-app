@@ -38,14 +38,26 @@ export function MenuScreen({ onStart }: MenuScreenProps) {
 
         {/* 学習モード選択 */}
         <section className="mb-8 sm:mb-12" aria-labelledby="learning-modes">
-          <h2 id="learning-modes" className="sr-only">学習モード選択</h2>
+          <h2 id="learning-modes" className="sr-only">
+            学習モード選択
+          </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <div className="card-interactive group">
               <div className="flex flex-col h-full">
                 <div className="flex items-center mb-3 sm:mb-4">
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mr-3">
-                    <svg className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                    <svg
+                      className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                      />
                     </svg>
                   </div>
                   <h3 className="text-responsive-lg font-semibold text-gray-900 dark:text-white">
@@ -61,8 +73,18 @@ export function MenuScreen({ onStart }: MenuScreenProps) {
                   aria-label="10問セットモードを開始"
                 >
                   <span>10問セットを開始</span>
-                  <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  <svg
+                    className="w-4 h-4 ml-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 7l5 5m0 0l-5 5m5-5H6"
+                    />
                   </svg>
                 </button>
               </div>
@@ -72,8 +94,18 @@ export function MenuScreen({ onStart }: MenuScreenProps) {
               <div className="flex flex-col h-full">
                 <div className="flex items-center mb-3 sm:mb-4">
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mr-3">
-                    <svg className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    <svg
+                      className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 dark:text-green-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
                     </svg>
                   </div>
                   <h3 className="text-responsive-lg font-semibold text-gray-900 dark:text-white">
@@ -89,8 +121,18 @@ export function MenuScreen({ onStart }: MenuScreenProps) {
                   aria-label="エンドレスモードを開始"
                 >
                   <span>エンドレスモードを開始</span>
-                  <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  <svg
+                    className="w-4 h-4 ml-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 7l5 5m0 0l-5 5m5-5H6"
+                    />
                   </svg>
                 </button>
               </div>
@@ -100,57 +142,90 @@ export function MenuScreen({ onStart }: MenuScreenProps) {
 
         {/* 試験ドメイン情報 */}
         <section className="card-base" aria-labelledby="exam-domains">
-          <h3 id="exam-domains" className="text-responsive-lg font-semibold text-gray-900 dark:text-white mb-4 sm:mb-6">
+          <h3
+            id="exam-domains"
+            className="text-responsive-lg font-semibold text-gray-900 dark:text-white mb-4 sm:mb-6"
+          >
             試験ドメイン
           </h3>
           <div className="grid-responsive-3 gap-3 sm:gap-4">
             <div className="flex items-center p-3 sm:p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-l-4 border-blue-500">
               <div className="flex-grow">
-                <h4 className="font-medium text-gray-900 dark:text-white text-sm sm:text-base">監視・ロギング</h4>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Monitoring & Logging</p>
+                <h4 className="font-medium text-gray-900 dark:text-white text-sm sm:text-base">
+                  監視・ロギング
+                </h4>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                  Monitoring & Logging
+                </p>
               </div>
               <div className="text-right">
-                <span className="text-lg sm:text-xl font-bold text-blue-600 dark:text-blue-400">20%</span>
+                <span className="text-lg sm:text-xl font-bold text-blue-600 dark:text-blue-400">
+                  20%
+                </span>
               </div>
             </div>
-            
+
             <div className="flex items-center p-3 sm:p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border-l-4 border-green-500">
               <div className="flex-grow">
-                <h4 className="font-medium text-gray-900 dark:text-white text-sm sm:text-base">信頼性・継続性</h4>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Reliability & Business Continuity</p>
+                <h4 className="font-medium text-gray-900 dark:text-white text-sm sm:text-base">
+                  信頼性・継続性
+                </h4>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                  Reliability & Business Continuity
+                </p>
               </div>
               <div className="text-right">
-                <span className="text-lg sm:text-xl font-bold text-green-600 dark:text-green-400">32%</span>
+                <span className="text-lg sm:text-xl font-bold text-green-600 dark:text-green-400">
+                  32%
+                </span>
               </div>
             </div>
-            
+
             <div className="flex items-center p-3 sm:p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border-l-4 border-yellow-500">
               <div className="flex-grow">
-                <h4 className="font-medium text-gray-900 dark:text-white text-sm sm:text-base">デプロイメント</h4>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Deployment & Provisioning</p>
+                <h4 className="font-medium text-gray-900 dark:text-white text-sm sm:text-base">
+                  デプロイメント
+                </h4>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                  Deployment & Provisioning
+                </p>
               </div>
               <div className="text-right">
-                <span className="text-lg sm:text-xl font-bold text-yellow-600 dark:text-yellow-400">20%</span>
+                <span className="text-lg sm:text-xl font-bold text-yellow-600 dark:text-yellow-400">
+                  20%
+                </span>
               </div>
             </div>
-            
+
             <div className="flex items-center p-3 sm:p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border-l-4 border-red-500">
               <div className="flex-grow">
-                <h4 className="font-medium text-gray-900 dark:text-white text-sm sm:text-base">セキュリティ</h4>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Security & Compliance</p>
+                <h4 className="font-medium text-gray-900 dark:text-white text-sm sm:text-base">
+                  セキュリティ
+                </h4>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                  Security & Compliance
+                </p>
               </div>
               <div className="text-right">
-                <span className="text-lg sm:text-xl font-bold text-red-600 dark:text-red-400">16%</span>
+                <span className="text-lg sm:text-xl font-bold text-red-600 dark:text-red-400">
+                  16%
+                </span>
               </div>
             </div>
-            
+
             <div className="flex items-center p-3 sm:p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border-l-4 border-purple-500">
               <div className="flex-grow">
-                <h4 className="font-medium text-gray-900 dark:text-white text-sm sm:text-base">ネットワーク</h4>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Networking & Content Delivery</p>
+                <h4 className="font-medium text-gray-900 dark:text-white text-sm sm:text-base">
+                  ネットワーク
+                </h4>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                  Networking & Content Delivery
+                </p>
               </div>
               <div className="text-right">
-                <span className="text-lg sm:text-xl font-bold text-purple-600 dark:text-purple-400">12%</span>
+                <span className="text-lg sm:text-xl font-bold text-purple-600 dark:text-purple-400">
+                  12%
+                </span>
               </div>
             </div>
           </div>

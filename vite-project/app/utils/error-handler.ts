@@ -29,7 +29,7 @@ export class ErrorHandler {
       type: error.type,
       message: error.message,
       timestamp: error.timestamp,
-      details: error.details
+      details: error.details,
     });
 
     // エラーをローカルストレージに記録（デバッグ用）
@@ -39,7 +39,7 @@ export class ErrorHandler {
     const userMessage = this.getUserMessage(error);
 
     // 登録されたリスナーに通知
-    this.errorListeners.forEach(listener => {
+    this.errorListeners.forEach((listener) => {
       try {
         listener(error);
       } catch (listenerError) {
@@ -77,7 +77,7 @@ export class ErrorHandler {
   private static showErrorToUser(message: string, type: ErrorTypes): void {
     // カスタムイベントを発火してUIコンポーネントに通知
     const event = new CustomEvent('app-error', {
-      detail: { message, type }
+      detail: { message, type },
     });
     window.dispatchEvent(event);
   }
@@ -91,7 +91,7 @@ export class ErrorHandler {
         ...error,
         timestamp: error.timestamp.toISOString(),
         userAgent: navigator.userAgent,
-        url: window.location.href
+        url: window.location.href,
       };
 
       const existingLogs = this.getErrorLogs();
@@ -99,7 +99,7 @@ export class ErrorHandler {
 
       // 最新の10件のみ保持
       const recentLogs = existingLogs.slice(-10);
-      
+
       localStorage.setItem('app_error_logs', JSON.stringify(recentLogs));
     } catch (storageError) {
       console.warn('Failed to log error to storage:', storageError);
@@ -142,7 +142,7 @@ export class ErrorHandler {
       type,
       message,
       details,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 

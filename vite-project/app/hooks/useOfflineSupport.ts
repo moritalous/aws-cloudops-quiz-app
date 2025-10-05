@@ -29,16 +29,16 @@ export function useOfflineSupport() {
     networkStatus: NetworkMonitor.getCurrentStatus(),
     serviceWorkerStatus: ServiceWorkerManager.getStatus(),
     cacheSize: 0,
-    sessionRecoveryStats: SessionRecovery.getRecoveryStats()
+    sessionRecoveryStats: SessionRecovery.getRecoveryStats(),
   });
 
   // ネットワーク状態の監視
   useEffect(() => {
     const handleNetworkChange = (networkStatus: NetworkStatus) => {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         isOnline: networkStatus.isOnline,
-        networkStatus
+        networkStatus,
       }));
     };
 
@@ -55,10 +55,10 @@ export function useOfflineSupport() {
   useEffect(() => {
     const initializeServiceWorker = async () => {
       await ServiceWorkerManager.initializeOfflineSupport();
-      
-      setState(prev => ({
+
+      setState((prev) => ({
         ...prev,
-        serviceWorkerStatus: ServiceWorkerManager.getStatus()
+        serviceWorkerStatus: ServiceWorkerManager.getStatus(),
       }));
     };
 
@@ -74,45 +74,45 @@ export function useOfflineSupport() {
   useEffect(() => {
     const updateCacheSize = async () => {
       const size = await ServiceWorkerManager.getCacheSize();
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
-        cacheSize: size
+        cacheSize: size,
       }));
     };
 
     updateCacheSize();
-    
+
     // 5分間隔で更新
     const interval = setInterval(updateCacheSize, 5 * 60 * 1000);
-    
+
     return () => clearInterval(interval);
   }, []);
 
   // セッション復旧統計の定期更新
   useEffect(() => {
     const updateRecoveryStats = () => {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
-        sessionRecoveryStats: SessionRecovery.getRecoveryStats()
+        sessionRecoveryStats: SessionRecovery.getRecoveryStats(),
       }));
     };
 
     updateRecoveryStats();
-    
+
     // 1分間隔で更新
     const interval = setInterval(updateRecoveryStats, 60 * 1000);
-    
+
     return () => clearInterval(interval);
   }, []);
 
   // セッション復旧を試行
   const attemptSessionRecovery = useCallback((): SessionData | null => {
     const recoveredSession = SessionRecovery.attemptRecovery();
-    
+
     // 統計を更新
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
-      sessionRecoveryStats: SessionRecovery.getRecoveryStats()
+      sessionRecoveryStats: SessionRecovery.getRecoveryStats(),
     }));
 
     return recoveredSession;
@@ -121,34 +121,34 @@ export function useOfflineSupport() {
   // セッションバックアップを作成
   const createSessionBackup = useCallback((session: SessionData): void => {
     SessionRecovery.createBackup(session);
-    
+
     // 統計を更新
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
-      sessionRecoveryStats: SessionRecovery.getRecoveryStats()
+      sessionRecoveryStats: SessionRecovery.getRecoveryStats(),
     }));
   }, []);
 
   // 全セッションをクリア
   const clearAllSessions = useCallback((): void => {
     SessionRecovery.clearAllSessions();
-    
+
     // 統計を更新
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
-      sessionRecoveryStats: SessionRecovery.getRecoveryStats()
+      sessionRecoveryStats: SessionRecovery.getRecoveryStats(),
     }));
   }, []);
 
   // ネットワーク接続をテスト
   const testNetworkConnection = useCallback(async (): Promise<boolean> => {
     const isConnected = await NetworkMonitor.testConnection();
-    
+
     // 状態を更新
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       isOnline: isConnected,
-      networkStatus: { ...prev.networkStatus, isOnline: isConnected }
+      networkStatus: { ...prev.networkStatus, isOnline: isConnected },
     }));
 
     return isConnected;
@@ -162,12 +162,12 @@ export function useOfflineSupport() {
   // キャッシュをクリア
   const clearCache = useCallback(async (): Promise<void> => {
     await ServiceWorkerManager.clearCache();
-    
+
     // キャッシュサイズを更新
     const size = await ServiceWorkerManager.getCacheSize();
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
-      cacheSize: size
+      cacheSize: size,
     }));
   }, []);
 
@@ -184,46 +184,48 @@ export function useOfflineSupport() {
   // キャッシュサイズを人間が読みやすい形式に変換
   const formatCacheSize = useCallback((bytes: number): string => {
     if (bytes === 0) return '0 B';
-    
+
     const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    
+
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }, []);
 
   // オフライン対応の状態を取得
   const getOfflineCapabilities = useCallback(() => {
     const { serviceWorkerStatus, cacheSize, sessionRecoveryStats } = state;
-    
+
     return {
       canWorkOffline: serviceWorkerStatus.isActive && cacheSize > 0,
-      hasSessionBackup: sessionRecoveryStats.hasBackupSession && sessionRecoveryStats.backupSessionValid,
+      hasSessionBackup:
+        sessionRecoveryStats.hasBackupSession &&
+        sessionRecoveryStats.backupSessionValid,
       cacheStatus: cacheSize > 0 ? 'available' : 'empty',
-      lastBackupTime: sessionRecoveryStats.lastBackupTime
+      lastBackupTime: sessionRecoveryStats.lastBackupTime,
     };
   }, [state]);
 
   return {
     // 状態
     ...state,
-    
+
     // セッション復旧関数
     attemptSessionRecovery,
     createSessionBackup,
     clearAllSessions,
-    
+
     // ネットワーク関数
     testNetworkConnection,
     getConnectionQuality,
     getRecommendedSettings,
-    
+
     // Service Worker 関数
     updateServiceWorker,
     clearCache,
-    
+
     // ユーティリティ関数
     formatCacheSize,
-    getOfflineCapabilities
+    getOfflineCapabilities,
   };
 }

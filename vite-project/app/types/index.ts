@@ -78,4 +78,9 @@ export interface AppError {
   timestamp: Date;
 }
 
-export type ErrorTypes = 'NETWORK_ERROR' | 'DATA_LOAD_ERROR' | 'SESSION_ERROR' | 'VALIDATION_ERROR' | 'COMPONENT_ERROR';
+export type ErrorTypes =
+  | 'NETWORK_ERROR'
+  | 'DATA_LOAD_ERROR'
+  | 'SESSION_ERROR'
+  | 'VALIDATION_ERROR'
+  | 'COMPONENT_ERROR';

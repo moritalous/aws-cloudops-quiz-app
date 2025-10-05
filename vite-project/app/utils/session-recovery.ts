@@ -4,7 +4,8 @@ import { ErrorHandler } from './error-handler';
 export class SessionRecovery {
   private static readonly SESSION_KEY = 'cloudops_quiz_session';
   private static readonly BACKUP_SESSION_KEY = 'cloudops_quiz_session_backup';
-  private static readonly SESSION_TIMESTAMP_KEY = 'cloudops_quiz_session_timestamp';
+  private static readonly SESSION_TIMESTAMP_KEY =
+    'cloudops_quiz_session_timestamp';
 
   /**
    * セッション復旧を試行
@@ -13,7 +14,7 @@ export class SessionRecovery {
     try {
       // メインセッションを試行
       const session = this.getSession();
-      
+
       if (session && this.validateSession(session)) {
         // セッションが有効な場合、バックアップを更新
         this.createBackup(session);
@@ -22,7 +23,7 @@ export class SessionRecovery {
 
       // メインセッションが無効な場合、バックアップを試行
       const backupSession = this.getBackupSession();
-      
+
       if (backupSession && this.validateSession(backupSession)) {
         // バックアップセッションを復元
         this.restoreFromBackup(backupSession);
@@ -32,7 +33,6 @@ export class SessionRecovery {
       // 両方とも無効な場合はクリア
       this.clearAllSessions();
       return null;
-
     } catch (error) {
       console.warn('Session recovery failed:', error);
       ErrorHandler.handleSessionError(error);
@@ -52,7 +52,10 @@ export class SessionRecovery {
       }
 
       // 配列フィールドの検証
-      if (!Array.isArray(session.answers) || !Array.isArray(session.usedQuestionIds)) {
+      if (
+        !Array.isArray(session.answers) ||
+        !Array.isArray(session.usedQuestionIds)
+      ) {
         return false;
       }
 
@@ -79,13 +82,16 @@ export class SessionRecovery {
 
       // 回答データの検証
       for (const answer of session.answers) {
-        if (!answer.questionId || !answer.correctAnswer || answer.isCorrect === undefined) {
+        if (
+          !answer.questionId ||
+          !answer.correctAnswer ||
+          answer.isCorrect === undefined
+        ) {
           return false;
         }
       }
 
       return true;
-
     } catch (error) {
       console.warn('Session validation failed:', error);
       return false;
@@ -101,7 +107,7 @@ export class SessionRecovery {
       if (!data) return null;
 
       const session = JSON.parse(data);
-      
+
       // 日付文字列をDateオブジェクトに変換
       if (session.startedAt) {
         session.startedAt = new Date(session.startedAt);
@@ -110,12 +116,11 @@ export class SessionRecovery {
       if (session.answers) {
         session.answers = session.answers.map((answer: any) => ({
           ...answer,
-          answeredAt: new Date(answer.answeredAt)
+          answeredAt: new Date(answer.answeredAt),
         }));
       }
 
       return session;
-
     } catch (error) {
       console.warn('Failed to get session:', error);
       return null;
@@ -131,7 +136,7 @@ export class SessionRecovery {
       if (!data) return null;
 
       const session = JSON.parse(data);
-      
+
       // 日付文字列をDateオブジェクトに変換
       if (session.startedAt) {
         session.startedAt = new Date(session.startedAt);
@@ -140,12 +145,11 @@ export class SessionRecovery {
       if (session.answers) {
         session.answers = session.answers.map((answer: any) => ({
           ...answer,
-          answeredAt: new Date(answer.answeredAt)
+          answeredAt: new Date(answer.answeredAt),
         }));
       }
 
       return session;
-
     } catch (error) {
       console.warn('Failed to get backup session:', error);
       return null;
@@ -160,15 +164,17 @@ export class SessionRecovery {
       const backupData = {
         ...session,
         startedAt: session.startedAt.toISOString(),
-        answers: session.answers.map(answer => ({
+        answers: session.answers.map((answer) => ({
           ...answer,
-          answeredAt: answer.answeredAt.toISOString()
-        }))
+          answeredAt: answer.answeredAt.toISOString(),
+        })),
       };
 
       localStorage.setItem(this.BACKUP_SESSION_KEY, JSON.stringify(backupData));
-      localStorage.setItem(this.SESSION_TIMESTAMP_KEY, new Date().toISOString());
-
+      localStorage.setItem(
+        this.SESSION_TIMESTAMP_KEY,
+        new Date().toISOString()
+      );
     } catch (error) {
       console.warn('Failed to create session backup:', error);
     }
@@ -182,14 +188,13 @@ export class SessionRecovery {
       const sessionData = {
         ...session,
         startedAt: session.startedAt.toISOString(),
-        answers: session.answers.map(answer => ({
+        answers: session.answers.map((answer) => ({
           ...answer,
-          answeredAt: answer.answeredAt.toISOString()
-        }))
+          answeredAt: answer.answeredAt.toISOString(),
+        })),
       };
 
       sessionStorage.setItem(this.SESSION_KEY, JSON.stringify(sessionData));
-
     } catch (error) {
       console.warn('Failed to restore from backup:', error);
       ErrorHandler.handleSessionError(error);
@@ -221,7 +226,7 @@ export class SessionRecovery {
   } {
     const mainSession = this.getSession();
     const backupSession = this.getBackupSession();
-    
+
     let lastBackupTime: Date | null = null;
     try {
       const timestamp = localStorage.getItem(this.SESSION_TIMESTAMP_KEY);
@@ -236,8 +241,10 @@ export class SessionRecovery {
       hasMainSession: !!mainSession,
       hasBackupSession: !!backupSession,
       mainSessionValid: mainSession ? this.validateSession(mainSession) : false,
-      backupSessionValid: backupSession ? this.validateSession(backupSession) : false,
-      lastBackupTime
+      backupSessionValid: backupSession
+        ? this.validateSession(backupSession)
+        : false,
+      lastBackupTime,
     };
   }
 
@@ -247,10 +254,10 @@ export class SessionRecovery {
   static setupAutoBackup(): void {
     // セッションストレージの変更を監視
     const originalSetItem = sessionStorage.setItem;
-    
-    sessionStorage.setItem = function(key: string, value: string) {
+
+    sessionStorage.setItem = function (key: string, value: string) {
       originalSetItem.call(this, key, value);
-      
+
       // セッションキーの変更時にバックアップを作成
       if (key === SessionRecovery.SESSION_KEY) {
         try {
@@ -261,10 +268,10 @@ export class SessionRecovery {
           if (session.answers) {
             session.answers = session.answers.map((answer: any) => ({
               ...answer,
-              answeredAt: new Date(answer.answeredAt)
+              answeredAt: new Date(answer.answeredAt),
             }));
           }
-          
+
           if (SessionRecovery.validateSession(session)) {
             SessionRecovery.createBackup(session);
           }
@@ -283,11 +290,14 @@ export class SessionRecovery {
     });
 
     // 定期的なバックアップ（5分間隔）
-    setInterval(() => {
-      const session = this.getSession();
-      if (session && this.validateSession(session)) {
-        this.createBackup(session);
-      }
-    }, 5 * 60 * 1000); // 5分
+    setInterval(
+      () => {
+        const session = this.getSession();
+        if (session && this.validateSession(session)) {
+          this.createBackup(session);
+        }
+      },
+      5 * 60 * 1000
+    ); // 5分
   }
 }

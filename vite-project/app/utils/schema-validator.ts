@@ -33,38 +33,47 @@ export interface ValidationResult {
 /**
  * 問題セットデータをJSONスキーマで検証する
  */
-export async function validateQuestionSetData(data: any): Promise<ValidationResult> {
+export async function validateQuestionSetData(
+  data: any
+): Promise<ValidationResult> {
   try {
     const validator = await loadSchema();
     const isValid = validator(data);
-    
+
     if (isValid) {
       return {
         isValid: true,
-        errors: []
+        errors: [],
       };
     }
 
     const errors: ValidationError[] = [];
-    
+
     if (validator.errors) {
       for (const error of validator.errors) {
         errors.push({
           field: error.instancePath || error.schemaPath,
           message: error.message || 'Validation error',
-          value: error.data
+          value: error.data,
         });
       }
     }
 
     return {
       isValid: false,
-      errors
+      errors,
     };
   } catch (error) {
     return {
       isValid: false,
-      errors: [{ field: 'schema', message: 'Failed to load schema: ' + (error instanceof Error ? error.message : 'Unknown error') }]
+      errors: [
+        {
+          field: 'schema',
+          message:
+            'Failed to load schema: ' +
+            (error instanceof Error ? error.message : 'Unknown error'),
+        },
+      ],
     };
   }
 }
@@ -72,16 +81,20 @@ export async function validateQuestionSetData(data: any): Promise<ValidationResu
 /**
  * 個別の問題データを検証する
  */
-export async function validateQuestion(question: any): Promise<ValidationResult> {
+export async function validateQuestion(
+  question: any
+): Promise<ValidationResult> {
   try {
     await loadSchema(); // スキーマを読み込み
-    
+
     const questionSchemaDefinition = questionSchema.definitions?.question;
-    
+
     if (!questionSchemaDefinition) {
       return {
         isValid: false,
-        errors: [{ field: 'schema', message: 'Question schema definition not found' }]
+        errors: [
+          { field: 'schema', message: 'Question schema definition not found' },
+        ],
       };
     }
 
@@ -91,30 +104,37 @@ export async function validateQuestion(question: any): Promise<ValidationResult>
     if (isValid) {
       return {
         isValid: true,
-        errors: []
+        errors: [],
       };
     }
 
     const errors: ValidationError[] = [];
-    
+
     if (validateSingleQuestion.errors) {
       for (const error of validateSingleQuestion.errors) {
         errors.push({
           field: error.instancePath || error.schemaPath,
           message: error.message || 'Validation error',
-          value: error.data
+          value: error.data,
         });
       }
     }
 
     return {
       isValid: false,
-      errors
+      errors,
     };
   } catch (error) {
     return {
       isValid: false,
-      errors: [{ field: 'schema', message: 'Failed to validate question: ' + (error instanceof Error ? error.message : 'Unknown error') }]
+      errors: [
+        {
+          field: 'schema',
+          message:
+            'Failed to validate question: ' +
+            (error instanceof Error ? error.message : 'Unknown error'),
+        },
+      ],
     };
   }
 }
@@ -122,7 +142,9 @@ export async function validateQuestion(question: any): Promise<ValidationResult>
 /**
  * 問題データの基本的な整合性をチェック
  */
-export function validateQuestionConsistency(data: QuestionSet): ValidationResult {
+export function validateQuestionConsistency(
+  data: QuestionSet
+): ValidationResult {
   const errors: ValidationError[] = [];
 
   // 問題数の整合性チェック
@@ -130,7 +152,7 @@ export function validateQuestionConsistency(data: QuestionSet): ValidationResult
     errors.push({
       field: 'totalQuestions',
       message: `Total questions mismatch: expected ${data.totalQuestions}, got ${data.questions.length}`,
-      value: data.totalQuestions
+      value: data.totalQuestions,
     });
   }
 
@@ -146,32 +168,32 @@ export function validateQuestionConsistency(data: QuestionSet): ValidationResult
       errors.push({
         field: `domains.${domain}`,
         message: `Domain question count mismatch: expected ${expectedCount}, got ${actualCount}`,
-        value: expectedCount
+        value: expectedCount,
       });
     }
   }
 
   // 問題IDの重複チェック
-  const questionIds = data.questions.map(q => q.id);
+  const questionIds = data.questions.map((q) => q.id);
   const uniqueIds = new Set(questionIds);
   if (questionIds.length !== uniqueIds.size) {
     errors.push({
       field: 'questions',
       message: 'Duplicate question IDs found',
-      value: questionIds
+      value: questionIds,
     });
   }
 
   // 正解の選択肢存在チェック
   for (const question of data.questions) {
-    const optionLetters = question.options.map(opt => opt.charAt(0));
-    
+    const optionLetters = question.options.map((opt) => opt.charAt(0));
+
     if (typeof question.correctAnswer === 'string') {
       if (!optionLetters.includes(question.correctAnswer)) {
         errors.push({
           field: `questions.${question.id}.correctAnswer`,
           message: `Correct answer '${question.correctAnswer}' not found in options`,
-          value: question.correctAnswer
+          value: question.correctAnswer,
         });
       }
     } else if (Array.isArray(question.correctAnswer)) {
@@ -180,7 +202,7 @@ export function validateQuestionConsistency(data: QuestionSet): ValidationResult
           errors.push({
             field: `questions.${question.id}.correctAnswer`,
             message: `Correct answer '${answer}' not found in options`,
-            value: answer
+            value: answer,
           });
         }
       }
@@ -189,14 +211,16 @@ export function validateQuestionConsistency(data: QuestionSet): ValidationResult
 
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
   };
 }
 
 /**
  * 学習リソースURLの有効性をチェック（基本的な形式チェック）
  */
-export function validateLearningResourceUrls(data: QuestionSet): ValidationResult {
+export function validateLearningResourceUrls(
+  data: QuestionSet
+): ValidationResult {
   const errors: ValidationError[] = [];
   const urlPattern = /^https?:\/\/.+/;
 
@@ -206,7 +230,7 @@ export function validateLearningResourceUrls(data: QuestionSet): ValidationResul
         errors.push({
           field: `questions.${question.id}.learningResources`,
           message: `Invalid URL format: ${resource.url}`,
-          value: resource.url
+          value: resource.url,
         });
       }
     }
@@ -214,14 +238,16 @@ export function validateLearningResourceUrls(data: QuestionSet): ValidationResul
 
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
   };
 }
 
 /**
  * 包括的な問題セット検証
  */
-export async function validateQuestionSetComprehensive(data: any): Promise<ValidationResult> {
+export async function validateQuestionSetComprehensive(
+  data: any
+): Promise<ValidationResult> {
   // 1. JSONスキーマ検証
   const schemaResult = await validateQuestionSetData(data);
   if (!schemaResult.isValid) {
@@ -242,6 +268,6 @@ export async function validateQuestionSetComprehensive(data: any): Promise<Valid
 
   return {
     isValid: true,
-    errors: []
+    errors: [],
   };
 }

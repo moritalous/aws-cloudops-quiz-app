@@ -41,7 +41,7 @@ describe('SessionManager + QuestionSelector Integration', () => {
       explanation: 'CloudWatch monitors AWS resources.',
       learningResources: [],
       relatedServices: ['CloudWatch'],
-      tags: ['monitoring']
+      tags: ['monitoring'],
     },
     {
       id: 'q2',
@@ -54,7 +54,7 @@ describe('SessionManager + QuestionSelector Integration', () => {
       explanation: 'IAM provides identity and access management.',
       learningResources: [],
       relatedServices: ['IAM'],
-      tags: ['security', 'identity']
+      tags: ['security', 'identity'],
     },
     {
       id: 'q3',
@@ -67,8 +67,8 @@ describe('SessionManager + QuestionSelector Integration', () => {
       explanation: 'CloudWatch is used for monitoring.',
       learningResources: [],
       relatedServices: ['CloudWatch'],
-      tags: ['monitoring', 'basics']
-    }
+      tags: ['monitoring', 'basics'],
+    },
   ];
 
   beforeEach(() => {
@@ -82,7 +82,10 @@ describe('SessionManager + QuestionSelector Integration', () => {
     expect(session.usedQuestionIds).toHaveLength(0);
 
     // Select first question
-    const question1 = QuestionSelector.selectNextQuestion(mockQuestions, session);
+    const question1 = QuestionSelector.selectNextQuestion(
+      mockQuestions,
+      session
+    );
     expect(question1).toBeDefined();
     expect(question1?.domain).toBe('monitoring');
 
@@ -93,13 +96,16 @@ describe('SessionManager + QuestionSelector Integration', () => {
         userAnswer: 'A',
         correctAnswer: question1.correctAnswer,
         isCorrect: true,
-        answeredAt: new Date()
+        answeredAt: new Date(),
       });
 
       expect(updatedSession?.usedQuestionIds).toContain(question1.id);
 
       // Select second question - should be different
-      const question2 = QuestionSelector.selectNextQuestion(mockQuestions, updatedSession!);
+      const question2 = QuestionSelector.selectNextQuestion(
+        mockQuestions,
+        updatedSession!
+      );
       expect(question2).toBeDefined();
       expect(question2?.id).not.toBe(question1.id);
       expect(question2?.domain).toBe('monitoring');
@@ -111,9 +117,14 @@ describe('SessionManager + QuestionSelector Integration', () => {
     const session = SessionManager.createSession('set', 10);
 
     // Select a balanced question set
-    const questionSet = QuestionSelector.selectQuestionSet(mockQuestions, 3, undefined, {
-      balanceDomains: true
-    });
+    const questionSet = QuestionSelector.selectQuestionSet(
+      mockQuestions,
+      3,
+      undefined,
+      {
+        balanceDomains: true,
+      }
+    );
 
     expect(questionSet).toHaveLength(3);
 
@@ -126,7 +137,7 @@ describe('SessionManager + QuestionSelector Integration', () => {
         correctAnswer: question.correctAnswer,
         isCorrect: Math.random() > 0.5, // Random correct/incorrect
         answeredAt: new Date(),
-        timeSpent: 30 + Math.random() * 30
+        timeSpent: 30 + Math.random() * 30,
       };
 
       const updatedSession = SessionManager.addAnswer(answer);
@@ -153,18 +164,18 @@ describe('SessionManager + QuestionSelector Integration', () => {
 
     // Select questions with domain filter
     const monitoringQuestions = QuestionSelector.selectQuestionSet(
-      mockQuestions, 
-      2, 
+      mockQuestions,
+      2,
       { domain: 'monitoring' }
     );
 
     expect(monitoringQuestions).toHaveLength(2);
-    monitoringQuestions.forEach(q => {
+    monitoringQuestions.forEach((q) => {
       expect(q.domain).toBe('monitoring');
     });
 
     // Verify no duplicates
-    const questionIds = monitoringQuestions.map(q => q.id);
+    const questionIds = monitoringQuestions.map((q) => q.id);
     const uniqueIds = [...new Set(questionIds)];
     expect(uniqueIds).toHaveLength(questionIds.length);
   });
@@ -172,22 +183,22 @@ describe('SessionManager + QuestionSelector Integration', () => {
   it('should calculate domain statistics correctly', () => {
     // Create session and add mixed domain answers
     const session = SessionManager.createSession('endless');
-    
+
     // Add answers from different domains
     let currentSession = session;
     const answers = [
       { questionId: 'q1', domain: 'monitoring', isCorrect: true },
       { questionId: 'q2', domain: 'security', isCorrect: false },
-      { questionId: 'q3', domain: 'monitoring', isCorrect: true }
+      { questionId: 'q3', domain: 'monitoring', isCorrect: true },
     ];
 
-    answers.forEach(answerData => {
+    answers.forEach((answerData) => {
       const updatedSession = SessionManager.addAnswer({
         questionId: answerData.questionId,
         userAnswer: 'A',
         correctAnswer: answerData.isCorrect ? 'A' : 'B',
         isCorrect: answerData.isCorrect,
-        answeredAt: new Date()
+        answeredAt: new Date(),
       });
       currentSession = updatedSession!;
     });
@@ -196,11 +207,14 @@ describe('SessionManager + QuestionSelector Integration', () => {
     const questionMap = new Map([
       ['q1', { domain: 'monitoring' }],
       ['q2', { domain: 'security' }],
-      ['q3', { domain: 'monitoring' }]
+      ['q3', { domain: 'monitoring' }],
     ]);
 
-    const domainStats = SessionManager.calculateDomainStatistics(currentSession, questionMap);
-    
+    const domainStats = SessionManager.calculateDomainStatistics(
+      currentSession,
+      questionMap
+    );
+
     expect(domainStats.domainBreakdown.monitoring).toBeDefined();
     expect(domainStats.domainBreakdown.monitoring.total).toBe(2);
     expect(domainStats.domainBreakdown.monitoring.correct).toBe(2);
@@ -220,7 +234,7 @@ describe('SessionManager + QuestionSelector Integration', () => {
       userAnswer: 'A',
       correctAnswer: 'A',
       isCorrect: true,
-      answeredAt: new Date()
+      answeredAt: new Date(),
     });
 
     // Simulate session recovery

@@ -1,6 +1,12 @@
 import type { QuestionSet, Question } from '~/types';
-import { validateQuestionSetComprehensive, type ValidationResult } from './schema-validator';
-import { checkQuestionSetQuality, type QualityReport } from './question-quality-checker';
+import {
+  validateQuestionSetComprehensive,
+  type ValidationResult,
+} from './schema-validator';
+import {
+  checkQuestionSetQuality,
+  type QualityReport,
+} from './question-quality-checker';
 
 export interface LoadResult<T> {
   success: boolean;
@@ -33,7 +39,9 @@ export class DataLoader {
   /**
    * 問題セットデータを読み込む
    */
-  async loadQuestionSet(url: string = '/questions.json'): Promise<LoadResult<QuestionSet>> {
+  async loadQuestionSet(
+    url: string = '/questions.json'
+  ): Promise<LoadResult<QuestionSet>> {
     try {
       // キャッシュチェック
       if (this.options.enableCache && this.cache.has(url)) {
@@ -46,7 +54,7 @@ export class DataLoader {
 
       // データ取得
       const response = await this.fetchWithTimeout(url, this.options.timeout!);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
@@ -60,7 +68,7 @@ export class DataLoader {
         if (!validationResult.isValid) {
           return {
             success: false,
-            error: `Schema validation failed: ${validationResult.errors.map(e => e.message).join(', ')}`,
+            error: `Schema validation failed: ${validationResult.errors.map((e) => e.message).join(', ')}`,
             validationResult,
           };
         }
@@ -85,7 +93,6 @@ export class DataLoader {
         validationResult,
         qualityReport,
       };
-
     } catch (error) {
       return this.handleError(error, 'Failed to load question set');
     }
@@ -98,7 +105,7 @@ export class DataLoader {
     try {
       // まず問題セット全体を読み込む
       const questionSetResult = await this.loadQuestionSet();
-      
+
       if (!questionSetResult.success || !questionSetResult.data) {
         return {
           success: false,
@@ -106,8 +113,10 @@ export class DataLoader {
         };
       }
 
-      const question = questionSetResult.data.questions.find(q => q.id === questionId);
-      
+      const question = questionSetResult.data.questions.find(
+        (q) => q.id === questionId
+      );
+
       if (!question) {
         return {
           success: false,
@@ -119,7 +128,6 @@ export class DataLoader {
         success: true,
         data: question,
       };
-
     } catch (error) {
       return this.handleError(error, `Failed to load question ${questionId}`);
     }
@@ -131,7 +139,7 @@ export class DataLoader {
   async loadQuestionsByDomain(domain: string): Promise<LoadResult<Question[]>> {
     try {
       const questionSetResult = await this.loadQuestionSet();
-      
+
       if (!questionSetResult.success || !questionSetResult.data) {
         return {
           success: false,
@@ -139,25 +147,31 @@ export class DataLoader {
         };
       }
 
-      const questions = questionSetResult.data.questions.filter(q => q.domain === domain);
-      
+      const questions = questionSetResult.data.questions.filter(
+        (q) => q.domain === domain
+      );
+
       return {
         success: true,
         data: questions,
       };
-
     } catch (error) {
-      return this.handleError(error, `Failed to load questions for domain ${domain}`);
+      return this.handleError(
+        error,
+        `Failed to load questions for domain ${domain}`
+      );
     }
   }
 
   /**
    * 難易度別の問題を読み込む
    */
-  async loadQuestionsByDifficulty(difficulty: 'easy' | 'medium' | 'hard'): Promise<LoadResult<Question[]>> {
+  async loadQuestionsByDifficulty(
+    difficulty: 'easy' | 'medium' | 'hard'
+  ): Promise<LoadResult<Question[]>> {
     try {
       const questionSetResult = await this.loadQuestionSet();
-      
+
       if (!questionSetResult.success || !questionSetResult.data) {
         return {
           success: false,
@@ -165,13 +179,14 @@ export class DataLoader {
         };
       }
 
-      const questions = questionSetResult.data.questions.filter(q => q.difficulty === difficulty);
-      
+      const questions = questionSetResult.data.questions.filter(
+        (q) => q.difficulty === difficulty
+      );
+
       return {
         success: true,
         data: questions,
       };
-
     } catch (error) {
       return this.handleError(error, `Failed to load ${difficulty} questions`);
     }
@@ -188,7 +203,7 @@ export class DataLoader {
   }): Promise<LoadResult<Question[]>> {
     try {
       const questionSetResult = await this.loadQuestionSet();
-      
+
       if (!questionSetResult.success || !questionSetResult.data) {
         return {
           success: false,
@@ -200,20 +215,20 @@ export class DataLoader {
 
       // フィルター適用
       if (filter.domain) {
-        questions = questions.filter(q => q.domain === filter.domain);
+        questions = questions.filter((q) => q.domain === filter.domain);
       }
 
       if (filter.difficulty) {
-        questions = questions.filter(q => q.difficulty === filter.difficulty);
+        questions = questions.filter((q) => q.difficulty === filter.difficulty);
       }
 
       if (filter.type) {
-        questions = questions.filter(q => q.type === filter.type);
+        questions = questions.filter((q) => q.type === filter.type);
       }
 
       if (filter.tags && filter.tags.length > 0) {
-        questions = questions.filter(q => 
-          filter.tags!.some(tag => q.tags.includes(tag))
+        questions = questions.filter((q) =>
+          filter.tags!.some((tag) => q.tags.includes(tag))
         );
       }
 
@@ -221,7 +236,6 @@ export class DataLoader {
         success: true,
         data: questions,
       };
-
     } catch (error) {
       return this.handleError(error, 'Failed to load filtered questions');
     }
@@ -230,7 +244,9 @@ export class DataLoader {
   /**
    * データの再読み込み（キャッシュクリア）
    */
-  async reloadQuestionSet(url: string = '/questions.json'): Promise<LoadResult<QuestionSet>> {
+  async reloadQuestionSet(
+    url: string = '/questions.json'
+  ): Promise<LoadResult<QuestionSet>> {
     this.cache.delete(url);
     return this.loadQuestionSet(url);
   }
@@ -245,24 +261,35 @@ export class DataLoader {
   /**
    * データの健全性チェック
    */
-  async validateData(url: string = '/questions.json'): Promise<ValidationResult> {
+  async validateData(
+    url: string = '/questions.json'
+  ): Promise<ValidationResult> {
     try {
       const response = await this.fetchWithTimeout(url, this.options.timeout!);
-      
+
       if (!response.ok) {
         return {
           isValid: false,
-          errors: [{ field: 'network', message: `HTTP ${response.status}: ${response.statusText}` }]
+          errors: [
+            {
+              field: 'network',
+              message: `HTTP ${response.status}: ${response.statusText}`,
+            },
+          ],
         };
       }
 
       const rawData = await response.json();
       return await validateQuestionSetComprehensive(rawData);
-
     } catch (error) {
       return {
         isValid: false,
-        errors: [{ field: 'network', message: error instanceof Error ? error.message : 'Unknown error' }]
+        errors: [
+          {
+            field: 'network',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          },
+        ],
       };
     }
   }
@@ -270,7 +297,9 @@ export class DataLoader {
   /**
    * データの品質レポート取得
    */
-  async getQualityReport(url: string = '/questions.json'): Promise<QualityReport | null> {
+  async getQualityReport(
+    url: string = '/questions.json'
+  ): Promise<QualityReport | null> {
     try {
       const result = await this.loadQuestionSet(url);
       return result.qualityReport || null;
@@ -282,7 +311,10 @@ export class DataLoader {
   /**
    * タイムアウト付きfetch
    */
-  private async fetchWithTimeout(url: string, timeout: number): Promise<Response> {
+  private async fetchWithTimeout(
+    url: string,
+    timeout: number
+  ): Promise<Response> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -290,7 +322,7 @@ export class DataLoader {
       const response = await fetch(url, {
         signal: controller.signal,
         headers: {
-          'Accept': 'application/json',
+          Accept: 'application/json',
           'Cache-Control': 'no-cache',
         },
       });
@@ -310,7 +342,7 @@ export class DataLoader {
    */
   private handleError(error: unknown, defaultMessage: string): LoadResult<any> {
     let errorMessage = defaultMessage;
-    
+
     if (error instanceof Error) {
       errorMessage = error.message;
     } else if (typeof error === 'string') {
@@ -319,13 +351,16 @@ export class DataLoader {
 
     // ネットワークエラーの詳細分類
     if (errorMessage.includes('Failed to fetch')) {
-      errorMessage = 'ネットワーク接続に失敗しました。インターネット接続を確認してください。';
+      errorMessage =
+        'ネットワーク接続に失敗しました。インターネット接続を確認してください。';
     } else if (errorMessage.includes('timeout')) {
-      errorMessage = 'リクエストがタイムアウトしました。しばらく後にお試しください。';
+      errorMessage =
+        'リクエストがタイムアウトしました。しばらく後にお試しください。';
     } else if (errorMessage.includes('404')) {
       errorMessage = '問題データファイルが見つかりません。';
     } else if (errorMessage.includes('500')) {
-      errorMessage = 'サーバーエラーが発生しました。しばらく後にお試しください。';
+      errorMessage =
+        'サーバーエラーが発生しました。しばらく後にお試しください。';
     }
 
     return {
@@ -339,10 +374,15 @@ export class DataLoader {
 export const defaultDataLoader = new DataLoader();
 
 // 便利な関数エクスポート
-export const loadQuestionSet = (url?: string) => defaultDataLoader.loadQuestionSet(url);
-export const loadQuestion = (questionId: string) => defaultDataLoader.loadQuestion(questionId);
-export const loadQuestionsByDomain = (domain: string) => defaultDataLoader.loadQuestionsByDomain(domain);
-export const loadQuestionsByDifficulty = (difficulty: 'easy' | 'medium' | 'hard') => 
-  defaultDataLoader.loadQuestionsByDifficulty(difficulty);
-export const loadQuestionsWithFilter = (filter: Parameters<DataLoader['loadQuestionsWithFilter']>[0]) => 
-  defaultDataLoader.loadQuestionsWithFilter(filter);
+export const loadQuestionSet = (url?: string) =>
+  defaultDataLoader.loadQuestionSet(url);
+export const loadQuestion = (questionId: string) =>
+  defaultDataLoader.loadQuestion(questionId);
+export const loadQuestionsByDomain = (domain: string) =>
+  defaultDataLoader.loadQuestionsByDomain(domain);
+export const loadQuestionsByDifficulty = (
+  difficulty: 'easy' | 'medium' | 'hard'
+) => defaultDataLoader.loadQuestionsByDifficulty(difficulty);
+export const loadQuestionsWithFilter = (
+  filter: Parameters<DataLoader['loadQuestionsWithFilter']>[0]
+) => defaultDataLoader.loadQuestionsWithFilter(filter);

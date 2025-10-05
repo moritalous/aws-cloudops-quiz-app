@@ -1,8 +1,9 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-sans:
+    'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
 /* Base styles with mobile-first approach */
@@ -133,11 +134,11 @@ body {
   .mobile-portrait-optimized {
     @apply px-3 py-4;
   }
-  
+
   .mobile-portrait-text {
     @apply text-sm leading-relaxed;
   }
-  
+
   .mobile-portrait-button {
     @apply py-4 text-base;
     min-height: 48px;
@@ -167,7 +168,7 @@ body {
   .no-print {
     display: none !important;
   }
-  
+
   body {
     @apply bg-white text-black;
   }

@@ -1,6 +1,6 @@
 /**
  * SessionManager Demo Script
- * 
+ *
  * This script demonstrates the SessionManager functionality
  * Run this in a browser console to see the session management in action
  */
@@ -18,7 +18,7 @@ export function demonstrateSessionManager() {
     id: session.sessionId,
     mode: session.mode,
     targetCount: session.targetQuestionCount,
-    domainFilter: session.domainFilter
+    domainFilter: session.domainFilter,
   });
 
   // 2. Add some answers
@@ -30,7 +30,7 @@ export function demonstrateSessionManager() {
       correctAnswer: 'A',
       isCorrect: true,
       answeredAt: new Date(),
-      timeSpent: 30
+      timeSpent: 30,
     },
     {
       questionId: 'q002',
@@ -38,7 +38,7 @@ export function demonstrateSessionManager() {
       correctAnswer: 'A',
       isCorrect: false,
       answeredAt: new Date(),
-      timeSpent: 45
+      timeSpent: 45,
     },
     {
       questionId: 'q003',
@@ -46,8 +46,8 @@ export function demonstrateSessionManager() {
       correctAnswer: 'C',
       isCorrect: true,
       answeredAt: new Date(),
-      timeSpent: 25
-    }
+      timeSpent: 25,
+    },
   ];
 
   sampleAnswers.forEach((answer, index) => {
@@ -55,7 +55,7 @@ export function demonstrateSessionManager() {
     console.log(`Added answer ${index + 1}:`, {
       questionId: answer.questionId,
       isCorrect: answer.isCorrect,
-      timeSpent: answer.timeSpent
+      timeSpent: answer.timeSpent,
     });
   });
 
@@ -68,7 +68,9 @@ export function demonstrateSessionManager() {
       totalQuestions: stats.totalQuestions,
       correctAnswers: stats.correctAnswers,
       accuracy: `${stats.accuracy.toFixed(1)}%`,
-      averageTime: stats.averageTimePerQuestion ? `${stats.averageTimePerQuestion.toFixed(1)}s` : 'N/A'
+      averageTime: stats.averageTimePerQuestion
+        ? `${stats.averageTimePerQuestion.toFixed(1)}s`
+        : 'N/A',
     });
 
     // 4. Get progress information
@@ -77,7 +79,7 @@ export function demonstrateSessionManager() {
       current: progress.current,
       total: progress.total,
       percentage: progress.percentage ? `${progress.percentage}%` : 'N/A',
-      isComplete: progress.isComplete
+      isComplete: progress.isComplete,
     });
 
     // 5. Get session duration
@@ -90,11 +92,14 @@ export function demonstrateSessionManager() {
   const questionMap = new Map([
     ['q001', { domain: 'monitoring' }],
     ['q002', { domain: 'security' }],
-    ['q003', { domain: 'monitoring' }]
+    ['q003', { domain: 'monitoring' }],
   ]);
 
   if (currentSession) {
-    const domainStats = SessionManager.calculateDomainStatistics(currentSession, questionMap);
+    const domainStats = SessionManager.calculateDomainStatistics(
+      currentSession,
+      questionMap
+    );
     console.log('Domain breakdown:', domainStats.domainBreakdown);
   }
 
@@ -119,12 +124,18 @@ export function demonstrateSessionManager() {
   }
 
   console.log('\n=== Demo Complete ===');
-  console.log('Check sessionStorage and localStorage in DevTools to see stored data');
-  
+  console.log(
+    'Check sessionStorage and localStorage in DevTools to see stored data'
+  );
+
   return {
     session: currentSession,
-    stats: currentSession ? SessionManager.calculateStatistics(currentSession) : null,
-    progress: currentSession ? SessionManager.getProgress(currentSession) : null
+    stats: currentSession
+      ? SessionManager.calculateStatistics(currentSession)
+      : null,
+    progress: currentSession
+      ? SessionManager.getProgress(currentSession)
+      : null,
   };
 }
 

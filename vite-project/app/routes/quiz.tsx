@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router';
-import type { Route } from "./+types/quiz";
+import type { Route } from './+types/quiz';
 import type { Question, QuizConfig, SessionData } from '~/types';
 import { QuizScreen } from '~/components/QuizScreen';
 import { QuestionLoadingSpinner, DataLoadErrorDisplay } from '~/components';
@@ -8,8 +8,8 @@ import { loadQuestionSet } from '~/utils/simple-data-loader';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "クイズ - AWS CloudOps試験対策" },
-    { name: "description", content: "AWS CloudOps試験の練習問題" },
+    { title: 'クイズ - AWS CloudOps試験対策' },
+    { name: 'description', content: 'AWS CloudOps試験の練習問題' },
   ];
 }
 
@@ -21,7 +21,7 @@ export default function Quiz() {
   const [error, setError] = useState<string | null>(null);
 
   // URLパラメータから設定を取得
-  const mode = searchParams.get('mode') as 'set' | 'endless' || 'set';
+  const mode = (searchParams.get('mode') as 'set' | 'endless') || 'set';
   const count = parseInt(searchParams.get('count') || '10');
   const domainFilter = searchParams.get('domain') || undefined;
 
@@ -38,22 +38,26 @@ export default function Quiz() {
   const initializeQuiz = async () => {
     try {
       const result = await loadQuestionSet();
-      
+
       if (!result.success || !result.data) {
         throw new Error(result.error || '問題データの読み込みに失敗しました');
       }
 
       let questionsToUse = result.data.questions;
-      
+
       // ドメインフィルターが指定されている場合
       if (domainFilter) {
-        questionsToUse = questionsToUse.filter(q => q.domain === domainFilter);
+        questionsToUse = questionsToUse.filter(
+          (q) => q.domain === domainFilter
+        );
       }
 
       setQuestions(questionsToUse);
       setLoading(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '不明なエラーが発生しました');
+      setError(
+        err instanceof Error ? err.message : '不明なエラーが発生しました'
+      );
       setLoading(false);
     }
   };
@@ -68,7 +72,7 @@ export default function Quiz() {
 
   if (error) {
     return (
-      <DataLoadErrorDisplay 
+      <DataLoadErrorDisplay
         onRetry={() => {
           setError(null);
           setLoading(true);

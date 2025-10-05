@@ -8,12 +8,12 @@ interface ErrorDisplayProps {
   onRetry?: () => void;
 }
 
-export function ErrorDisplay({ 
+export function ErrorDisplay({
   title = 'エラーが発生しました',
   message,
   showRetry = false,
   showHome = true,
-  onRetry
+  onRetry,
 }: ErrorDisplayProps) {
   const navigate = useNavigate();
 
@@ -39,14 +39,10 @@ export function ErrorDisplay({
           </div>
 
           {/* エラータイトル */}
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            {title}
-          </h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">{title}</h2>
 
           {/* エラーメッセージ */}
-          <p className="text-gray-600 mb-6">
-            {message}
-          </p>
+          <p className="text-gray-600 mb-6">{message}</p>
 
           {/* アクションボタン */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -58,7 +54,7 @@ export function ErrorDisplay({
                 再試行
               </button>
             )}
-            
+
             {showHome && (
               <button
                 onClick={() => navigate('/')}

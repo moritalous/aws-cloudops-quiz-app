@@ -15,28 +15,36 @@ export class ServiceWorkerManager {
 
     try {
       console.log('Service Worker: Registering...');
-      
+
       this.registration = await navigator.serviceWorker.register('/sw.js', {
-        scope: '/'
+        scope: '/',
       });
 
       console.log('Service Worker: Registered successfully', this.registration);
 
       // 更新チェック
-      this.registration.addEventListener('updatefound', this.handleUpdateFound.bind(this));
+      this.registration.addEventListener(
+        'updatefound',
+        this.handleUpdateFound.bind(this)
+      );
 
       // アクティブなService Workerの状態変更を監視
       if (this.registration.active) {
-        this.registration.active.addEventListener('statechange', this.handleStateChange.bind(this));
+        this.registration.active.addEventListener(
+          'statechange',
+          this.handleStateChange.bind(this)
+        );
       }
 
       // 定期的な更新チェック（1時間間隔）
-      setInterval(() => {
-        this.checkForUpdates();
-      }, 60 * 60 * 1000);
+      setInterval(
+        () => {
+          this.checkForUpdates();
+        },
+        60 * 60 * 1000
+      );
 
       return true;
-
     } catch (error) {
       console.error('Service Worker: Registration failed', error);
       ErrorHandler.handleNetworkError(error);
@@ -90,11 +98,14 @@ export class ServiceWorkerManager {
     try {
       // 新しいService Workerにスキップ待機メッセージを送信
       this.registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-      
+
       // ページをリロード
       window.location.reload();
     } catch (error) {
-      console.error('Service Worker: Failed to activate new service worker', error);
+      console.error(
+        'Service Worker: Failed to activate new service worker',
+        error
+      );
     }
   }
 
@@ -123,9 +134,9 @@ export class ServiceWorkerManager {
 
     try {
       const cacheNames = await caches.keys();
-      
+
       await Promise.all(
-        cacheNames.map(cacheName => {
+        cacheNames.map((cacheName) => {
           if (cacheName.startsWith('aws-cloudops-')) {
             console.log('Clearing cache:', cacheName);
             return caches.delete(cacheName);
@@ -155,7 +166,7 @@ export class ServiceWorkerManager {
         if (cacheName.startsWith('aws-cloudops-')) {
           const cache = await caches.open(cacheName);
           const requests = await cache.keys();
-          
+
           for (const request of requests) {
             const response = await cache.match(request);
             if (response) {
@@ -186,7 +197,7 @@ export class ServiceWorkerManager {
       isSupported: this.isSupported,
       isRegistered: !!this.registration,
       isActive: !!(this.registration && this.registration.active),
-      hasUpdate: !!(this.registration && this.registration.waiting)
+      hasUpdate: !!(this.registration && this.registration.waiting),
     };
   }
 
@@ -202,9 +213,12 @@ export class ServiceWorkerManager {
     console.log('Service Worker: Update found');
 
     newWorker.addEventListener('statechange', () => {
-      if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+      if (
+        newWorker.state === 'installed' &&
+        navigator.serviceWorker.controller
+      ) {
         console.log('Service Worker: New version available');
-        
+
         // ユーザーに更新通知
         this.notifyUpdate();
       }
@@ -224,10 +238,11 @@ export class ServiceWorkerManager {
    */
   private static notifyUpdate(): void {
     const event = new CustomEvent('app-error', {
-      detail: { 
-        message: 'アプリケーションの新しいバージョンが利用可能です。ページを再読み込みして更新してください。', 
-        type: 'VALIDATION_ERROR' 
-      }
+      detail: {
+        message:
+          'アプリケーションの新しいバージョンが利用可能です。ページを再読み込みして更新してください。',
+        type: 'VALIDATION_ERROR',
+      },
     });
     window.dispatchEvent(event);
   }
@@ -238,10 +253,10 @@ export class ServiceWorkerManager {
   static async initializeOfflineSupport(): Promise<void> {
     // Service Worker を登録
     const registered = await this.register();
-    
+
     if (registered) {
       console.log('Service Worker: Offline support initialized');
-      
+
       // 重要なリソースを事前キャッシュ
       await this.precacheImportantResources();
     }
@@ -257,13 +272,8 @@ export class ServiceWorkerManager {
 
     try {
       const cache = await caches.open('aws-cloudops-precache-v1');
-      
-      const importantResources = [
-        '/questions.json',
-        '/',
-        '/quiz',
-        '/result'
-      ];
+
+      const importantResources = ['/questions.json', '/', '/quiz', '/result'];
 
       // リソースを順次キャッシュ（並行処理でサーバーに負荷をかけないため）
       for (const resource of importantResources) {
@@ -274,7 +284,6 @@ export class ServiceWorkerManager {
           console.warn('Failed to precache:', resource, error);
         }
       }
-
     } catch (error) {
       console.error('Service Worker: Precaching failed', error);
     }

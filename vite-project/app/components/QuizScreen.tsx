@@ -65,9 +65,10 @@ export function QuizScreen({ questions, config, onComplete }: QuizScreenProps) {
       }
     }
   };
-  const progress = config.mode === 'set' 
-    ? ((currentQuestionIndex + 1) / config.questionCount) * 100
-    : 0;
+  const progress =
+    config.mode === 'set'
+      ? ((currentQuestionIndex + 1) / config.questionCount) * 100
+      : 0;
 
   const handleSubmitAnswer = () => {
     if (!currentQuestion) return;
@@ -80,12 +81,17 @@ export function QuizScreen({ questions, config, onComplete }: QuizScreenProps) {
       isCorrect = selectedAnswer === correctAnswer;
     } else {
       // For multiple choice, compare arrays
-      const userAnswers = Array.isArray(selectedAnswer) ? [...selectedAnswer].sort() : [selectedAnswer].sort();
-      const correctAnswers = Array.isArray(correctAnswer) ? [...correctAnswer].sort() : [correctAnswer].sort();
-      
+      const userAnswers = Array.isArray(selectedAnswer)
+        ? [...selectedAnswer].sort()
+        : [selectedAnswer].sort();
+      const correctAnswers = Array.isArray(correctAnswer)
+        ? [...correctAnswer].sort()
+        : [correctAnswer].sort();
+
       // Both arrays must have the same length and contain the same elements
-      isCorrect = userAnswers.length === correctAnswers.length && 
-                  userAnswers.every((answer, index) => answer === correctAnswers[index]);
+      isCorrect =
+        userAnswers.length === correctAnswers.length &&
+        userAnswers.every((answer, index) => answer === correctAnswers[index]);
     }
 
     const newAnswer: Answer = {
@@ -93,14 +99,14 @@ export function QuizScreen({ questions, config, onComplete }: QuizScreenProps) {
       userAnswer: selectedAnswer,
       correctAnswer: correctAnswer,
       isCorrect,
-      answeredAt: new Date()
+      answeredAt: new Date(),
     };
 
     const updatedSessionData = {
       ...sessionData,
       answers: [...sessionData.answers, newAnswer],
       usedQuestionIds: [...sessionData.usedQuestionIds, currentQuestion.id],
-      currentQuestionIndex: currentQuestionIndex
+      currentQuestionIndex: currentQuestionIndex,
     };
 
     setSessionData(updatedSessionData);
@@ -109,13 +115,13 @@ export function QuizScreen({ questions, config, onComplete }: QuizScreenProps) {
 
   const handleNextQuestion = () => {
     const nextIndex = currentQuestionIndex + 1;
-    
+
     // Check if quiz is complete
     if (config.mode === 'set' && nextIndex >= config.questionCount) {
       onComplete(sessionData);
       return;
     }
-    
+
     if (nextIndex >= questions.length) {
       onComplete(sessionData);
       return;
@@ -139,16 +145,14 @@ export function QuizScreen({ questions, config, onComplete }: QuizScreenProps) {
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
             問題が見つかりません
           </h2>
-          <p className="text-gray-600">
-            問題データの読み込みに失敗しました。
-          </p>
+          <p className="text-gray-600">問題データの読み込みに失敗しました。</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div 
+    <div
       className="min-h-screen bg-gray-50 dark:bg-gray-900 py-4 sm:py-6 md:py-8"
       ref={containerRef}
       onTouchStart={handleTouchStart}
@@ -163,19 +167,27 @@ export function QuizScreen({ questions, config, onComplete }: QuizScreenProps) {
               className="btn-secondary text-sm sm:text-base"
               aria-label="メニューに戻る"
             >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <svg
+                className="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
               </svg>
               <span className="hidden sm:inline">メニューに戻る</span>
               <span className="sm:hidden">戻る</span>
             </button>
-            
             <div className="text-center">
               <h1 className="text-responsive-lg font-semibold text-gray-900 dark:text-white">
                 {config.mode === 'set' ? '10問セット' : 'エンドレスモード'}
               </h1>
             </div>
-            
             <div className="w-20 sm:w-24"></div> {/* Spacer for centering */}
           </div>
 
@@ -218,9 +230,15 @@ export function QuizScreen({ questions, config, onComplete }: QuizScreenProps) {
                 </div>
                 <div>
                   <div className="text-responsive-lg font-bold text-green-600 dark:text-green-400">
-                    {sessionData.answers.length > 0 
-                      ? Math.round((sessionData.answers.filter(a => a.isCorrect).length / sessionData.answers.length) * 100)
-                      : 0}%
+                    {sessionData.answers.length > 0
+                      ? Math.round(
+                          (sessionData.answers.filter((a) => a.isCorrect)
+                            .length /
+                            sessionData.answers.length) *
+                            100
+                        )
+                      : 0}
+                    %
                   </div>
                   <div className="text-responsive-xs text-gray-500 dark:text-gray-400">
                     正答率
@@ -258,15 +276,35 @@ export function QuizScreen({ questions, config, onComplete }: QuizScreenProps) {
           <div className="inline-flex items-center text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-3 py-2 rounded-full">
             {showResult ? (
               <>
-                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                <svg
+                  className="w-4 h-4 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
                 </svg>
                 左にスワイプで次の問題
               </>
             ) : currentQuestionIndex > 0 ? (
               <>
-                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <svg
+                  className="w-4 h-4 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
                 右にスワイプで前の問題
               </>

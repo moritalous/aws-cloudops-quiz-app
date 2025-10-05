@@ -75,17 +75,21 @@ describe('SessionManager', () => {
         mode: 'set',
         targetQuestionCount: 10,
         currentQuestionIndex: 0,
-        answers: [{
-          questionId: 'q1',
-          userAnswer: 'A',
-          correctAnswer: 'A',
-          isCorrect: true,
-          answeredAt: new Date().toISOString()
-        }],
-        usedQuestionIds: ['q1']
+        answers: [
+          {
+            questionId: 'q1',
+            userAnswer: 'A',
+            correctAnswer: 'A',
+            isCorrect: true,
+            answeredAt: new Date().toISOString(),
+          },
+        ],
+        usedQuestionIds: ['q1'],
       };
 
-      mockSessionStorage.getItem.mockReturnValue(JSON.stringify(mockSessionData));
+      mockSessionStorage.getItem.mockReturnValue(
+        JSON.stringify(mockSessionData)
+      );
 
       const session = SessionManager.getSession();
 
@@ -114,7 +118,7 @@ describe('SessionManager', () => {
         targetQuestionCount: 10,
         currentQuestionIndex: 0,
         answers: [],
-        usedQuestionIds: []
+        usedQuestionIds: [],
       };
 
       mockSessionStorage.getItem.mockReturnValue(JSON.stringify(mockSession));
@@ -124,7 +128,7 @@ describe('SessionManager', () => {
         userAnswer: 'A',
         correctAnswer: 'A',
         isCorrect: true,
-        answeredAt: new Date()
+        answeredAt: new Date(),
       };
 
       const updatedSession = SessionManager.addAnswer(answer);
@@ -143,7 +147,7 @@ describe('SessionManager', () => {
         userAnswer: 'A',
         correctAnswer: 'A',
         isCorrect: true,
-        answeredAt: new Date()
+        answeredAt: new Date(),
       };
 
       const result = SessionManager.addAnswer(answer);
@@ -167,7 +171,7 @@ describe('SessionManager', () => {
             correctAnswer: 'A',
             isCorrect: true,
             answeredAt: new Date(),
-            timeSpent: 30
+            timeSpent: 30,
           },
           {
             questionId: 'q2',
@@ -175,7 +179,7 @@ describe('SessionManager', () => {
             correctAnswer: 'A',
             isCorrect: false,
             answeredAt: new Date(),
-            timeSpent: 45
+            timeSpent: 45,
           },
           {
             questionId: 'q3',
@@ -183,10 +187,10 @@ describe('SessionManager', () => {
             correctAnswer: 'C',
             isCorrect: true,
             answeredAt: new Date(),
-            timeSpent: 25
-          }
+            timeSpent: 25,
+          },
         ],
-        usedQuestionIds: ['q1', 'q2', 'q3']
+        usedQuestionIds: ['q1', 'q2', 'q3'],
       };
 
       const stats = SessionManager.calculateStatistics(session);
@@ -205,7 +209,7 @@ describe('SessionManager', () => {
         targetQuestionCount: 10,
         currentQuestionIndex: 0,
         answers: [],
-        usedQuestionIds: []
+        usedQuestionIds: [],
       };
 
       const stats = SessionManager.calculateStatistics(session);
@@ -225,7 +229,7 @@ describe('SessionManager', () => {
         targetQuestionCount: 10,
         currentQuestionIndex: 0,
         answers: [],
-        usedQuestionIds: []
+        usedQuestionIds: [],
       };
 
       const isValid = SessionManager.validateSession(validSession);
@@ -239,7 +243,7 @@ describe('SessionManager', () => {
         startedAt: 'invalid-date',
         mode: 'set',
         answers: 'not-array',
-        usedQuestionIds: []
+        usedQuestionIds: [],
       } as any;
 
       const isValid = SessionManager.validateSession(invalidSession);
@@ -257,11 +261,29 @@ describe('SessionManager', () => {
         targetQuestionCount: 10,
         currentQuestionIndex: 3,
         answers: [
-          { questionId: 'q1', userAnswer: 'A', correctAnswer: 'A', isCorrect: true, answeredAt: new Date() },
-          { questionId: 'q2', userAnswer: 'B', correctAnswer: 'A', isCorrect: false, answeredAt: new Date() },
-          { questionId: 'q3', userAnswer: 'C', correctAnswer: 'C', isCorrect: true, answeredAt: new Date() }
+          {
+            questionId: 'q1',
+            userAnswer: 'A',
+            correctAnswer: 'A',
+            isCorrect: true,
+            answeredAt: new Date(),
+          },
+          {
+            questionId: 'q2',
+            userAnswer: 'B',
+            correctAnswer: 'A',
+            isCorrect: false,
+            answeredAt: new Date(),
+          },
+          {
+            questionId: 'q3',
+            userAnswer: 'C',
+            correctAnswer: 'C',
+            isCorrect: true,
+            answeredAt: new Date(),
+          },
         ],
-        usedQuestionIds: ['q1', 'q2', 'q3']
+        usedQuestionIds: ['q1', 'q2', 'q3'],
       };
 
       const progress = SessionManager.getProgress(session);
@@ -278,14 +300,16 @@ describe('SessionManager', () => {
         startedAt: new Date(),
         mode: 'endless',
         currentQuestionIndex: 5,
-        answers: Array(5).fill(null).map((_, i) => ({
-          questionId: `q${i}`,
-          userAnswer: 'A',
-          correctAnswer: 'A',
-          isCorrect: true,
-          answeredAt: new Date()
-        })),
-        usedQuestionIds: ['q0', 'q1', 'q2', 'q3', 'q4']
+        answers: Array(5)
+          .fill(null)
+          .map((_, i) => ({
+            questionId: `q${i}`,
+            userAnswer: 'A',
+            correctAnswer: 'A',
+            isCorrect: true,
+            answeredAt: new Date(),
+          })),
+        usedQuestionIds: ['q0', 'q1', 'q2', 'q3', 'q4'],
       };
 
       const progress = SessionManager.getProgress(session);
@@ -301,7 +325,9 @@ describe('SessionManager', () => {
     it('should clear session storage', () => {
       SessionManager.clearSession();
 
-      expect(mockSessionStorage.removeItem).toHaveBeenCalledWith('cloudops_quiz_session');
+      expect(mockSessionStorage.removeItem).toHaveBeenCalledWith(
+        'cloudops_quiz_session'
+      );
     });
   });
 });

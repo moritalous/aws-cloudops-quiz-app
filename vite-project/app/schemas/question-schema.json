@@ -2,7 +2,13 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "AWS CloudOps Question Set Schema",
   "type": "object",
-  "required": ["version", "generatedAt", "totalQuestions", "domains", "questions"],
+  "required": [
+    "version",
+    "generatedAt",
+    "totalQuestions",
+    "domains",
+    "questions"
+  ],
   "properties": {
     "version": {
       "type": "string",
@@ -41,7 +47,19 @@
   "definitions": {
     "question": {
       "type": "object",
-      "required": ["id", "domain", "difficulty", "type", "question", "options", "correctAnswer", "explanation", "learningResources", "relatedServices", "tags"],
+      "required": [
+        "id",
+        "domain",
+        "difficulty",
+        "type",
+        "question",
+        "options",
+        "correctAnswer",
+        "explanation",
+        "learningResources",
+        "relatedServices",
+        "tags"
+      ],
       "properties": {
         "id": {
           "type": "string",
@@ -50,7 +68,13 @@
         },
         "domain": {
           "type": "string",
-          "enum": ["monitoring", "reliability", "deployment", "security", "networking"],
+          "enum": [
+            "monitoring",
+            "reliability",
+            "deployment",
+            "security",
+            "networking"
+          ],
           "description": "AWS CloudOps exam domain"
         },
         "difficulty": {

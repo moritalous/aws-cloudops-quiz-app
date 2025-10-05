@@ -1,7 +1,13 @@
-import type { Question, SessionData, Answer, QuizConfig, QuizStatistics } from '~/types';
+import type {
+  Question,
+  SessionData,
+  Answer,
+  QuizConfig,
+  QuizStatistics,
+} from '~/types';
 import { SessionManager } from './session-manager';
 import { QuestionSelector } from './question-selector';
-import { simpleDataLoader } from './simple-data-loader';
+import { loadQuestionSet } from './data-loader';
 
 export interface QuizManagerOptions {
   balanceDomains?: boolean;
@@ -18,7 +24,7 @@ export class QuizManager {
     this.options = {
       balanceDomains: true,
       avoidRecentQuestions: true,
-      ...options
+      ...options,
     };
   }
 
@@ -37,7 +43,11 @@ export class QuizManager {
    * 新しいクイズセッションを開始
    */
   startNewSession(config: QuizConfig): SessionData {
-    this.currentSession = SessionManager.createSession(config);
+    this.currentSession = SessionManager.createSession(
+      config.mode,
+      config.questionCount,
+      config.domain
+    );
     return this.currentSession;
   }
 
@@ -73,7 +83,7 @@ export class QuizManager {
       {
         balanceDomains: this.options.balanceDomains,
         avoidRecentQuestions: this.options.avoidRecentQuestions,
-        preferDifficulty: this.options.preferDifficulty
+        preferDifficulty: this.options.preferDifficulty,
       }
     );
 
@@ -88,36 +98,38 @@ export class QuizManager {
       return [];
     }
 
-    const filter = this.currentSession?.domainFilter 
+    const filter = this.currentSession?.domainFilter
       ? { domain: this.currentSession.domainFilter }
       : undefined;
 
-    return QuestionSelector.selectQuestionSet(
-      this.questions,
-      count,
-      filter,
-      {
-        balanceDomains: this.options.balanceDomains,
-        preferDifficulty: this.options.preferDifficulty
-      }
-    );
+    return QuestionSelector.selectQuestionSet(this.questions, count, filter, {
+      balanceDomains: this.options.balanceDomains,
+      preferDifficulty: this.options.preferDifficulty,
+    });
   }
 
   /**
    * 回答を記録
    */
-  recordAnswer(questionId: string, userAnswer: string | string[], correctAnswer: string | string[], startTime?: Date): SessionData | null {
+  recordAnswer(
+    questionId: string,
+    userAnswer: string | string[],
+    correctAnswer: string | string[],
+    startTime?: Date
+  ): SessionData | null {
     if (!this.currentSession) {
       return null;
     }
 
     const now = new Date();
-    const timeSpent = startTime ? now.getTime() - startTime.getTime() : undefined;
-    
+    const timeSpent = startTime
+      ? now.getTime() - startTime.getTime()
+      : undefined;
+
     const isCorrect = Array.isArray(correctAnswer)
-      ? Array.isArray(userAnswer) && 
+      ? Array.isArray(userAnswer) &&
         correctAnswer.length === userAnswer.length &&
-        correctAnswer.every(answer => userAnswer.includes(answer))
+        correctAnswer.every((answer) => userAnswer.includes(answer))
       : userAnswer === correctAnswer;
 
     const answer: Answer = {
@@ -126,7 +138,7 @@ export class QuizManager {
       correctAnswer,
       isCorrect,
       answeredAt: now,
-      timeSpent
+      timeSpent,
     };
 
     this.currentSession = SessionManager.addAnswer(answer);
@@ -137,7 +149,7 @@ export class QuizManager {
    * 問題インデックスを更新
    */
   updateQuestionIndex(index: number): SessionData | null {
-    this.currentSession = SessionManager.updateQuestionIndex(index);
+    this.currentSession = SessionManager.updateCurrentQuestionIndex(index);
     return this.currentSession;
   }
 
@@ -150,12 +162,14 @@ export class QuizManager {
     }
 
     const baseStats = SessionManager.calculateStatistics(this.currentSession);
-    
+
     // 問題データを使用してドメイン別統計を正確に計算
-    const domainBreakdown: { [domain: string]: { total: number; correct: number; accuracy: number } } = {};
-    
+    const domainBreakdown: {
+      [domain: string]: { total: number; correct: number; accuracy: number };
+    } = {};
+
     for (const answer of this.currentSession.answers) {
-      const question = this.questions.find(q => q.id === answer.questionId);
+      const question = this.questions.find((q) => q.id === answer.questionId);
       if (question) {
         const domain = question.domain;
         if (!domainBreakdown[domain]) {
@@ -171,12 +185,13 @@ export class QuizManager {
     // 各ドメインの正答率を計算
     for (const domain in domainBreakdown) {
       const stats = domainBreakdown[domain];
-      stats.accuracy = stats.total > 0 ? (stats.correct / stats.total) * 100 : 0;
+      stats.accuracy =
+        stats.total > 0 ? (stats.correct / stats.total) * 100 : 0;
     }
 
     return {
       ...baseStats,
-      domainBreakdown
+      domainBreakdown,
     };
   }
 
@@ -187,7 +202,14 @@ export class QuizManager {
     if (!this.currentSession) {
       return null;
     }
-    return SessionManager.getSessionSummary(this.currentSession);
+    return {
+      sessionId: this.currentSession.sessionId,
+      mode: this.currentSession.mode,
+      startedAt: this.currentSession.startedAt,
+      progress: SessionManager.getProgress(this.currentSession),
+      statistics: SessionManager.calculateStatistics(this.currentSession),
+      duration: SessionManager.getSessionDuration(this.currentSession),
+    };
   }
 
   /**
@@ -197,7 +219,11 @@ export class QuizManager {
     if (!this.currentSession) {
       return [];
     }
-    return QuestionSelector.selectReviewQuestions(this.questions, this.currentSession, count);
+    return QuestionSelector.selectReviewQuestions(
+      this.questions,
+      this.currentSession,
+      count
+    );
   }
 
   /**
@@ -208,8 +234,14 @@ export class QuizManager {
       return false;
     }
 
-    if (this.currentSession.mode === 'set' && this.currentSession.targetQuestionCount) {
-      return this.currentSession.answers.length >= this.currentSession.targetQuestionCount;
+    if (
+      this.currentSession.mode === 'set' &&
+      this.currentSession.targetQuestionCount
+    ) {
+      return (
+        this.currentSession.answers.length >=
+        this.currentSession.targetQuestionCount
+      );
     }
 
     return false; // エンドレスモードは手動終了
@@ -223,12 +255,17 @@ export class QuizManager {
       return this.questions.length;
     }
 
-    const filter = this.currentSession.domainFilter 
+    const filter = this.currentSession.domainFilter
       ? { domain: this.currentSession.domainFilter }
       : undefined;
 
-    const availableQuestions = QuestionSelector['filterQuestions'](this.questions, filter);
-    return availableQuestions.filter(q => !this.currentSession!.usedQuestionIds.includes(q.id)).length;
+    const availableQuestions = QuestionSelector['filterQuestions'](
+      this.questions,
+      filter
+    );
+    return availableQuestions.filter(
+      (q) => !this.currentSession!.usedQuestionIds.includes(q.id)
+    ).length;
   }
 
   /**
@@ -239,7 +276,7 @@ export class QuizManager {
       return null;
     }
 
-    const filter = this.currentSession.domainFilter 
+    const filter = this.currentSession.domainFilter
       ? { domain: this.currentSession.domainFilter }
       : undefined;
 
@@ -262,7 +299,8 @@ export class QuizManager {
    * セッションをエクスポート
    */
   exportSession(): string | null {
-    return SessionManager.exportSession();
+    const session = SessionManager.getSession();
+    return session ? JSON.stringify(session) : null;
   }
 
   /**
@@ -271,9 +309,13 @@ export class QuizManager {
   getQuestionDataStats() {
     return {
       totalQuestions: this.questions.length,
-      difficultyDistribution: QuestionSelector.getDifficultyDistribution(this.questions),
-      domainDistribution: QuestionSelector.getDomainDistribution(this.questions),
-      duplicates: QuestionSelector.checkDuplicates(this.questions)
+      difficultyDistribution: QuestionSelector.getDifficultyDistribution(
+        this.questions
+      ),
+      domainDistribution: QuestionSelector.getDomainDistribution(
+        this.questions
+      ),
+      duplicates: QuestionSelector.checkDuplicates(this.questions),
     };
   }
 
@@ -281,20 +323,20 @@ export class QuizManager {
    * 特定の問題を取得
    */
   getQuestionById(questionId: string): Question | null {
-    return this.questions.find(q => q.id === questionId) || null;
+    return this.questions.find((q) => q.id === questionId) || null;
   }
 
   /**
    * ドメイン別の問題を取得
    */
   getQuestionsByDomain(domain: string): Question[] {
-    return this.questions.filter(q => q.domain === domain);
+    return this.questions.filter((q) => q.domain === domain);
   }
 
   /**
    * 難易度別の問題を取得
    */
   getQuestionsByDifficulty(difficulty: 'easy' | 'medium' | 'hard'): Question[] {
-    return this.questions.filter(q => q.difficulty === difficulty);
+    return this.questions.filter((q) => q.difficulty === difficulty);
   }
 }

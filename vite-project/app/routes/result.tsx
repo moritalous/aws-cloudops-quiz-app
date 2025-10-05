@@ -1,22 +1,23 @@
 import { useLocation, useNavigate } from 'react-router';
-import type { Route } from "./+types/result";
+import type { Route } from './+types/result';
 import type { SessionData, QuizStatistics } from '~/types';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "結果 - AWS CloudOps試験対策" },
-    { name: "description", content: "クイズの結果と統計" },
+    { title: '結果 - AWS CloudOps試験対策' },
+    { name: 'description', content: 'クイズの結果と統計' },
   ];
 }
 
 export default function Result() {
   const location = useLocation();
   const navigate = useNavigate();
-  
-  const { session, statistics } = location.state as { 
-    session: SessionData; 
-    statistics: QuizStatistics;
-  } || {};
+
+  const { session, statistics } =
+    (location.state as {
+      session: SessionData;
+      statistics: QuizStatistics;
+    }) || {};
 
   if (!session || !statistics) {
     return (
@@ -41,7 +42,9 @@ export default function Result() {
     );
   }
 
-  const sessionDuration = Math.floor((new Date().getTime() - session.startedAt.getTime()) / 1000);
+  const sessionDuration = Math.floor(
+    (new Date().getTime() - session.startedAt.getTime()) / 1000
+  );
   const minutes = Math.floor(sessionDuration / 60);
   const seconds = sessionDuration % 60;
 
@@ -67,7 +70,9 @@ export default function Result() {
         {/* 総合スコア */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <div className="text-center">
-            <div className={`text-6xl font-bold mb-4 ${getScoreColor(statistics.accuracy)}`}>
+            <div
+              className={`text-6xl font-bold mb-4 ${getScoreColor(statistics.accuracy)}`}
+            >
               {Math.round(statistics.accuracy)}%
             </div>
             <h2 className="text-2xl font-semibold text-gray-900 mb-2">
@@ -136,7 +141,9 @@ export default function Result() {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">正答率:</span>
-                <span className={`font-medium ${getScoreColor(statistics.accuracy)}`}>
+                <span
+                  className={`font-medium ${getScoreColor(statistics.accuracy)}`}
+                >
                   {Math.round(statistics.accuracy)}%
                 </span>
               </div>
@@ -151,25 +158,36 @@ export default function Result() {
               ドメイン別成績
             </h3>
             <div className="space-y-4">
-              {Object.entries(statistics.domainBreakdown).map(([domain, stats]) => (
-                <div key={domain} className="border-b border-gray-200 pb-3 last:border-b-0">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-medium text-gray-900">{domain}</span>
-                    <span className={`font-medium ${getScoreColor(stats.accuracy)}`}>
-                      {Math.round(stats.accuracy)}%
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-sm text-gray-600">
-                    <span>{stats.correct} / {stats.total} 問正解</span>
-                    <div className="w-32 bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-blue-600 h-2 rounded-full"
-                        style={{ width: `${stats.accuracy}%` }}
-                      />
+              {Object.entries(statistics.domainBreakdown).map(
+                ([domain, stats]) => (
+                  <div
+                    key={domain}
+                    className="border-b border-gray-200 pb-3 last:border-b-0"
+                  >
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-medium text-gray-900">
+                        {domain}
+                      </span>
+                      <span
+                        className={`font-medium ${getScoreColor(stats.accuracy)}`}
+                      >
+                        {Math.round(stats.accuracy)}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span>
+                        {stats.correct} / {stats.total} 問正解
+                      </span>
+                      <div className="w-32 bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-blue-600 h-2 rounded-full"
+                          style={{ width: `${stats.accuracy}%` }}
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                )
+              )}
             </div>
           </div>
         )}
@@ -183,7 +201,11 @@ export default function Result() {
             新しいクイズを開始
           </button>
           <button
-            onClick={() => navigate(`/quiz?mode=${session.mode}&count=${session.targetQuestionCount || 10}`)}
+            onClick={() =>
+              navigate(
+                `/quiz?mode=${session.mode}&count=${session.targetQuestionCount || 10}`
+              )
+            }
             className="bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
           >
             同じ設定で再挑戦

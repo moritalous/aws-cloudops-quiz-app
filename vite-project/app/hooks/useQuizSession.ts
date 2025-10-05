@@ -56,12 +56,12 @@ export function useQuizSession(): UseQuizSessionReturn {
   // セッション状態の更新
   const updateSessionState = useCallback((newSession: SessionData | null) => {
     setSession(newSession);
-    
+
     if (newSession) {
       // 統計情報を更新
       const stats = SessionManager.calculateStatistics(newSession);
       setStatistics(stats);
-      
+
       // 進捗情報を更新
       const prog = SessionManager.getProgress(newSession);
       setProgress(prog);
@@ -80,31 +80,36 @@ export function useQuizSession(): UseQuizSessionReturn {
   }, [updateSessionState]);
 
   // セッション開始
-  const startSession = useCallback((options: UseQuizSessionOptions) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      
-      const newSession = SessionManager.createSession(
-        options.mode,
-        options.targetCount,
-        options.domainFilter
-      );
-      
-      updateSessionState(newSession);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '不明なエラーが発生しました');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [updateSessionState]);
+  const startSession = useCallback(
+    (options: UseQuizSessionOptions) => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const newSession = SessionManager.createSession(
+          options.mode,
+          options.targetCount,
+          options.domainFilter
+        );
+
+        updateSessionState(newSession);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : '不明なエラーが発生しました'
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [updateSessionState]
+  );
 
   // セッション終了
   const endSession = useCallback(() => {
     if (session) {
       // セッション履歴に保存
       SessionManager.saveSessionHistory(session);
-      
+
       // セッションをクリア
       SessionManager.clearSession();
       updateSessionState(null);
@@ -126,53 +131,71 @@ export function useQuizSession(): UseQuizSessionReturn {
   }, [updateSessionState]);
 
   // 回答追加
-  const addAnswer = useCallback((answerData: Omit<Answer, 'answeredAt'>) => {
-    if (!session) return;
+  const addAnswer = useCallback(
+    (answerData: Omit<Answer, 'answeredAt'>) => {
+      if (!session) return;
 
-    try {
-      const answer: Answer = {
-        ...answerData,
-        answeredAt: new Date(),
-      };
+      try {
+        const answer: Answer = {
+          ...answerData,
+          answeredAt: new Date(),
+        };
 
-      const updatedSession = SessionManager.addAnswer(answer);
-      if (updatedSession) {
-        updateSessionState(updatedSession);
+        const updatedSession = SessionManager.addAnswer(answer);
+        if (updatedSession) {
+          updateSessionState(updatedSession);
+        }
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : '回答の保存に失敗しました'
+        );
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '回答の保存に失敗しました');
-    }
-  }, [session, updateSessionState]);
+    },
+    [session, updateSessionState]
+  );
 
   // 現在の問題インデックス更新
-  const updateCurrentQuestion = useCallback((index: number) => {
-    if (!session) return;
+  const updateCurrentQuestion = useCallback(
+    (index: number) => {
+      if (!session) return;
 
-    try {
-      const updatedSession = SessionManager.updateCurrentQuestionIndex(index);
-      if (updatedSession) {
-        updateSessionState(updatedSession);
+      try {
+        const updatedSession = SessionManager.updateCurrentQuestionIndex(index);
+        if (updatedSession) {
+          updateSessionState(updatedSession);
+        }
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : '問題インデックスの更新に失敗しました'
+        );
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '問題インデックスの更新に失敗しました');
-    }
-  }, [session, updateSessionState]);
+    },
+    [session, updateSessionState]
+  );
 
   // 次の問題を取得
-  const getNextQuestion = useCallback((questions: Question[]): Question | null => {
-    if (!session) return null;
+  const getNextQuestion = useCallback(
+    (questions: Question[]): Question | null => {
+      if (!session) return null;
 
-    return QuestionSelector.selectRandomQuestion(
-      questions,
-      session.usedQuestionIds,
-      session.domainFilter ? { domain: session.domainFilter } : undefined
-    );
-  }, [session]);
+      return QuestionSelector.selectRandomQuestion(
+        questions,
+        session.usedQuestionIds,
+        session.domainFilter ? { domain: session.domainFilter } : undefined
+      );
+    },
+    [session]
+  );
 
   // 問題が使用済みかチェック
-  const isQuestionUsed = useCallback((questionId: string): boolean => {
-    return session ? session.usedQuestionIds.includes(questionId) : false;
-  }, [session]);
+  const isQuestionUsed = useCallback(
+    (questionId: string): boolean => {
+      return session ? session.usedQuestionIds.includes(questionId) : false;
+    },
+    [session]
+  );
 
   // セッション時間を取得
   const getSessionDuration = useCallback((): number => {

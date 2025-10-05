@@ -11,7 +11,7 @@ export interface NetworkStatus {
 export class NetworkMonitor {
   private static listeners: ((status: NetworkStatus) => void)[] = [];
   private static currentStatus: NetworkStatus = {
-    isOnline: navigator.onLine
+    isOnline: navigator.onLine,
   };
 
   /**
@@ -25,16 +25,22 @@ export class NetworkMonitor {
     // Network Information API（サポートされている場合）
     if ('connection' in navigator) {
       const connection = (navigator as any).connection;
-      
+
       if (connection) {
-        connection.addEventListener('change', this.handleConnectionChange.bind(this));
+        connection.addEventListener(
+          'change',
+          this.handleConnectionChange.bind(this)
+        );
         this.updateConnectionInfo();
       }
     }
 
     // Service Worker メッセージの監視
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.addEventListener('message', this.handleServiceWorkerMessage.bind(this));
+      navigator.serviceWorker.addEventListener(
+        'message',
+        this.handleServiceWorkerMessage.bind(this)
+      );
     }
 
     // 初期状態を設定
@@ -51,12 +57,18 @@ export class NetworkMonitor {
     if ('connection' in navigator) {
       const connection = (navigator as any).connection;
       if (connection) {
-        connection.removeEventListener('change', this.handleConnectionChange.bind(this));
+        connection.removeEventListener(
+          'change',
+          this.handleConnectionChange.bind(this)
+        );
       }
     }
 
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.removeEventListener('message', this.handleServiceWorkerMessage.bind(this));
+      navigator.serviceWorker.removeEventListener(
+        'message',
+        this.handleServiceWorkerMessage.bind(this)
+      );
     }
   }
 
@@ -93,9 +105,9 @@ export class NetworkMonitor {
       const response = await fetch('/questions.json', {
         method: 'HEAD',
         cache: 'no-cache',
-        signal: AbortSignal.timeout(5000) // 5秒タイムアウト
+        signal: AbortSignal.timeout(5000), // 5秒タイムアウト
       });
-      
+
       return response.ok;
     } catch (error) {
       console.warn('Network connection test failed:', error);
@@ -109,7 +121,7 @@ export class NetworkMonitor {
   private static handleOnline(): void {
     console.log('Network: Online');
     this.updateStatus();
-    
+
     // 接続復旧の通知
     this.notifyListeners();
   }
@@ -120,7 +132,7 @@ export class NetworkMonitor {
   private static handleOffline(): void {
     console.log('Network: Offline');
     this.updateStatus();
-    
+
     // オフライン通知
     ErrorHandler.handleNetworkError(new Error('Network connection lost'));
     this.notifyListeners();
@@ -142,13 +154,14 @@ export class NetworkMonitor {
   private static handleServiceWorkerMessage(event: MessageEvent): void {
     if (event.data && event.data.type === 'OFFLINE_MODE') {
       console.log('Service Worker: Offline mode activated');
-      
+
       // オフラインモード通知
       const event_custom = new CustomEvent('app-error', {
-        detail: { 
-          message: 'オフラインモードで動作しています。キャッシュされた問題で学習を続けることができます。', 
-          type: 'NETWORK_ERROR' 
-        }
+        detail: {
+          message:
+            'オフラインモードで動作しています。キャッシュされた問題で学習を続けることができます。',
+          type: 'NETWORK_ERROR',
+        },
       });
       window.dispatchEvent(event_custom);
     }
@@ -168,7 +181,7 @@ export class NetworkMonitor {
   private static updateConnectionInfo(): void {
     if ('connection' in navigator) {
       const connection = (navigator as any).connection;
-      
+
       if (connection) {
         this.currentStatus.connectionType = connection.type;
         this.currentStatus.effectiveType = connection.effectiveType;
@@ -182,7 +195,7 @@ export class NetworkMonitor {
    * リスナーに通知
    */
   private static notifyListeners(): void {
-    this.listeners.forEach(listener => {
+    this.listeners.forEach((listener) => {
       try {
         listener(this.getCurrentStatus());
       } catch (error) {
@@ -204,7 +217,10 @@ export class NetworkMonitor {
 
     if (effectiveType === '4g' && rtt && rtt < 100) {
       return 'excellent';
-    } else if (effectiveType === '4g' || (effectiveType === '3g' && rtt && rtt < 300)) {
+    } else if (
+      effectiveType === '4g' ||
+      (effectiveType === '3g' && rtt && rtt < 300)
+    ) {
       return 'good';
     } else {
       return 'poor';
@@ -226,26 +242,26 @@ export class NetworkMonitor {
         return {
           enablePrefetch: true,
           cacheStrategy: 'aggressive',
-          maxConcurrentRequests: 6
+          maxConcurrentRequests: 6,
         };
       case 'good':
         return {
           enablePrefetch: true,
           cacheStrategy: 'moderate',
-          maxConcurrentRequests: 4
+          maxConcurrentRequests: 4,
         };
       case 'poor':
         return {
           enablePrefetch: false,
           cacheStrategy: 'minimal',
-          maxConcurrentRequests: 2
+          maxConcurrentRequests: 2,
         };
       case 'offline':
       default:
         return {
           enablePrefetch: false,
           cacheStrategy: 'minimal',
-          maxConcurrentRequests: 1
+          maxConcurrentRequests: 1,
         };
     }
   }

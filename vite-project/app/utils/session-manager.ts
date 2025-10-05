@@ -35,7 +35,7 @@ export class SessionManager {
   static getSession(): SessionData | null {
     try {
       const data = sessionStorage.getItem(this.SESSION_KEY);
-      
+
       if (data) {
         const session = JSON.parse(data);
         // Date オブジェクトを復元
@@ -54,7 +54,7 @@ export class SessionManager {
       // セッションが無効または存在しない場合は復旧を試行
       console.log('Attempting session recovery...');
       const recoveredSession = SessionRecovery.attemptRecovery();
-      
+
       if (recoveredSession) {
         console.log('Session recovered successfully');
         return recoveredSession;
@@ -75,7 +75,7 @@ export class SessionManager {
   static saveSession(session: SessionData): void {
     try {
       sessionStorage.setItem(this.SESSION_KEY, JSON.stringify(session));
-      
+
       // 自動バックアップを作成
       SessionRecovery.createBackup(session);
     } catch (error) {
@@ -135,7 +135,8 @@ export class SessionManager {
     const { answers } = session;
     const correctAnswers = answers.filter((a) => a.isCorrect).length;
     const totalQuestions = answers.length;
-    const accuracy = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
+    const accuracy =
+      totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
 
     // ドメイン別統計を計算（問題データが必要なため、ここでは基本統計のみ）
     const domainBreakdown: {
@@ -153,7 +154,8 @@ export class SessionManager {
         .filter((a) => a.timeSpent)
         .reduce((sum, a) => sum + (a.timeSpent || 0), 0);
       const questionsWithTime = answers.filter((a) => a.timeSpent).length;
-      averageTimePerQuestion = questionsWithTime > 0 ? totalTime / questionsWithTime : undefined;
+      averageTimePerQuestion =
+        questionsWithTime > 0 ? totalTime / questionsWithTime : undefined;
     }
 
     return {
@@ -200,7 +202,9 @@ export class SessionManager {
     Object.keys(domainBreakdown).forEach((domain) => {
       const domainStats = domainBreakdown[domain];
       domainStats.accuracy =
-        domainStats.total > 0 ? (domainStats.correct / domainStats.total) * 100 : 0;
+        domainStats.total > 0
+          ? (domainStats.correct / domainStats.total) * 100
+          : 0;
     });
 
     return {

@@ -13,7 +13,9 @@ export class SimpleDataLoader {
   /**
    * 問題セットデータを読み込む（スキーマ検証なし）
    */
-  async loadQuestionSet(url: string = '/questions.json'): Promise<SimpleLoadResult<QuestionSet>> {
+  async loadQuestionSet(
+    url: string = '/questions.json'
+  ): Promise<SimpleLoadResult<QuestionSet>> {
     try {
       // キャッシュチェック
       if (this.cache.has(url)) {
@@ -26,7 +28,7 @@ export class SimpleDataLoader {
 
       // データ取得
       const response = await this.fetchWithTimeout(url, 10000);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
@@ -47,7 +49,6 @@ export class SimpleDataLoader {
         success: true,
         data: questionSet,
       };
-
     } catch (error) {
       // ErrorHandlerを使用してエラーを処理
       ErrorHandler.handleDataLoadError(error);
@@ -58,10 +59,12 @@ export class SimpleDataLoader {
   /**
    * ドメイン別の問題を読み込む
    */
-  async loadQuestionsByDomain(domain: string): Promise<SimpleLoadResult<Question[]>> {
+  async loadQuestionsByDomain(
+    domain: string
+  ): Promise<SimpleLoadResult<Question[]>> {
     try {
       const questionSetResult = await this.loadQuestionSet();
-      
+
       if (!questionSetResult.success || !questionSetResult.data) {
         return {
           success: false,
@@ -69,24 +72,30 @@ export class SimpleDataLoader {
         };
       }
 
-      const questions = questionSetResult.data.questions.filter(q => q.domain === domain);
-      
+      const questions = questionSetResult.data.questions.filter(
+        (q) => q.domain === domain
+      );
+
       return {
         success: true,
         data: questions,
       };
-
     } catch (error) {
       // ErrorHandlerを使用してエラーを処理
       ErrorHandler.handleDataLoadError(error);
-      return this.handleError(error, `Failed to load questions for domain ${domain}`);
+      return this.handleError(
+        error,
+        `Failed to load questions for domain ${domain}`
+      );
     }
   }
 
   /**
    * データの再読み込み（キャッシュクリア）
    */
-  async reloadQuestionSet(url: string = '/questions.json'): Promise<SimpleLoadResult<QuestionSet>> {
+  async reloadQuestionSet(
+    url: string = '/questions.json'
+  ): Promise<SimpleLoadResult<QuestionSet>> {
     this.cache.delete(url);
     return this.loadQuestionSet(url);
   }
@@ -101,7 +110,10 @@ export class SimpleDataLoader {
   /**
    * タイムアウト付きfetch
    */
-  private async fetchWithTimeout(url: string, timeout: number): Promise<Response> {
+  private async fetchWithTimeout(
+    url: string,
+    timeout: number
+  ): Promise<Response> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -109,7 +121,7 @@ export class SimpleDataLoader {
       const response = await fetch(url, {
         signal: controller.signal,
         headers: {
-          'Accept': 'application/json',
+          Accept: 'application/json',
           'Cache-Control': 'no-cache',
         },
       });
@@ -130,9 +142,12 @@ export class SimpleDataLoader {
   /**
    * エラーハンドリング
    */
-  private handleError(error: unknown, defaultMessage: string): SimpleLoadResult<any> {
+  private handleError(
+    error: unknown,
+    defaultMessage: string
+  ): SimpleLoadResult<any> {
     let errorMessage = defaultMessage;
-    
+
     if (error instanceof Error) {
       errorMessage = error.message;
     } else if (typeof error === 'string') {
@@ -141,13 +156,16 @@ export class SimpleDataLoader {
 
     // ネットワークエラーの詳細分類
     if (errorMessage.includes('Failed to fetch')) {
-      errorMessage = 'ネットワーク接続に失敗しました。インターネット接続を確認してください。';
+      errorMessage =
+        'ネットワーク接続に失敗しました。インターネット接続を確認してください。';
     } else if (errorMessage.includes('timeout')) {
-      errorMessage = 'リクエストがタイムアウトしました。しばらく後にお試しください。';
+      errorMessage =
+        'リクエストがタイムアウトしました。しばらく後にお試しください。';
     } else if (errorMessage.includes('404')) {
       errorMessage = '問題データファイルが見つかりません。';
     } else if (errorMessage.includes('500')) {
-      errorMessage = 'サーバーエラーが発生しました。しばらく後にお試しください。';
+      errorMessage =
+        'サーバーエラーが発生しました。しばらく後にお試しください。';
     }
 
     return {
@@ -161,5 +179,7 @@ export class SimpleDataLoader {
 export const simpleDataLoader = new SimpleDataLoader();
 
 // 便利な関数エクスポート
-export const loadQuestionSet = (url?: string) => simpleDataLoader.loadQuestionSet(url);
-export const loadQuestionsByDomain = (domain: string) => simpleDataLoader.loadQuestionsByDomain(domain);
+export const loadQuestionSet = (url?: string) =>
+  simpleDataLoader.loadQuestionSet(url);
+export const loadQuestionsByDomain = (domain: string) =>
+  simpleDataLoader.loadQuestionsByDomain(domain);

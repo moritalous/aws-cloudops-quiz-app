@@ -32,7 +32,7 @@ export function checkQuestionQuality(question: Question): QualityIssue[] {
       severity: 'warning',
       category: 'content',
       message: 'Question text is too short',
-      suggestion: 'Consider adding more context or detail to the question'
+      suggestion: 'Consider adding more context or detail to the question',
     });
   }
 
@@ -42,7 +42,7 @@ export function checkQuestionQuality(question: Question): QualityIssue[] {
       severity: 'warning',
       category: 'content',
       message: 'Question text is very long',
-      suggestion: 'Consider breaking down into smaller, more focused questions'
+      suggestion: 'Consider breaking down into smaller, more focused questions',
     });
   }
 
@@ -53,7 +53,7 @@ export function checkQuestionQuality(question: Question): QualityIssue[] {
       severity: 'error',
       category: 'format',
       message: 'Too few answer options',
-      suggestion: 'Add more plausible distractors'
+      suggestion: 'Add more plausible distractors',
     });
   }
 
@@ -63,15 +63,16 @@ export function checkQuestionQuality(question: Question): QualityIssue[] {
       severity: 'warning',
       category: 'format',
       message: 'Too many answer options',
-      suggestion: 'Consider reducing to 4-5 options for better usability'
+      suggestion: 'Consider reducing to 4-5 options for better usability',
     });
   }
 
   // 選択肢の長さバランスチェック
-  const optionLengths = question.options.map(opt => opt.length);
-  const avgLength = optionLengths.reduce((a, b) => a + b, 0) / optionLengths.length;
-  const hasImbalancedOptions = optionLengths.some(len => 
-    Math.abs(len - avgLength) > avgLength * 0.5
+  const optionLengths = question.options.map((opt) => opt.length);
+  const avgLength =
+    optionLengths.reduce((a, b) => a + b, 0) / optionLengths.length;
+  const hasImbalancedOptions = optionLengths.some(
+    (len) => Math.abs(len - avgLength) > avgLength * 0.5
   );
 
   if (hasImbalancedOptions) {
@@ -80,7 +81,7 @@ export function checkQuestionQuality(question: Question): QualityIssue[] {
       severity: 'info',
       category: 'format',
       message: 'Answer options have significantly different lengths',
-      suggestion: 'Try to balance the length of answer options'
+      suggestion: 'Try to balance the length of answer options',
     });
   }
 
@@ -91,7 +92,8 @@ export function checkQuestionQuality(question: Question): QualityIssue[] {
       severity: 'warning',
       category: 'content',
       message: 'Explanation is too brief',
-      suggestion: 'Provide more detailed explanation including why other options are incorrect'
+      suggestion:
+        'Provide more detailed explanation including why other options are incorrect',
     });
   }
 
@@ -102,7 +104,7 @@ export function checkQuestionQuality(question: Question): QualityIssue[] {
       severity: 'warning',
       category: 'content',
       message: 'No learning resources provided',
-      suggestion: 'Add relevant AWS documentation links'
+      suggestion: 'Add relevant AWS documentation links',
     });
   }
 
@@ -113,7 +115,7 @@ export function checkQuestionQuality(question: Question): QualityIssue[] {
       severity: 'info',
       category: 'content',
       message: 'No related services specified',
-      suggestion: 'Add relevant AWS services for better categorization'
+      suggestion: 'Add relevant AWS services for better categorization',
     });
   }
 
@@ -124,7 +126,7 @@ export function checkQuestionQuality(question: Question): QualityIssue[] {
       severity: 'info',
       category: 'content',
       message: 'No tags specified',
-      suggestion: 'Add relevant tags for better searchability'
+      suggestion: 'Add relevant tags for better searchability',
     });
   }
 
@@ -135,8 +137,9 @@ export function checkQuestionQuality(question: Question): QualityIssue[] {
         questionId: question.id,
         severity: 'error',
         category: 'consistency',
-        message: 'Multiple choice question should have at least 2 correct answers',
-        suggestion: 'Add more correct answers or change to single choice'
+        message:
+          'Multiple choice question should have at least 2 correct answers',
+        suggestion: 'Add more correct answers or change to single choice',
       });
     }
 
@@ -146,7 +149,7 @@ export function checkQuestionQuality(question: Question): QualityIssue[] {
         severity: 'error',
         category: 'consistency',
         message: 'Too many correct answers for multiple choice question',
-        suggestion: 'Reduce correct answers or add more options'
+        suggestion: 'Reduce correct answers or add more options',
       });
     }
   }
@@ -157,7 +160,9 @@ export function checkQuestionQuality(question: Question): QualityIssue[] {
 /**
  * 問題セット全体の品質をチェックする
  */
-export function checkQuestionSetQuality(questionSet: QuestionSet): QualityReport {
+export function checkQuestionSetQuality(
+  questionSet: QuestionSet
+): QualityReport {
   const allIssues: QualityIssue[] = [];
 
   // 各問題の品質チェック
@@ -169,8 +174,10 @@ export function checkQuestionSetQuality(questionSet: QuestionSet): QualityReport
   // ドメイン分布チェック
   const domainCounts = Object.values(questionSet.domains);
   const totalQuestions = domainCounts.reduce((a, b) => a + b, 0);
-  const minDomainPercentage = Math.min(...domainCounts) / totalQuestions * 100;
-  const maxDomainPercentage = Math.max(...domainCounts) / totalQuestions * 100;
+  const minDomainPercentage =
+    (Math.min(...domainCounts) / totalQuestions) * 100;
+  const maxDomainPercentage =
+    (Math.max(...domainCounts) / totalQuestions) * 100;
 
   if (maxDomainPercentage > 50) {
     allIssues.push({
@@ -178,7 +185,7 @@ export function checkQuestionSetQuality(questionSet: QuestionSet): QualityReport
       severity: 'warning',
       category: 'consistency',
       message: 'One domain dominates the question set',
-      suggestion: 'Balance questions across all exam domains'
+      suggestion: 'Balance questions across all exam domains',
     });
   }
 
@@ -188,7 +195,7 @@ export function checkQuestionSetQuality(questionSet: QuestionSet): QualityReport
       severity: 'warning',
       category: 'consistency',
       message: 'Some domains have very few questions',
-      suggestion: 'Add more questions to underrepresented domains'
+      suggestion: 'Add more questions to underrepresented domains',
     });
   }
 
@@ -196,15 +203,15 @@ export function checkQuestionSetQuality(questionSet: QuestionSet): QualityReport
   const difficultyCount = {
     easy: 0,
     medium: 0,
-    hard: 0
+    hard: 0,
   };
 
   for (const question of questionSet.questions) {
     difficultyCount[question.difficulty]++;
   }
 
-  const easyPercentage = difficultyCount.easy / totalQuestions * 100;
-  const hardPercentage = difficultyCount.hard / totalQuestions * 100;
+  const easyPercentage = (difficultyCount.easy / totalQuestions) * 100;
+  const hardPercentage = (difficultyCount.hard / totalQuestions) * 100;
 
   if (easyPercentage > 60) {
     allIssues.push({
@@ -212,7 +219,8 @@ export function checkQuestionSetQuality(questionSet: QuestionSet): QualityReport
       severity: 'info',
       category: 'consistency',
       message: 'Too many easy questions',
-      suggestion: 'Add more medium and hard questions for better exam preparation'
+      suggestion:
+        'Add more medium and hard questions for better exam preparation',
     });
   }
 
@@ -222,27 +230,29 @@ export function checkQuestionSetQuality(questionSet: QuestionSet): QualityReport
       severity: 'info',
       category: 'consistency',
       message: 'Too few hard questions',
-      suggestion: 'Add more challenging questions to better prepare for the exam'
+      suggestion:
+        'Add more challenging questions to better prepare for the exam',
     });
   }
 
   // 統計計算
   const summary = {
-    errors: allIssues.filter(i => i.severity === 'error').length,
-    warnings: allIssues.filter(i => i.severity === 'warning').length,
-    info: allIssues.filter(i => i.severity === 'info').length
+    errors: allIssues.filter((i) => i.severity === 'error').length,
+    warnings: allIssues.filter((i) => i.severity === 'warning').length,
+    info: allIssues.filter((i) => i.severity === 'info').length,
   };
 
   // スコア計算 (エラーは-10点、警告は-3点、情報は-1点)
   const maxScore = 100;
-  const deductions = summary.errors * 10 + summary.warnings * 3 + summary.info * 1;
+  const deductions =
+    summary.errors * 10 + summary.warnings * 3 + summary.info * 1;
   const overallScore = Math.max(0, maxScore - deductions);
 
   return {
     overallScore,
     totalIssues: allIssues.length,
     issues: allIssues,
-    summary
+    summary,
   };
 }
 
@@ -251,7 +261,7 @@ export function checkQuestionSetQuality(questionSet: QuestionSet): QualityReport
  */
 export function formatQualityReport(report: QualityReport): string {
   const lines: string[] = [];
-  
+
   lines.push(`Quality Report`);
   lines.push(`=============`);
   lines.push(`Overall Score: ${report.overallScore}/100`);
@@ -264,10 +274,14 @@ export function formatQualityReport(report: QualityReport): string {
   if (report.issues.length > 0) {
     lines.push('Issues:');
     lines.push('-------');
-    
+
     for (const issue of report.issues) {
-      const icon = issue.severity === 'error' ? '❌' : 
-                   issue.severity === 'warning' ? '⚠️' : 'ℹ️';
+      const icon =
+        issue.severity === 'error'
+          ? '❌'
+          : issue.severity === 'warning'
+            ? '⚠️'
+            : 'ℹ️';
       lines.push(`${icon} [${issue.questionId}] ${issue.message}`);
       if (issue.suggestion) {
         lines.push(`   💡 ${issue.suggestion}`);

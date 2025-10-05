@@ -30,13 +30,13 @@ export function useErrorHandler() {
   const addToast = useCallback((message: string, type: ErrorTypes) => {
     const id = `toast-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const newToast: Toast = { id, message, type };
-    
-    setToasts(prev => [...prev, newToast]);
+
+    setToasts((prev) => [...prev, newToast]);
   }, []);
 
   // トーストを削除
   const removeToast = useCallback((id: string) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
+    setToasts((prev) => prev.filter((toast) => toast.id !== id));
   }, []);
 
   // 全てのトーストをクリア
@@ -81,36 +81,39 @@ export function useErrorHandler() {
     addToast,
     removeToast,
     clearAllToasts,
-    
+
     // エラーハンドリング関数
     handleNetworkError,
     handleDataLoadError,
     handleSessionError,
     handleValidationError,
     handleComponentError,
-    
+
     // エラーログ関連
     getErrorLogs,
-    clearErrorLogs
+    clearErrorLogs,
   };
 }
 
 // 特定のエラータイプ用のカスタムフック
 export function useNetworkErrorHandler() {
   const { handleNetworkError } = useErrorHandler();
-  
-  const handleFetchError = useCallback(async (fetchPromise: Promise<Response>) => {
-    try {
-      const response = await fetchPromise;
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+
+  const handleFetchError = useCallback(
+    async (fetchPromise: Promise<Response>) => {
+      try {
+        const response = await fetchPromise;
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response;
+      } catch (error) {
+        handleNetworkError(error);
+        throw error;
       }
-      return response;
-    } catch (error) {
-      handleNetworkError(error);
-      throw error;
-    }
-  }, [handleNetworkError]);
+    },
+    [handleNetworkError]
+  );
 
   return { handleFetchError };
 }
@@ -118,21 +121,21 @@ export function useNetworkErrorHandler() {
 // データ読み込み用のカスタムフック
 export function useDataLoader() {
   const { handleDataLoadError } = useErrorHandler();
-  
-  const loadWithErrorHandling = useCallback(async <T>(
-    loader: () => Promise<T>,
-    fallback?: T
-  ): Promise<T> => {
-    try {
-      return await loader();
-    } catch (error) {
-      handleDataLoadError(error);
-      if (fallback !== undefined) {
-        return fallback;
+
+  const loadWithErrorHandling = useCallback(
+    async <T>(loader: () => Promise<T>, fallback?: T): Promise<T> => {
+      try {
+        return await loader();
+      } catch (error) {
+        handleDataLoadError(error);
+        if (fallback !== undefined) {
+          return fallback;
+        }
+        throw error;
       }
-      throw error;
-    }
-  }, [handleDataLoadError]);
+    },
+    [handleDataLoadError]
+  );
 
   return { loadWithErrorHandling };
 }
