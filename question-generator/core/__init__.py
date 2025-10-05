@@ -1,5 +1,6 @@
 # Core modules for Strands Agents integration
 from .agent_factory import AgentFactory, create_bedrock_model, create_mcp_client
+from .database_integration_agent import DatabaseIntegrationAgent
 from .error_handling import (
     QuestionGenerationError,
     BedrockConnectionError,
@@ -13,6 +14,7 @@ __all__ = [
     "AgentFactory",
     "create_bedrock_model",
     "create_mcp_client",
+    "DatabaseIntegrationAgent",
     "QuestionGenerationError",
     "BedrockConnectionError", 
     "MCPConnectionError",

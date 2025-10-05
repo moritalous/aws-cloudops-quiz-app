@@ -400,6 +400,32 @@ ID連続性の確保、メタデータの更新、JSON構造の整合性維持�
         logger.info("Created database integrator agent")
         return agent
     
+    def create_database_integration_agent(self, database_path: str, backup_dir: str = "backups"):
+        """
+        Create a complete Database Integration Agent with full functionality.
+        
+        Args:
+            database_path: Path to the questions.json file
+            backup_dir: Directory for storing backups
+            
+        Returns:
+            DatabaseIntegrationAgent instance
+        """
+        from core.database_integration_agent import DatabaseIntegrationAgent
+        
+        # Create the underlying Strands Agent
+        agent = self.create_database_integrator()
+        
+        # Create the full Database Integration Agent
+        db_integration_agent = DatabaseIntegrationAgent(
+            agent=agent,
+            database_path=database_path,
+            backup_dir=backup_dir
+        )
+        
+        logger.info(f"Created Database Integration Agent for: {database_path}")
+        return db_integration_agent
+    
     def create_overall_quality_checker(self) -> Agent:
         """
         Create an agent specialized for overall quality assessment.
