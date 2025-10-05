@@ -25,10 +25,18 @@ export const links: Route.LinksFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="ja">
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <meta name="description" content="AWS CloudOps Engineer - Associate 認定試験対策アプリ。実践的な問題で効率的に学習できます。" />
+        <meta name="keywords" content="AWS, CloudOps, 試験対策, 認定試験, Associate, 学習アプリ" />
+        <meta name="author" content="AWS CloudOps 試験対策アプリ" />
+        <meta name="theme-color" content="#3b82f6" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="AWS CloudOps 試験対策" />
+        <meta name="format-detection" content="telephone=no" />
         <Meta />
         <Links />
       </head>
