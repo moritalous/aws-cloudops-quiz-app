@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "generatedAt": "2025-01-15T10:00:00Z",
-  "totalQuestions": 10,
+  "totalQuestions": 11,
   "domains": {
     "monitoring": 3,
     "reliability": 3,
@@ -249,6 +249,31 @@
       ],
       "relatedServices": ["VPC", "Route Table", "Subnet"],
       "tags": ["networking", "vpc", "routing"]
+    },
+    {
+      "id": "q011",
+      "domain": "security",
+      "difficulty": "medium",
+      "type": "multiple",
+      "question": "AWS IAMでセキュリティを強化するために推奨されるベストプラクティスはどれですか？（複数選択）",
+      "options": [
+        "A. 最小権限の原則を適用する",
+        "B. ルートアカウントを日常的に使用する",
+        "C. 多要素認証（MFA）を有効にする",
+        "D. アクセスキーを定期的にローテーションする",
+        "E. すべてのユーザーに管理者権限を付与する"
+      ],
+      "correctAnswer": ["A", "C", "D"],
+      "explanation": "IAMのセキュリティベストプラクティスには、最小権限の原則の適用、MFAの有効化、アクセスキーの定期的なローテーションが含まれます。ルートアカウントの日常使用や全ユーザーへの管理者権限付与は避けるべきです。",
+      "learningResources": [
+        {
+          "title": "IAM Best Practices",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html",
+          "type": "documentation"
+        }
+      ],
+      "relatedServices": ["IAM", "MFA", "STS"],
+      "tags": ["security", "iam", "best-practices"]
     }
   ]
 }

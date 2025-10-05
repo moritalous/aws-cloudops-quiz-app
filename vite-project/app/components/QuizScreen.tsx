@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import type { Question, QuizConfig, SessionData } from '~/types';
+import type { Question, QuizConfig, SessionData, Answer } from '~/types';
+import { QuestionDisplay } from './QuestionDisplay';
+import { ResultDisplay } from './ResultDisplay';
 
 interface QuizScreenProps {
   questions: Question[];
@@ -9,6 +11,8 @@ interface QuizScreenProps {
 
 export function QuizScreen({ questions, config, onComplete }: QuizScreenProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | string[]>('');
+  const [showResult, setShowResult] = useState(false);
   const [sessionData, setSessionData] = useState<SessionData>({
     sessionId: `session_${Date.now()}`,
     startedAt: new Date(),
@@ -20,9 +24,76 @@ export function QuizScreen({ questions, config, onComplete }: QuizScreenProps) {
   });
 
   const currentQuestion = questions[currentQuestionIndex];
+
+  // Reset selected answer when question changes
+  useEffect(() => {
+    if (currentQuestion) {
+      setSelectedAnswer(currentQuestion.type === 'multiple' ? [] : '');
+    }
+  }, [currentQuestionIndex, currentQuestion]);
   const progress = config.mode === 'set' 
     ? ((currentQuestionIndex + 1) / config.questionCount) * 100
     : 0;
+
+  const handleSubmitAnswer = () => {
+    if (!currentQuestion) return;
+
+    const correctAnswer = currentQuestion.correctAnswer;
+    let isCorrect = false;
+
+    // Check if answer is correct
+    if (currentQuestion.type === 'single') {
+      isCorrect = selectedAnswer === correctAnswer;
+    } else {
+      // For multiple choice, compare arrays
+      const userAnswers = Array.isArray(selectedAnswer) ? selectedAnswer.sort() : [selectedAnswer].sort();
+      const correctAnswers = Array.isArray(correctAnswer) ? correctAnswer.sort() : [correctAnswer].sort();
+      isCorrect = JSON.stringify(userAnswers) === JSON.stringify(correctAnswers);
+    }
+
+    const newAnswer: Answer = {
+      questionId: currentQuestion.id,
+      userAnswer: selectedAnswer,
+      correctAnswer: correctAnswer,
+      isCorrect,
+      answeredAt: new Date()
+    };
+
+    const updatedSessionData = {
+      ...sessionData,
+      answers: [...sessionData.answers, newAnswer],
+      usedQuestionIds: [...sessionData.usedQuestionIds, currentQuestion.id],
+      currentQuestionIndex: currentQuestionIndex
+    };
+
+    setSessionData(updatedSessionData);
+    setShowResult(true);
+  };
+
+  const handleNextQuestion = () => {
+    const nextIndex = currentQuestionIndex + 1;
+    
+    // Check if quiz is complete
+    if (config.mode === 'set' && nextIndex >= config.questionCount) {
+      onComplete(sessionData);
+      return;
+    }
+    
+    if (nextIndex >= questions.length) {
+      onComplete(sessionData);
+      return;
+    }
+
+    // Move to next question
+    setCurrentQuestionIndex(nextIndex);
+    const nextQuestion = questions[nextIndex];
+    setSelectedAnswer(nextQuestion?.type === 'multiple' ? [] : '');
+    setShowResult(false);
+  };
+
+  const getCurrentAnswer = (): Answer | undefined => {
+    return sessionData.answers[sessionData.answers.length - 1];
+  };
 
   if (!currentQuestion) {
     return (
@@ -62,50 +133,37 @@ export function QuizScreen({ questions, config, onComplete }: QuizScreenProps) {
           </div>
         )}
 
-        {/* 問題表示エリア */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="mb-4">
-            <div className="flex gap-2 mb-4">
-              <span className="inline-block bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                {currentQuestion.domain}
+        {/* エンドレスモード用の問題カウンター */}
+        {config.mode === 'endless' && (
+          <div className="mb-6">
+            <div className="text-center">
+              <span className="text-lg font-medium text-gray-700">
+                問題 {currentQuestionIndex + 1}
               </span>
-              <span className="inline-block bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                {currentQuestion.difficulty}
+              <span className="text-sm text-gray-500 ml-2">
+                (エンドレスモード)
               </span>
             </div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">
-              {currentQuestion.question}
-            </h2>
           </div>
+        )}
 
-          {/* 選択肢 */}
-          <div className="space-y-3 mb-6">
-            {currentQuestion.options.map((option, index) => (
-              <label
-                key={index}
-                className="flex items-start p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
-              >
-                <input
-                  type="radio"
-                  name="answer"
-                  value={option.charAt(0)}
-                  className="mt-1 mr-3"
-                />
-                <span className="text-gray-900">{option}</span>
-              </label>
-            ))}
-          </div>
+        {/* 問題表示 */}
+        <QuestionDisplay
+          question={currentQuestion}
+          selectedAnswer={selectedAnswer}
+          onAnswerSelect={setSelectedAnswer}
+          onSubmit={handleSubmitAnswer}
+          showResult={showResult}
+        />
 
-          {/* アクションボタン */}
-          <div className="flex justify-between">
-            <button className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">
-              スキップ
-            </button>
-            <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-              回答する
-            </button>
-          </div>
-        </div>
+        {/* 結果表示 */}
+        {showResult && getCurrentAnswer() && (
+          <ResultDisplay
+            question={currentQuestion}
+            answer={getCurrentAnswer()!}
+            onNext={handleNextQuestion}
+          />
+        )}
       </div>
     </div>
   );
