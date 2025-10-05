@@ -70,10 +70,16 @@
 
 #### 受入基準
 
-1. 問題が生成された時、コンテンツはaws-docsツールを通じてアクセスされる公式AWSドキュメントに基づくものとする
-2. AWSサービスが参照された時、情報はAWSドキュメントに従って現在かつ正確であるものとする
-3. 技術的詳細が含まれた時、公式AWSサービスドキュメントに対して検証されるものとする
+1. 問題が生成された時、コンテンツはAWS Knowledge MCP Server（https://knowledge-mcp.global.api.aws）を通じてアクセスされる公式AWSドキュメントに基づくものとする
+2. AWSサービスが参照された時、情報はAWSドキュメント、API参照、What's New投稿、Builder Center、ブログ投稿、アーキテクチャ参照、Well-Architectedガイダンスに従って現在かつ正確であるものとする
+3. 技術的詳細が含まれた時、AWS Knowledge MCP Serverの以下のツールを使用して検証されるものとする：
+   - `search_documentation`: 全AWSドキュメントの検索
+   - `read_documentation`: AWSドキュメントページの取得とマークダウン変換
+   - `recommend`: AWSドキュメントページのコンテンツ推奨
+   - `list_regions`: AWS全リージョンの取得（実験的）
+   - `get_regional_availability`: AWSリージョン別可用性情報の取得（実験的）
 4. ベストプラクティスが言及された時、AWS Well-Architectedフレームワークの原則と一致するものとする
+5. MCP統合が設定された時、fastmcpユーティリティを使用してHTTPからstdioへのプロキシ機能を提供するものとする
 
 ### 要件7
 

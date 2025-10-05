@@ -171,49 +171,119 @@ def analyze_exam_guide_with_structured_output(guide_path: str) -> ExamGuideAnaly
     )
 ```
 
-### 3. AWS ドキュメント取得コンポーネント（MCP統合）
+### 3. AWS Knowledge MCP Server統合コンポーネント
 
-**責任**: aws-docs MCP Serverを使用して関連するAWSサービスドキュメントを取得
+**責任**: AWS Knowledge MCP Server（https://knowledge-mcp.global.api.aws）を使用して包括的なAWS知識を取得
 
 **主要機能**:
-- MCP経由でのサービス別ドキュメント検索
-- ベストプラクティス情報の抽出
-- 技術仕様の収集
-- 設定例の取得
+- リアルタイムでのAWSドキュメント、API参照、アーキテクチャガイダンスへのアクセス
+- 最新のAWSサービスと機能に関する情報取得
+- ベストプラクティス、Getting Started情報、Builder Center、ブログ投稿の収集
+- Well-Architectedガイダンスの参照
+- AWSリージョン別可用性情報の取得
+
+**利用可能なMCPツール**:
+1. `search_documentation`: 全AWSドキュメントの横断検索
+2. `read_documentation`: AWSドキュメントページの取得とマークダウン変換
+3. `recommend`: AWSドキュメントページのコンテンツ推奨取得
+4. `list_regions`: 全AWSリージョンのリスト取得（実験的）
+5. `get_regional_availability`: SDK APIとCloudFormationリソースのリージョン別可用性取得（実験的）
+
+**MCP統合設定**:
+```json
+{
+  "mcpServers": {
+    "aws-knowledge-mcp-server": {
+      "command": "uvx",
+      "args": ["fastmcp", "run", "https://knowledge-mcp.global.api.aws"]
+    }
+  }
+}
+```
 
 **MCP統合例**:
 ```python
-# aws-docs MCPツールの使用
-with aws_docs_mcp_client:
-    tools = aws_docs_mcp_client.list_tools_sync()
+# AWS Knowledge MCP Serverとの統合
+from mcp import stdio_client, StdioServerParameters
+
+# fastmcpを使用したHTTP-to-stdioプロキシ設定
+aws_knowledge_mcp_client = MCPClient(lambda: stdio_client(
+    StdioServerParameters(
+        command="uvx",
+        args=["fastmcp", "run", "https://knowledge-mcp.global.api.aws"]
+    )
+))
+
+# AWS Knowledge MCPツールの使用
+with aws_knowledge_mcp_client:
+    tools = aws_knowledge_mcp_client.list_tools_sync()
     
     # ドキュメント検索Agent
     doc_agent = Agent(
         model=bedrock_model,
         tools=tools,
         system_prompt="""
-        あなたはAWSドキュメント検索の専門家です。
-        指定されたAWSサービスに関する最新の技術情報、
-        ベストプラクティス、設定例を収集してください。
+        あなたはAWS知識検索の専門家です。
+        AWS Knowledge MCP Serverを使用して、指定されたAWSサービスに関する
+        最新の技術情報、ベストプラクティス、アーキテクチャガイダンス、
+        リージョン別可用性情報を収集してください。
+        
+        利用可能なツール：
+        - search_documentation: 包括的なAWS知識検索
+        - read_documentation: 詳細ドキュメントの取得
+        - recommend: 関連コンテンツの推奨
+        - list_regions: リージョン情報の取得
+        - get_regional_availability: サービス可用性の確認
         """
     )
 ```
 
+**知識ソース**:
+- 最新のAWSドキュメント
+- API参照
+- What's New投稿
+- Getting Started情報
+- Builder Center
+- ブログ投稿
+- アーキテクチャ参照
+- Well-Architectedガイダンス
+
 **インターフェース**:
 ```typescript
-interface DocumentationRetriever {
-  searchService(serviceName: string): Promise<ServiceDocumentation>;
-  getBestPractices(serviceName: string): Promise<BestPractice[]>;
-  getConfigurationExamples(serviceName: string): Promise<ConfigExample[]>;
+interface AWSKnowledgeRetriever {
+  searchDocumentation(query: string): Promise<SearchResult[]>;
+  readDocumentation(url: string): Promise<DocumentContent>;
+  getRecommendations(url: string): Promise<Recommendation[]>;
+  listRegions(): Promise<Region[]>;
+  getRegionalAvailability(service: string, resource?: string): Promise<RegionalAvailability[]>;
 }
 
-interface ServiceDocumentation {
-  serviceName: string;
+interface SearchResult {
+  title: string;
+  url: string;
+  snippet: string;
+  type: 'documentation' | 'api-reference' | 'blog' | 'whitepaper' | 'best-practice';
+}
+
+interface DocumentContent {
+  title: string;
+  content: string; // Markdown format
+  lastUpdated: string;
+  relatedLinks: string[];
+}
+
+interface Recommendation {
+  title: string;
+  url: string;
   description: string;
-  keyFeatures: string[];
-  useCases: string[];
-  limitations: string[];
-  relatedServices: string[];
+  category: 'highly-rated' | 'new' | 'similar' | 'journey';
+}
+
+interface RegionalAvailability {
+  region: string;
+  available: boolean;
+  serviceType: 'sdk-api' | 'cloudformation-resource';
+  limitations?: string[];
 }
 ```
 

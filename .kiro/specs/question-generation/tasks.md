@@ -1,14 +1,30 @@
 # 実装計画
 
 **重要な実装方針**: 
-このプロジェクトは最先端のAI技術（Strands Agents、Amazon Bedrock OpenAI、MCP）を活用します。実装時は既存知識に頼らず、以下のツールを積極的に活用して最新情報を取得してください：
+このプロジェクトは最先端のAI技術（Strands Agents、Amazon Bedrock OpenAI、AWS Knowledge MCP Server）を活用します。実装時は既存知識に頼らず、以下のツールを積極的に活用して最新情報を取得してください：
 - `mcp_strands_agents_*` ツール: Strands Agentsの最新ドキュメント参照
 - `mcp_aws_docs_*` ツール: AWS Bedrockの最新仕様確認
 - `mcp_web_search_*` ツール: 最新の技術情報とベストプラクティス調査
 - `mcp_fetch_*` ツール: 公式ドキュメントの詳細確認
 
-- [ ] 1. Strands Agents基盤とPydanticモデルの実装
-- [ ] 1.1 Pydanticデータモデルの定義
+**AWS Knowledge MCP Server**: 
+このプロジェクトでは、AWS Knowledge MCP Server（https://knowledge-mcp.global.api.aws）を使用してリアルタイムでAWSドキュメント、API参照、アーキテクチャガイダンスにアクセスします。fastmcpユーティリティを使用してHTTP-to-stdioプロキシを設定し、以下のツールを活用します：
+- `search_documentation`: 全AWSドキュメントの横断検索
+- `read_documentation`: AWSドキュメントページの取得とマークダウン変換  
+- `recommend`: AWSドキュメントページのコンテンツ推奨
+- `list_regions`: AWS全リージョンの取得（実験的）
+- `get_regional_availability`: AWSリージョン別可用性情報の取得（実験的）
+
+- [x] 1. Strands Agents基盤とPydanticモデルの実装
+
+
+
+
+
+
+- [x] 1.1 Pydanticデータモデルの定義
+
+
   - 試験ガイド分析用のPydanticモデル（ExamGuideAnalysis, DomainAnalysis, Task, Skill）を作成
   - 問題生成用のPydanticモデル（Question, QuestionBatch, LearningResource）を作成
   - 品質検証用のPydanticモデル（QuestionValidation, BatchValidation）を作成
@@ -16,11 +32,16 @@
   - データベース統合用のPydanticモデル（QuestionDatabase, IntegrationResult）を作成
   - _要件: 1.1, 1.2, 1.3, 1.4, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6_
 
-- [ ] 1.2 Strands Agents基盤設定の実装
+- [x] 1.2 Strands Agents基盤設定の実装
+
+
+
+
   - **最新技術調査**: mcp_strands_agents_*ツールでStrands Agentsの最新ドキュメントを確認
   - **AWS Bedrock調査**: mcp_aws_docs_*ツールでBedrock OpenAIモデルの最新仕様を調査
   - Amazon Bedrock OpenAIモデル（gpt-oss-120b）の設定機能を作成
-  - aws-docs MCP Serverとの統合設定を実装
+  - AWS Knowledge MCP Server（https://knowledge-mcp.global.api.aws）との統合設定を実装
+  - fastmcpユーティリティを使用したHTTP-to-stdioプロキシ設定を実装
   - Agent設定の管理機能（システムプロンプト、温度設定等）を作成
   - エラーハンドリングとリトライ機能を実装
   - _要件: 6.1, 6.2, 6.3, 6.4_
@@ -59,21 +80,27 @@
   - 状態管理機能のテストを作成
   - _要件: 1.1, 1.2, 1.3, 1.4_
 
-- [ ] 4. AWS ドキュメント検索Agentの実装
-- [ ] 4.1 aws-docs MCP統合Agentの作成
+- [ ] 4. AWS Knowledge MCP Server統合Agentの実装
+- [ ] 4.1 AWS Knowledge MCP統合Agentの作成
   - **MCP統合調査**: mcp_strands_agents_*ツールでMCPツール統合の最新方法を確認
-  - **aws-docs MCP調査**: 実際のaws-docs MCPサーバーの機能と使用方法を調査
-  - MCP経由でのAWSサービスドキュメント検索機能を実装
-  - 構造化出力を使用したドキュメント情報抽出機能を作成
-  - ベストプラクティスと技術仕様の自動収集機能を実装
+  - **AWS Knowledge MCP調査**: AWS Knowledge MCP Server（https://knowledge-mcp.global.api.aws）の機能と使用方法を調査
+  - fastmcpユーティリティを使用したHTTP-to-stdioプロキシ設定を実装
+  - MCP経由でのAWS包括的知識検索機能（search_documentation）を実装
+  - AWSドキュメントページの取得と変換機能（read_documentation）を実装
+  - コンテンツ推奨機能（recommend）を実装
+  - リージョン情報取得機能（list_regions, get_regional_availability）を実装
+  - 構造化出力を使用したAWS知識情報抽出機能を作成
+  - ベストプラクティス、アーキテクチャガイダンス、Well-Architectedガイダンスの自動収集機能を実装
   - 学習リソースの自動検証機能を作成
-  - _要件: 5.2, 5.3, 5.5, 6.1, 6.2, 6.3_
+  - _要件: 5.2, 5.3, 5.5, 6.1, 6.2, 6.3, 6.4, 6.5_
 
-- [ ]* 4.2 ドキュメント検索のテスト
-  - MCP統合の動作確認テストを作成
+- [ ]* 4.2 AWS Knowledge MCP統合のテスト
+  - AWS Knowledge MCP Server統合の動作確認テストを作成
+  - fastmcpプロキシ機能のテストを実装
+  - 各MCPツール（search_documentation, read_documentation, recommend, list_regions, get_regional_availability）の動作テストを作成
   - ドキュメント抽出精度のテストを実装
   - エラーハンドリングとリトライのテストを作成
-  - _要件: 6.1, 6.2, 6.3_
+  - _要件: 6.1, 6.2, 6.3, 6.4, 6.5_
 
 - [ ] 5. AI問題生成Agentの実装
 - [ ] 5.1 問題生成Agentの作成
