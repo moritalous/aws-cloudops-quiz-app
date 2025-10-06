@@ -3,7 +3,7 @@
 AWS CloudOps試験問題生成ツール
 
 AWS Document MCPサーバーとStrands Agentsを使用して、
-一度に10問の高品質な試験問題を生成するシンプルなコマンドラインツール。
+一度に20問の高品質な試験問題を生成するシンプルなコマンドラインツール。
 """
 
 import json
@@ -20,46 +20,44 @@ from strands.models import BedrockModel
 from botocore.config import Config
 
 
-# Pydanticモデル定義
-class Choice(BaseModel):
-    id: str
-    text: str
-    is_correct: bool
+# Pydanticモデル定義（vite-projectフォーマット対応）
+class LearningResource(BaseModel):
+    title: str
+    url: str
+    type: str = "documentation"
 
 
 class Question(BaseModel):
-    id: str  # 形式: "q{YYYYMMDD}_{HHMMSS}_{001-010}"
-    question_text: str
-    choices: List[Choice]
-    question_type: str  # "single_choice" or "multiple_choice"
-    correct_answers: List[str]
-    explanation: str
-    learning_resources: List[str]
-    domain: str  # 5つのドメインのいずれか
+    id: str  # 形式: "q{YYYYMMDD}_{HHMMSS}_{001-020}"
+    domain: str  # "monitoring", "reliability", "deployment", "security", "networking"
     difficulty: str  # "easy", "medium", "hard"
-    aws_services: List[str]
+    type: str  # "single" or "multiple"
+    question: str
+    options: List[str]  # ["A. 選択肢1", "B. 選択肢2", ...]
+    correctAnswer: str  # "A" or "A,B" (複数選択の場合)
+    explanation: str
+    learningResources: List[LearningResource]
+    relatedServices: List[str]
+    tags: List[str]
 
 
 class QuestionSet(BaseModel):
+    version: str = "1.0.0"
+    generatedAt: str = Field(description="問題生成日時 (ISO 8601形式)")
+    totalQuestions: int = Field(default=20, description="生成された問題の総数")
+    domains: Dict[str, int] = Field(description="ドメイン配分情報 (ドメイン名: 問題数)")
     questions: List[Question]
-    generation_timestamp: str = Field(description="問題生成日時 (ISO 8601形式)")
-    total_questions: int = Field(default=10, description="生成された問題の総数")
-    domains: Dict[str, Any] = Field(description="ドメイン配分情報 (ドメイン名: 問題数)")
-    difficulty_distribution: Dict[str, int] = Field(description="難易度配分情報 (難易度: 問題数)")
-    mcp_server_info: Dict[str, str] = Field(default={}, description="使用したAWS Document MCPサーバーの情報")
-    strands_agent_config: Dict[str, str] = Field(default={}, description="使用したStrands Agentsの設定情報")
 
 
 def generate_question_id(timestamp: str, question_number: int) -> str:
     """
     タイムスタンプベースの一意のID生成
-    要件15.1, 15.2, 15.3, 15.4に従う
+    形式: "q{YYYYMMDD}_{HHMMSS}_{001-020}"
     """
     try:
-        # 要件15.2: ID形式 "q{YYYYMMDD}_{HHMMSS}_{001-010}"
         return f"q{timestamp}_{question_number:03d}"
     except Exception:
-        # 要件15.4: エラー時はUUIDベースの代替ID生成
+        # エラー時はUUIDベースの代替ID生成
         return f"q_uuid_{str(uuid.uuid4())[:8]}_{question_number:03d}"
 
 
@@ -68,7 +66,7 @@ def create_natural_language_prompt() -> str:
     自然言語での問題生成用プロンプトを作成
     タスク5: AWS CloudOps試験ガイドの内容を直接含めて問題を生成
     """
-    return """AWS CloudOps Engineer Associate試験の問題を5問、日本語で生成してください。
+    return """AWS CloudOps Engineer Associate試験の問題を20問、日本語で生成してください。
 
 【AWS CloudOps Engineer Associate試験ガイド】
 以下は公式試験ガイドの内容です：
@@ -120,12 +118,13 @@ def create_natural_language_prompt() -> str:
 選択肢D: [選択肢4]
 正解: [A/B/C/D または複数選択の場合はA,C等]
 解説: [詳細な解説とAWSベストプラクティスに基づく説明]
-学習リソース: [関連するAWS公式ドキュメントURL]
-ドメイン: [該当するContent Domain]
+学習リソース: [関連するAWS公式ドキュメントのタイトルとURL]
+ドメイン: [monitoring/reliability/deployment/security/networking]
 難易度: [easy/medium/hard]
 関連AWSサービス: [関連するAWSサービス名]
+タグ: [問題に関連するキーワード]
 
-（問題2〜5も同様の形式で）
+（問題2〜20も同様の形式で）
 
 上記の試験ガイドに基づいて、技術的に正確で実践的な問題を生成してください。"""
 
@@ -134,7 +133,7 @@ def create_prompt() -> str:
     """
     問題生成用の詳細なプロンプトを作成
     """
-    return """AWS CloudOps試験の問題を10問、日本語で生成してください。
+    return """AWS CloudOps試験の問題を20問、日本語で生成してください。
 
 【重要指示】問題生成前に必ず以下の手順を実行してください：
 1. AWS Document MCPサーバーのsearch_documentation機能を使用して「AWS CloudOps」「CloudOps Engineer Associate」で検索し、試験ガイドの最新情報を取得
@@ -209,13 +208,13 @@ def main():
         )
         
         bedrock_model = BedrockModel(
-            model_id="global.anthropic.claude-sonnet-4-5-20250929-v1:0",
-            # openai.gpt-oss-120b-1:0 
+            model_id="global.anthropic.claude-sonnet-4-5-20250929-v1:0",  # GPT-OSS: "openai.gpt-oss-120b-1:0"
             region_name="ap-northeast-1",  # 東京リージョン
             boto_client_config=bedrock_config  # 正しいパラメータ名に修正
         )
         print("✅ BedrockModel初期化完了 (Claude Sonnet 4.5, クロスリージョン推論)")
         print("🔧 タイムアウト設定: read_timeout=900秒, connect_timeout=60秒, max_retries=3")
+        
         
         # MCP接続設定 (要件11.1, 11.2, 11.3)
         print("🔗 AWS Document MCPサーバーに接続中...")
@@ -262,19 +261,22 @@ def main():
         print("✅ 構造化出力用Agent初期化完了 (ターミナル出力無効化、tools不使用)")
             
         structure_prompt = f"""
-以下の生成された問題内容を、指定されたJSON形式に構造化してください：
+以下の生成された問題内容を、vite-project用のJSON形式に構造化してください：
 
 {natural_result}
 
 各問題について以下の形式で整理してください：
-- 問題文
-- 選択肢（4つ）
-- 正解
-- 解説
-- 学習リソース
-- ドメイン
-- 難易度
-- 関連AWSサービス
+- id: タイムスタンプベースのID（後で自動設定されます）
+- domain: "monitoring", "reliability", "deployment", "security", "networking"のいずれか
+- difficulty: "easy", "medium", "hard"
+- type: "single" (単一選択) または "multiple" (複数選択)
+- question: 問題文
+- options: ["A. 選択肢1", "B. 選択肢2", "C. 選択肢3", "D. 選択肢4"]
+- correctAnswer: "A" または "A,B" (複数選択の場合)
+- explanation: 詳細な解説
+- learningResources: [{{title: "タイトル", url: "URL", type: "documentation"}}]
+- relatedServices: ["EC2", "CloudWatch"等のサービス名]
+- tags: ["monitoring", "alarms"等のキーワード]
 """
         
         # 構造化出力（toolsを使わないシンプルなAgent使用）
@@ -286,23 +288,13 @@ def main():
         timestamp = now.strftime("%Y%m%d_%H%M%S")
         iso_timestamp = now.isoformat()
         
-        # 各問題に一意のIDを付与 (要件15.1, 15.2, 15.3)
+        # 各問題に一意のIDを付与（タイムスタンプベース）
         for i, question in enumerate(result.questions, 1):
             question.id = generate_question_id(timestamp, i)
         
-        # メタデータ情報を設定 (要件17.1, 17.2, 17.3, 17.4)
-        result.generation_timestamp = iso_timestamp
-        result.mcp_server_info = {
-            "server_name": "awslabs.aws-documentation-mcp-server",
-            "version": "latest",
-            "partition": "aws"
-        }
-        result.strands_agent_config = {
-            "model_id": "global.anthropic.claude-sonnet-4-5-20250929-v1:0",
-            # openai.gpt-oss-120b-1:0 
-            "region": "ap-northeast-1",
-            "tools_count": "0"  # 構造化出力ではtools不使用
-        }
+        # メタデータ情報を設定（vite-project形式）
+        result.generatedAt = iso_timestamp
+        result.totalQuestions = len(result.questions)
         
         # ファイル名: questions_{YYYYMMDD}_{HHMMSS}.json
         filename = f"questions_{timestamp}.json"
@@ -311,24 +303,24 @@ def main():
         with open(filename, "w", encoding="utf-8") as f:
             json.dump(result.model_dump(), f, indent=2, ensure_ascii=False)
         
-        print(f"✅ 生成完了: {filename} (5問)")
+        print(f"✅ 生成完了: {filename} (20問)")
         print(f"📊 ドメイン配分: {result.domains}")
-        print(f"📈 難易度配分: {result.difficulty_distribution}")
         
-        # 生成された問題の品質確認ログ (要件18.4)
+        # 生成された問題の品質確認ログ
         print("\n📋 生成された問題の概要:")
         for i, question in enumerate(result.questions, 1):
-            print(f"  {i:2d}. [{question.domain}] [{question.difficulty}] {question.question_type}")
+            print(f"  {i:2d}. [{question.domain}] [{question.difficulty}] {question.type}")
             print(f"      ID: {question.id}")
-            print(f"      AWSサービス: {', '.join(question.aws_services[:3])}{'...' if len(question.aws_services) > 3 else ''}")
-            print(f"      学習リソース: {len(question.learning_resources)}個のリソース")
+            print(f"      関連サービス: {', '.join(question.relatedServices[:3])}{'...' if len(question.relatedServices) > 3 else ''}")
+            print(f"      学習リソース: {len(question.learningResources)}個のリソース")
         
         print(f"\n🎯 品質メトリクス:")
-        print(f"   - 総問題数: {len(result.questions)}")
+        print(f"   - 総問題数: {result.totalQuestions}")
         print(f"   - ドメインカバレッジ: {len(result.domains)}個のドメイン")
-        print(f"   - 難易度バランス: {len(result.difficulty_distribution)}レベル")
-        print(f"   - 生成時刻: {result.generation_timestamp}")
+        print(f"   - 生成時刻: {result.generatedAt}")
         print(f"   - 出力ファイル: {filename}")
+        print(f"\n💡 vite-projectで使用するには:")
+        print(f"   cp {filename} ../vite-project/public/questions.json")
             
     except Exception as e:
         error_msg = str(e).lower()
