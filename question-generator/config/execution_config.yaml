@@ -163,8 +163,8 @@ agents:
   exam_analyzer:
     enabled: true
     temperature: 0.3                # Lower temperature for analysis
-    max_tokens: 3000
-    timeout_seconds: 180
+    max_tokens: 16000
+    timeout_seconds: 300
     retry_attempts: 3
     custom_system_prompt: null
     model_overrides: {}

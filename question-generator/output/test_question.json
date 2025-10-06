@@ -1,0 +1,37 @@
+{
+  "id": "q012",
+  "domain": "monitoring",
+  "difficulty": "medium",
+  "type": "single",
+  "question": "あるEコマースサイトを運営する企業で、CloudWatch Alarmsを使用してEC2インスタンスの監視を行っています。システム管理者は、CPU使用率が90%を超えた場合に即座に通知を受け取りたいと考えています。また、アラートの誤検知を減らすため、一時的なCPUスパイクではなく、持続的な高負荷状態のみを検出したいと考えています。この要件を満たすために最適なCloudWatchアラーム設定はどれですか？",
+  "options": [
+    "A. 評価期間を5分、データポイントを3回に設定し、3回連続でCPU使用率が90%を超えた場合にアラームを発生させる",
+    "B. 評価期間を1分、データポイントを1回に設定し、CPU使用率が90%を超えた時点で即座にアラームを発生させる",
+    "C. 評価期間を1時間、データポイントを1回に設定し、1時間の平均CPU使用率が90%を超えた場合にアラームを発生させる",
+    "D. 評価期間を5分、データポイントを1回に設定し、5分間の最大CPU使用率が90%を超えた場合にアラームを発生させる"
+  ],
+  "correctAnswer": "A",
+  "explanation": "この問題の最適な解答はAです。以下が理由です：\n\n1. アラートの即時性と信頼性のバランス：\n- 5分間の評価期間は、システムの状態を適切にモニタリングするのに十分な頻度です\n- 3回連続でのチェックにより、一時的なCPUスパイクによる誤検知を防ぐことができます\n\n2. 他の選択肢の問題点：\n- 選択肢B: 一時的なCPUスパイクでも通知が発生し、誤検知が多くなる可能性があります\n- 選択肢C: 1時間は長すぎる評価期間であり、重要な問題の検出が遅れる可能性があります\n- 選択肢D: 1回のデータポイントでは信頼性が低く、誤検知の可能性が高くなります\n\n3. ベストプラクティス：\n- CloudWatchアラームでは、複数のデータポイントを使用して評価することが推奨されています\n- 評価期間と必要なデータポイント数のバランスを取ることで、信頼性の高いアラートを実現できます",
+  "learningResources": [
+    {
+      "title": "Amazon CloudWatch アラームの使用",
+      "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html",
+      "type": "documentation"
+    },
+    {
+      "title": "CloudWatch アラームのベストプラクティス",
+      "url": "https://aws.amazon.com/jp/blogs/mt/best-practices-for-amazon-cloudwatch-alerting-and-dashboards/",
+      "type": "blog"
+    }
+  ],
+  "relatedServices": [
+    "CloudWatch",
+    "EC2"
+  ],
+  "tags": [
+    "monitoring",
+    "cloudwatch",
+    "alarms",
+    "cpu-utilization"
+  ]
+}

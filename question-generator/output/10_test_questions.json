@@ -1,0 +1,442 @@
+{
+  "version": "1.1.0",
+  "generatedAt": "2025-10-06T07:04:35.908195Z",
+  "totalQuestions": 10,
+  "domains": {
+    "monitoring": 3,
+    "reliability": 2,
+    "deployment": 2,
+    "security": 2,
+    "networking": 1
+  },
+  "questions": [
+    {
+      "id": "q012",
+      "domain": "monitoring",
+      "difficulty": "easy",
+      "type": "single",
+      "question": "あるECインスタンスのCPU使用率を監視するために、CloudWatchメトリクスを設定しています。CPU使用率が90%を超えた場合に通知を受け取りたい場合、最も適切な設定方法は次のうちどれですか？",
+      "options": [
+        "A. CloudWatch アラームを作成し、CPUUtilizationメトリクスが90%を超えた場合にSNSトピックに通知を送信するように設定する",
+        "B. EC2インスタンス内でCPU使用率を監視するスクリプトを作成し、使用率が90%を超えた場合にメール送信する",
+        "C. AWS Systems Managerを使用してEC2インスタンスのCPU使用率を定期的にチェックし、手動で通知を設定する",
+        "D. AWS CloudTrailでCPU使用率のログを収集し、使用率が90%を超えた場合にLambda関数を実行する"
+      ],
+      "correctAnswer": "A",
+      "explanation": "CloudWatch アラームを使用することが、この要件に対する最も適切な解決策です。以下が主な理由です：\n\n1. CloudWatchは AWS のネイティブモニタリングサービスであり、EC2インスタンスのメトリクスを自動的に収集します。\n2. CPUUtilization は標準メトリクスとして提供されており、追加の設定なしで利用可能です。\n3. アラームの設定は簡単で、閾値やアクション（SNS通知など）を柔軟に設定できます。\n4. 信頼性が高く、運用オーバーヘッドが最小限です。\n\n他の選択肢の問題点：\nB: カスタムスクリプトは保守が必要で信頼性が低くなります。\nC: Systems Managerは定期的なチェックには適していません。\nD: CloudTrailはAPI活動の監査用であり、メトリクス監視には適していません。",
+      "learningResources": [
+        {
+          "title": "Amazon CloudWatch でのアラームの使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html",
+          "type": "documentation"
+        },
+        {
+          "title": "CloudWatchメトリクスとディメンション",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/aws-services-cloudwatch-metrics.html",
+          "type": "documentation"
+        }
+      ],
+      "relatedServices": [
+        "Amazon CloudWatch",
+        "Amazon EC2",
+        "Amazon SNS"
+      ],
+      "tags": [
+        "monitoring",
+        "alerts",
+        "metrics",
+        "cpu-utilization"
+      ]
+    },
+    {
+      "id": "q013",
+      "domain": "monitoring",
+      "difficulty": "medium",
+      "type": "single",
+      "question": "あなたの会社では、複数のマイクロサービスを運用しており、それらは異なるAWSアカウントで実行されています。開発チームは、すべてのマイクロサービスの健全性とパフォーマンスを一元的に監視したいと考えています。以下のうち、最も効果的な解決策はどれですか？",
+      "options": [
+        "A. AWS Organizations と CloudWatch Cross-Account Observability を設定し、中央モニタリングアカウントでメトリクスとログを集約する",
+        "B. 各アカウントのCloudWatchメトリクスをS3バケットにエクスポートし、中央アカウントでAthenaを使用して分析する",
+        "C. 各アカウントにLambda関数を作成し、メトリクスを定期的に中央アカウントのDynamoDBテーブルに複製する",
+        "D. 各アカウントでCloudWatch Dashboardを作成し、それぞれのURLを開発チームで共有する"
+      ],
+      "correctAnswer": "A",
+      "explanation": "CloudWatch Cross-Account Observabilityが最適な解決策である理由：\n\n1. ネイティブな統合：\n- AWS Organizationsとの統合により、複数アカウントの監視を簡単に設定できます\n- 追加のインフラストラクチャやカスタムコードが不要です\n\n2. リアルタイム性：\n- メトリクス、ログ、トレースをリアルタイムで集約できます\n- データの遅延が最小限です\n\n3. コスト効率：\n- データ転送やストレージの追加コストを最小限に抑えられます\n- 管理オーバーヘッドが少なくなります\n\n4. セキュリティ：\n- IAMロールとポリシーによる細かなアクセス制御が可能です\n- データの暗号化が標準で提供されます\n\n他の選択肢の問題点：\nB: S3へのエクスポートは遅延が発生し、リアルタイム監視には適していません\nC: カスタム実装は保守が困難で、スケーラビリティに課題があります\nD: 複数のダッシュボードを個別に確認する必要があり、運用効率が低下します",
+      "learningResources": [
+        {
+          "title": "CloudWatch Cross-Account Observability",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Unified-Cross-Account.html",
+          "type": "documentation"
+        },
+        {
+          "title": "Setting up CloudWatch Cross-Account Observability",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Unified-Cross-Account-Setup.html",
+          "type": "documentation"
+        }
+      ],
+      "relatedServices": [
+        "Amazon CloudWatch",
+        "AWS Organizations",
+        "AWS IAM"
+      ],
+      "tags": [
+        "cross-account",
+        "monitoring",
+        "observability",
+        "microservices"
+      ]
+    },
+    {
+      "id": "q014",
+      "domain": "monitoring",
+      "difficulty": "hard",
+      "type": "single",
+      "question": "大規模なeコマースプラットフォームを運用している企業で、複数のマイクロサービスがコンテナ化されてAmazon ECS上で実行されています。アプリケーションのパフォーマンス低下が報告され、特定のサービス間の通信に問題があると考えられています。開発チームは、サービス間の依存関係を可視化し、パフォーマンスの問題箇所を特定する必要があります。以下のうち、最も包括的で効果的な監視ソリューションはどれですか？",
+      "options": [
+        "A. AWS X-Ray とCloudWatch Container Insightsを統合し、分散トレースとコンテナメトリクスを収集。X-Rayのサービスマップで依存関係を可視化し、トレースセグメントでレイテンシーを分析する",
+        "B. CloudWatch Logsを使用してコンテナログを収集し、CloudWatch Metricsでコンテナのパフォーマンスメトリクスを監視する",
+        "C. AWS Systems Manager Session Managerを使用して各コンテナに接続し、手動でログとメトリクスを収集して分析する",
+        "D. Amazon Elasticsearch ServiceとKibanaを設定し、コンテナログを集中管理してダッシュボードで可視化する"
+      ],
+      "correctAnswer": "A",
+      "explanation": "この複雑なユースケースでは、AWS X-RayとCloudWatch Container Insightsの組み合わせが最適な解決策です。\n\n1. 分散トレーシング機能：\n- X-Rayはマイクロサービス間の通信フローを自動的にトレース\n- サービス間の依存関係をサービスマップとして視覚化\n- レイテンシー、エラー、障害の正確な位置を特定可能\n\n2. コンテナ監視機能：\n- Container Insightsがコンテナレベルの詳細なメトリクスを提供\n- CPU、メモリ、ネットワーク使用率などのリソース使用状況を把握\n- 異常検知と自動アラート設定が可能\n\n3. 統合分析：\n- X-RayとContainer Insightsのデータを組み合わせることで、問題の根本原因を特定可能\n- パフォーマンスボトルネックの特定が容易\n- エンドツーエンドの可視性を確保\n\n他の選択肢の問題点：\nB: サービス間の依存関係や通信フローの可視化ができない\nC: 手動プロセスは非効率で、リアルタイムの問題検出ができない\nD: ログ分析のみでは、サービス間の依存関係やパフォーマンスの全体像を把握できない",
+      "learningResources": [
+        {
+          "title": "AWS X-Ray での分散アプリケーションのトレース",
+          "url": "https://docs.aws.amazon.com/xray/latest/devguide/aws-xray.html",
+          "type": "documentation"
+        },
+        {
+          "title": "Container Insights の使用",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ContainerInsights.html",
+          "type": "documentation"
+        },
+        {
+          "title": "マイクロサービスのモニタリングベストプラクティス",
+          "url": "https://aws.amazon.com/jp/builders-library/monitoring-distributed-systems/",
+          "type": "bestpractices"
+        }
+      ],
+      "relatedServices": [
+        "AWS X-Ray",
+        "Amazon CloudWatch",
+        "Amazon ECS",
+        "CloudWatch Container Insights"
+      ],
+      "tags": [
+        "distributed-tracing",
+        "container-monitoring",
+        "microservices",
+        "performance-monitoring",
+        "observability"
+      ]
+    },
+    {
+      "id": "q015",
+      "domain": "reliability",
+      "difficulty": "easy",
+      "type": "single",
+      "question": "ウェブアプリケーションをホストするEC2インスタンスを運用しています。アプリケーションの可用性を向上させるために、最も基本的で効果的な方法は次のうちどれですか？",
+      "options": [
+        "A. 複数のアベイラビリティーゾーンにEC2インスタンスを配置し、Auto ScalingグループとApplication Load Balancerを使用する",
+        "B. 単一のEC2インスタンスのスペックを上げて、より大きなインスタンスタイプに変更する",
+        "C. EC2インスタンスのバックアップを定期的に取得し、S3に保存する",
+        "D. CloudWatchアラームを設定して、インスタンスの状態を監視する"
+      ],
+      "correctAnswer": "A",
+      "explanation": "複数AZでのAuto Scalingグループの使用が最適な解決策である理由：\n\n1. 高可用性：\n- 複数のアベイラビリティーゾーンを使用することで、単一障害点を排除\n- データセンターレベルの障害からの保護を実現\n\n2. 自動スケーリング：\n- Auto Scalingグループにより、需要に応じて自動的にキャパシティを調整\n- 障害発生時の自動復旧機能を提供\n\n3. 負荷分散：\n- Application Load Balancerにより、複数のインスタンス間でトラフィックを分散\n- ヘルスチェックによる異常インスタンスの自動除外\n\n他の選択肢の問題点：\nB: 単一インスタンスは依然として単一障害点となる\nC: バックアップは重要だが、リアルタイムの可用性向上には直接寄与しない\nD: 監視は重要だが、それ自体では可用性を向上させない",
+      "learningResources": [
+        {
+          "title": "AWS での高可用性の実現",
+          "url": "https://docs.aws.amazon.com/whitepapers/latest/real-time-communication-on-aws/high-availability.html",
+          "type": "documentation"
+        },
+        {
+          "title": "Auto Scaling グループの使用",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/auto-scaling-groups.html",
+          "type": "documentation"
+        }
+      ],
+      "relatedServices": [
+        "Amazon EC2",
+        "Auto Scaling",
+        "Elastic Load Balancing",
+        "Amazon CloudWatch"
+      ],
+      "tags": [
+        "high-availability",
+        "auto-scaling",
+        "load-balancing",
+        "fault-tolerance"
+      ]
+    },
+    {
+      "id": "q016",
+      "domain": "reliability",
+      "difficulty": "medium",
+      "type": "single",
+      "question": "あなたの会社では、重要なビジネスアプリケーションをAWSで運用しています。このアプリケーションは、RDS MySQLデータベースを使用しており、RPO（目標復旧地点）を15分以内、RTO（目標復旧時間）を1時間以内に設定する必要があります。この要件を満たすための最適な構成はどれですか？",
+      "options": [
+        "A. マルチAZのRDSデプロイメントを構成し、自動バックアップを有効化して15分間隔でバックアップを実行。Point-in-Time Recoveryを有効化する",
+        "B. シングルAZのRDSインスタンスを使用し、毎日のスナップショットバックアップを設定する",
+        "C. マルチAZのRDSデプロイメントを構成し、週次でのフルバックアップのみを実行する",
+        "D. シングルAZのRDSインスタンスを使用し、手動でデータベースのエクスポートを毎時実行する"
+      ],
+      "correctAnswer": "A",
+      "explanation": "マルチAZ構成とPoint-in-Time Recoveryが最適な解決策である理由：\n\n1. RPO（15分以内）の達成：\n- 自動バックアップを15分間隔で実行することで、最大15分のデータ損失に抑制\n- Point-in-Time Recoveryにより、任意の時点まで正確に復旧可能\n\n2. RTO（1時間以内）の達成：\n- マルチAZ構成により、プライマリDBの障害時に自動的にスタンバイに切り替え（通常3-5分）\n- 自動バックアップからの復旧も1時間以内に完了可能\n\n3. 高可用性：\n- マルチAZ構成により、物理的な障害やメンテナンス時の可用性を確保\n- 自動フェイルオーバーによる無停止運用が可能\n\n4. データ保護：\n- トランザクションログのリアルタイムレプリケーション\n- バックアップの自動化による運用負荷の軽減\n\n他の選択肢の問題点：\nB: 日次バックアップではRPO要件（15分）を満たせない\nC: 週次バックアップではRPO要件を満たせない\nD: 手動操作は信頼性が低く、運用負荷が高い",
+      "learningResources": [
+        {
+          "title": "Amazon RDS のマルチAZ配置",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html",
+          "type": "documentation"
+        },
+        {
+          "title": "Amazon RDS のバックアップと復元",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_CommonTasks.BackupRestore.html",
+          "type": "documentation"
+        },
+        {
+          "title": "RDSでの災害対策ベストプラクティス",
+          "url": "https://aws.amazon.com/blogs/database/implementing-disaster-recovery-patterns-with-amazon-rds/",
+          "type": "bestpractices"
+        }
+      ],
+      "relatedServices": [
+        "Amazon RDS",
+        "Amazon CloudWatch",
+        "AWS Backup"
+      ],
+      "tags": [
+        "disaster-recovery",
+        "high-availability",
+        "backup",
+        "rpo",
+        "rto",
+        "multi-az"
+      ]
+    },
+    {
+      "id": "q017",
+      "domain": "deployment",
+      "difficulty": "hard",
+      "type": "single",
+      "question": "大規模な金融サービス企業で、マイクロサービスアーキテクチャベースの新しい決済システムをAWSにデプロイする計画があります。このシステムは、高可用性、ゼロダウンタイムデプロイメント、自動スケーリング、および厳格なセキュリティコンプライアンスが要求されます。また、インフラストラクチャのバージョン管理とロールバック機能も必要です。以下のうち、最も適切なデプロイメント戦略はどれですか？",
+      "options": [
+        "A. AWS ECSとFargateを使用し、CodePipelineでCI/CDを構築。CloudFormationでインフラをコード化し、Blue/Greenデプロイメントを実装。AWS Secretsを使用して機密情報を管理し、Application Load Balancerで段階的なトラフィック移行を制御する",
+        "B. EC2インスタンスでKubernetesクラスターを手動構築し、Jenkinsでデプロイメントパイプラインを実装。シェルスクリプトでインフラ構成を管理する",
+        "C. AWS Beanstalkを使用して単一環境でアプリケーションをデプロイし、インプレースアップデートを実行。設定ファイルは環境変数として管理する",
+        "D. 複数のEC2インスタンスを手動でプロビジョニングし、SSHを使用して直接デプロイメントを実行。設定変更は手動で適用する"
+      ],
+      "correctAnswer": "A",
+      "explanation": "選択肢Aが最適な解決策である理由：\n\n1. コンテナオーケストレーション：\n- ECSとFargateの組み合わせにより、サーバーレスコンテナ実行環境を実現\n- マイクロサービスの独立したスケーリングと管理が可能\n- コンテナの自動ヘルスチェックと自己修復機能\n\n2. インフラストラクチャのコード化：\n- CloudFormationによるインフラのバージョン管理\n- 環境の一貫性維持と再現性の確保\n- ロールバックメカニズムの実装が容易\n\n3. 継続的デリバリー：\n- CodePipelineによる自動化されたデプロイメントパイプライン\n- 品質ゲートとセキュリティチェックの統合\n- 監査証跡の自動生成\n\n4. ゼロダウンタイムデプロイメント：\n- Blue/Greenデプロイメントによる無停止更新\n- ALBによる段階的なトラフィック移行\n- 問題発生時の即時ロールバック機能\n\n5. セキュリティとコンプライアンス：\n- AWS Secretsによる機密情報の安全な管理\n- IAMロールによる細かなアクセス制御\n- 暗号化とセキュリティグループの統合\n\n他の選択肢の問題点：\nB: 手動構築は運用負荷が高く、一貫性維持が困難\nC: 単一環境では高可用性要件を満たせない\nD: 手動操作は人的ミスのリスクが高く、スケーラビリティに欠ける",
+      "learningResources": [
+        {
+          "title": "ECSでのBlue/Greenデプロイメント",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-bluegreen.html",
+          "type": "documentation"
+        },
+        {
+          "title": "AWS CloudFormationベストプラクティス",
+          "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/best-practices.html",
+          "type": "documentation"
+        },
+        {
+          "title": "Implementing CI/CD with AWS CodePipeline",
+          "url": "https://docs.aws.amazon.com/codepipeline/latest/userguide/concepts-continuous-delivery-integration.html",
+          "type": "bestpractices"
+        }
+      ],
+      "relatedServices": [
+        "Amazon ECS",
+        "AWS Fargate",
+        "AWS CodePipeline",
+        "AWS CloudFormation",
+        "AWS Secrets Manager",
+        "Elastic Load Balancing"
+      ],
+      "tags": [
+        "continuous-deployment",
+        "microservices",
+        "containers",
+        "infrastructure-as-code",
+        "blue-green-deployment",
+        "security"
+      ]
+    },
+    {
+      "id": "q018",
+      "domain": "deployment",
+      "difficulty": "easy",
+      "type": "single",
+      "question": "小規模なWebアプリケーションを AWS にデプロイする必要があります。開発チームは AWS の経験が少なく、インフラストラクチャの管理に時間をかけたくありません。最も簡単で効率的なデプロイメント方法は次のうちどれですか？",
+      "options": [
+        "A. AWS Elastic Beanstalkを使用して、アプリケーションコードをアップロードし、プラットフォームバージョンを選択してデプロイする",
+        "B. EC2インスタンスを手動で起動し、SSHでアプリケーションコードをデプロイする",
+        "C. Docker コンテナを作成し、Amazon ECSクラスターを構築して手動でデプロイする",
+        "D. AWS CloudFormationテンプレートを作成し、すべてのインフラストラクチャリソースを定義してデプロイする"
+      ],
+      "correctAnswer": "A",
+      "explanation": "AWS Elastic Beanstalkが最適な解決策である理由：\n\n1. 簡易性：\n- アプリケーションコードをアップロードするだけで、必要なインフラが自動的にプロビジョニング\n- プラットフォームの選択が簡単（Java, Node.js, Python等）\n- 設定の詳細を理解する必要が最小限\n\n2. 自動化：\n- キャパシティのプロビジョニング、ロードバランシング、自動スケーリングを自動設定\n- セキュリティパッチやプラットフォームの更新を自動管理\n\n3. 運用効率：\n- インフラストラクチャ管理の負担を軽減\n- モニタリングとログ機能が統合済み\n- デプロイメントの簡易化\n\n他の選択肢の問題点：\nB: 手動デプロイは時間がかかり、エラーが発生しやすい\nC: ECSは小規模アプリケーションには複雑すぎる\nD: CloudFormationは学習曲線が急で、初心者には複雑すぎる",
+      "learningResources": [
+        {
+          "title": "AWS Elastic Beanstalk 入門ガイド",
+          "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/GettingStarted.html",
+          "type": "documentation"
+        },
+        {
+          "title": "Elastic Beanstalk デプロイメントオプション",
+          "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.deploy-existing-version.html",
+          "type": "documentation"
+        }
+      ],
+      "relatedServices": [
+        "AWS Elastic Beanstalk",
+        "Amazon EC2",
+        "Elastic Load Balancing",
+        "Amazon CloudWatch"
+      ],
+      "tags": [
+        "elastic-beanstalk",
+        "deployment",
+        "web-applications",
+        "automation",
+        "paas"
+      ]
+    },
+    {
+      "id": "q019",
+      "domain": "security",
+      "difficulty": "medium",
+      "type": "single",
+      "question": "あなたの組織では、複数のAWSアカウントを使用して開発、テスト、本番環境を分離しています。セキュリティチームは、すべての環境で一貫したセキュリティポリシーを実施し、IAMユーザーとロールの作成を中央で管理したいと考えています。また、各環境のセキュリティ状態を定期的に評価する必要があります。この要件を満たすための最適な組み合わせは次のうちどれですか？",
+      "options": [
+        "A. AWS OrganizationsでSCPを使用してポリシーを適用し、AWS IAM Identity Centerで認証を一元管理。AWS SecurityHubで各アカウントのセキュリティ状態を監視する",
+        "B. 各アカウントで個別にIAMポリシーを設定し、手動でユーザー管理を行う。AWS Configで設定変更を追跡する",
+        "C. AWS DirectoryServiceを使用してユーザー管理を行い、CloudWatchで各アカウントのログを監視する",
+        "D. IAMユーザーとポリシーを手動で同期し、AWS Inspectorで各アカウントのセキュリティ評価を行う"
+      ],
+      "correctAnswer": "A",
+      "explanation": "選択肢Aが最適な解決策である理由：\n\n1. 中央集中型のガバナンス：\n- AWS Organizationsを使用することで、複数アカウントを階層的に管理可能\n- SCPs（Service Control Policies）により、組織全体で一貫したセキュリティポリシーを適用\n- アカウント作成と管理の自動化が可能\n\n2. 統合的なアイデンティティ管理：\n- AWS IAM Identity Centerにより、シングルサインオンと中央集中型のアクセス管理を実現\n- ユーザーとグループの一元管理\n- きめ細かなアクセス制御の実装が可能\n\n3. 包括的なセキュリティ監視：\n- SecurityHubで複数アカウントのセキュリティ状態を一元的に可視化\n- セキュリティ標準への準拠状況を自動的に評価\n- セキュリティ上の問題を早期に検出\n\n他の選択肢の問題点：\nB: 個別管理は非効率で一貫性を維持できない\nC: DirectoryServiceのみでは組織全体のポリシー適用が不十分\nD: 手動同期は信頼性が低く、スケーラブルでない",
+      "learningResources": [
+        {
+          "title": "AWS Organizations ユーザーガイド",
+          "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html",
+          "type": "documentation"
+        },
+        {
+          "title": "AWS IAM Identity Center の概要",
+          "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html",
+          "type": "documentation"
+        },
+        {
+          "title": "AWS Security Hub の使用開始",
+          "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-getting-started.html",
+          "type": "documentation"
+        }
+      ],
+      "relatedServices": [
+        "AWS Organizations",
+        "AWS IAM Identity Center",
+        "AWS Security Hub",
+        "AWS IAM"
+      ],
+      "tags": [
+        "multi-account",
+        "security",
+        "governance",
+        "identity-management",
+        "compliance"
+      ]
+    },
+    {
+      "id": "q020",
+      "domain": "security",
+      "difficulty": "hard",
+      "type": "single",
+      "question": "金融サービス企業で、PCI DSS準拠が必要な新しい決済処理システムをAWSで構築しています。このシステムでは、クレジットカード情報を含む機密データの処理と保存が必要です。また、すべてのデータアクセスは暗号化され、詳細な監査ログが必要です。以下の選択肢のうち、最も包括的でセキュアな実装方法はどれですか？",
+      "options": [
+        "A. KMS管理のCMKを使用してデータを暗号化し、AWS Secrets Managerで認証情報を管理。CloudHSMでキーを保護し、CloudTrailとConfig Rulesで監査証跡を確保。WAFとShieldでアプリケーション層を保護し、GuardDutyで脅威検出を実施",
+        "B. EC2インスタンスでカスタム暗号化ソリューションを実装し、S3でデータを保存。CloudWatchでログを収集し、SecurityGroupsでアクセス制御を実施",
+        "C. RDSで暗号化オプションを有効化し、IAMロールでアクセス制御。VPCフローログでネットワークトラフィックを監視",
+        "D. DynamoDBでサーバーサイド暗号化を使用し、Cognito認証を実装。CloudFrontでSSL/TLS通信を確保"
+      ],
+      "correctAnswer": "A",
+      "explanation": "選択肢Aが最適な解決策である理由：\n\n1. 包括的な暗号化戦略：\n- KMS管理のCMKによる暗号化キーの一元管理\n- CloudHSMによるハードウェアセキュリティモジュールの使用\n- Secrets Managerによる認証情報の安全な管理と自動ローテーション\n\n2. 多層防御アプローチ：\n- WAFによるWebアプリケーションの保護（SQLインジェクション、XSSなど）\n- Shieldによる DDoS 攻撃からの保護\n- GuardDutyによる継続的な脅威検出と異常行動の監視\n\n3. 完全な監査能力：\n- CloudTrailによるAPI活動の詳細な記録\n- Config Rulesによるコンプライアンス状態の継続的評価\n- 変更管理と監査証跡の維持\n\n4. PCI DSS要件への対応：\n- 暗号化要件（要件3、4）\n- アクセス制御要件（要件7、8）\n- モニタリング要件（要件10、11）\n- セキュリティ管理要件（要件6）\n\n他の選択肢の問題点：\nB: カスタム暗号化は監査とコンプライアンスの観点で問題\nC: 単一の暗号化層では不十分\nD: 包括的なセキュリティ管理が欠如",
+      "learningResources": [
+        {
+          "title": "AWS での PCI DSS コンプライアンス",
+          "url": "https://docs.aws.amazon.com/compliance/latest/pci-dss/architecture.html",
+          "type": "documentation"
+        },
+        {
+          "title": "AWS KMS と CloudHSM の統合",
+          "url": "https://docs.aws.amazon.com/kms/latest/developerguide/cloudhsm-keystore.html",
+          "type": "documentation"
+        },
+        {
+          "title": "AWS セキュリティベストプラクティス",
+          "url": "https://docs.aws.amazon.com/wellarchitected/latest/security-pillar/welcome.html",
+          "type": "bestpractices"
+        }
+      ],
+      "relatedServices": [
+        "AWS KMS",
+        "AWS CloudHSM",
+        "AWS Secrets Manager",
+        "AWS WAF",
+        "AWS Shield",
+        "Amazon GuardDuty",
+        "AWS CloudTrail",
+        "AWS Config"
+      ],
+      "tags": [
+        "security",
+        "compliance",
+        "encryption",
+        "pci-dss",
+        "audit",
+        "threat-detection"
+      ]
+    },
+    {
+      "id": "q021",
+      "domain": "networking",
+      "difficulty": "easy",
+      "type": "single",
+      "question": "開発チームがAWSで新しいWebアプリケーションを立ち上げようとしています。パブリックサブネットにWebサーバーを、プライベートサブネットにデータベースサーバーを配置する予定です。プライベートサブネット内のサーバーがインターネットからソフトウェアアップデートをダウンロードする必要がある場合、最も適切な構成はどれですか？",
+      "options": [
+        "A. パブリックサブネットにNATゲートウェイを配置し、プライベートサブネットのルートテーブルで、インターネット向けトラフィックをNATゲートウェイに向ける",
+        "B. プライベートサブネットのインスタンスにパブリックIPアドレスを割り当て、インターネットゲートウェイを経由してアクセスする",
+        "C. プライベートサブネットに直接インターネットゲートウェイをアタッチする",
+        "D. VPCエンドポイントを作成し、すべてのインターネットトラフィックをVPCエンドポイント経由で転送する"
+      ],
+      "correctAnswer": "A",
+      "explanation": "NATゲートウェイを使用する解決策が最適である理由：\n\n1. セキュリティ：\n- プライベートサブネットのインスタンスは直接インターネットからアクセスできない\n- 送信（アウトバウンド）のみの通信が可能\n\n2. 設計のベストプラクティス：\n- プライベートサブネットの定義に準拠\n- セキュリティレイヤーの分離を維持\n\n3. 運用の簡便性：\n- AWSマネージドサービスとして高可用性を確保\n- メンテナンス不要\n\n4. スケーラビリティ：\n- 自動的にスケールして必要な帯域幅を提供\n\n他の選択肢の問題点：\nB: セキュリティ上の重大なリスクとなる\nC: プライベートサブネットの定義に反する\nD: VPCエンドポイントは特定のAWSサービス向けであり、一般的なインターネットアクセスには使用できない",
+      "learningResources": [
+        {
+          "title": "NAT ゲートウェイ",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html",
+          "type": "documentation"
+        },
+        {
+          "title": "VPCのネットワーキングコンポーネント",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Networking.html",
+          "type": "documentation"
+        }
+      ],
+      "relatedServices": [
+        "Amazon VPC",
+        "NAT Gateway",
+        "Internet Gateway",
+        "Route Tables"
+      ],
+      "tags": [
+        "networking",
+        "vpc",
+        "nat",
+        "security",
+        "subnet"
+      ]
+    }
+  ]
+}

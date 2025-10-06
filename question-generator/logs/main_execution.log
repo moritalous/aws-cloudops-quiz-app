@@ -1,0 +1,40 @@
+2025-10-06 06:52:43,265 - core.agent_factory - INFO - AgentFactory initialized
+2025-10-06 06:52:43,265 - core.main_execution_flow - INFO - MainExecutionFlow initialized
+2025-10-06 06:53:17,329 - core.agent_factory - INFO - AgentFactory initialized
+2025-10-06 06:53:17,329 - core.main_execution_flow - INFO - MainExecutionFlow initialized
+2025-10-06 06:53:24,024 - core.agent_factory - INFO - AgentFactory initialized
+2025-10-06 06:53:24,024 - core.main_execution_flow - INFO - MainExecutionFlow initialized
+2025-10-06 06:53:31,209 - core.agent_factory - INFO - AgentFactory initialized
+2025-10-06 06:53:31,213 - core.main_execution_flow - INFO - MainExecutionFlow initialized
+2025-10-06 06:53:31,213 - core.configuration_manager - INFO - Debug mode enabled
+2025-10-06 06:53:31,214 - core.configuration_manager - INFO - Batch size adjusted from 10 to 10
+2025-10-06 06:53:31,214 - core.configuration_manager - INFO - Total batches recalculated to 19
+2025-10-06 06:53:31,251 - core.main_execution_flow - INFO - No previous execution state found
+2025-10-06 06:53:31,366 - core.agent_factory - INFO - Creating Bedrock model: anthropic.claude-3-5-sonnet-20241022-v2:0
+2025-10-06 06:53:31,499 - botocore.tokens - INFO - Found token in environment variables.
+2025-10-06 06:53:31,503 - core.agent_factory - INFO - Successfully created Bedrock model: anthropic.claude-3-5-sonnet-20241022-v2:0
+2025-10-06 06:53:31,503 - core.agent_factory - INFO - Created exam guide analyzer agent
+2025-10-06 06:54:25,591 - core.main_execution_flow - ERROR - Failed to initialize execution flow: Model returned stop_reason: max_tokens instead of "tool_use".
+2025-10-06 06:54:25,592 - core.main_execution_flow - ERROR - Complete AI automation flow failed: Failed to initialize execution flow: Model returned stop_reason: max_tokens instead of "tool_use".
+2025-10-06 06:55:00,649 - core.agent_factory - INFO - AgentFactory initialized
+2025-10-06 06:55:00,650 - core.main_execution_flow - INFO - MainExecutionFlow initialized
+2025-10-06 06:55:00,650 - core.configuration_manager - INFO - Batch size adjusted from 10 to 1
+2025-10-06 06:55:00,650 - core.configuration_manager - INFO - Total batches recalculated to 189
+2025-10-06 06:55:00,668 - core.main_execution_flow - INFO - Execution state loaded from 2025-10-06T06:54:25.591561
+2025-10-06 06:55:00,732 - core.agent_factory - INFO - Creating Bedrock model: anthropic.claude-3-5-sonnet-20241022-v2:0
+2025-10-06 06:55:00,843 - botocore.tokens - INFO - Found token in environment variables.
+2025-10-06 06:55:00,845 - core.agent_factory - INFO - Successfully created Bedrock model: anthropic.claude-3-5-sonnet-20241022-v2:0
+2025-10-06 06:55:00,846 - core.agent_factory - INFO - Created exam guide analyzer agent
+2025-10-06 06:55:54,945 - core.main_execution_flow - ERROR - Failed to initialize execution flow: Model returned stop_reason: max_tokens instead of "tool_use".
+2025-10-06 06:55:54,946 - core.main_execution_flow - ERROR - Complete AI automation flow failed: Failed to initialize execution flow: Model returned stop_reason: max_tokens instead of "tool_use".
+2025-10-06 06:56:15,809 - core.agent_factory - INFO - AgentFactory initialized
+2025-10-06 06:56:15,810 - core.main_execution_flow - INFO - MainExecutionFlow initialized
+2025-10-06 06:56:15,810 - core.configuration_manager - INFO - Batch size adjusted from 10 to 1
+2025-10-06 06:56:15,810 - core.configuration_manager - INFO - Total batches recalculated to 189
+2025-10-06 06:56:15,815 - core.main_execution_flow - INFO - No previous execution state found
+2025-10-06 06:56:15,881 - core.agent_factory - INFO - Creating Bedrock model: anthropic.claude-3-5-sonnet-20241022-v2:0
+2025-10-06 06:56:15,991 - botocore.tokens - INFO - Found token in environment variables.
+2025-10-06 06:56:15,994 - core.agent_factory - INFO - Successfully created Bedrock model: anthropic.claude-3-5-sonnet-20241022-v2:0
+2025-10-06 06:56:15,994 - core.agent_factory - INFO - Created exam guide analyzer agent
+2025-10-06 06:57:11,535 - core.main_execution_flow - ERROR - Failed to initialize execution flow: Model returned stop_reason: max_tokens instead of "tool_use".
+2025-10-06 06:57:11,536 - core.main_execution_flow - ERROR - Complete AI automation flow failed: Failed to initialize execution flow: Model returned stop_reason: max_tokens instead of "tool_use".
