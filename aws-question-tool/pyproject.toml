@@ -1,9 +1,10 @@
 [project]
 name = "aws-question-tool"
 version = "0.1.0"
-description = "Add your description here"
+description = "AWS CloudOps試験問題生成ツール - AWS Document MCPサーバーとStrands Agentsを使用して一度に10問の問題を生成"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "strands-agents>=1.10.0",
+    "pydantic>=2.0.0",
 ]
