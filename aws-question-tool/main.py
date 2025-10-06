@@ -8,10 +8,11 @@ AWS Document MCPサーバーとStrands Agentsを使用して、
 
 import json
 import sys
+import uuid
 from datetime import datetime
-from typing import List
+from typing import List, Dict, Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from mcp import stdio_client, StdioServerParameters
 from strands.tools.mcp import MCPClient
 from strands import Agent
@@ -40,10 +41,25 @@ class Question(BaseModel):
 
 class QuestionSet(BaseModel):
     questions: List[Question]
-    generation_timestamp: str
-    total_questions: int = 10
-    domains: dict  # ドメイン配分情報
-    difficulty_distribution: dict  # 難易度配分情報
+    generation_timestamp: str = Field(description="問題生成日時 (ISO 8601形式)")
+    total_questions: int = Field(default=10, description="生成された問題の総数")
+    domains: Dict[str, Any] = Field(description="ドメイン配分情報 (ドメイン名: 問題数)")
+    difficulty_distribution: Dict[str, int] = Field(description="難易度配分情報 (難易度: 問題数)")
+    mcp_server_info: Dict[str, str] = Field(default_factory=dict, description="使用したAWS Document MCPサーバーの情報")
+    strands_agent_config: Dict[str, str] = Field(default_factory=dict, description="使用したStrands Agentsの設定情報")
+
+
+def generate_question_id(timestamp: str, question_number: int) -> str:
+    """
+    タイムスタンプベースの一意のID生成
+    要件15.1, 15.2, 15.3, 15.4に従う
+    """
+    try:
+        # 要件15.2: ID形式 "q{YYYYMMDD}_{HHMMSS}_{001-010}"
+        return f"q{timestamp}_{question_number:03d}"
+    except Exception:
+        # 要件15.4: エラー時はUUIDベースの代替ID生成
+        return f"q_uuid_{str(uuid.uuid4())[:8]}_{question_number:03d}"
 
 
 def create_prompt() -> str:
@@ -111,11 +127,26 @@ def main():
             result = agent.structured_output(QuestionSet, prompt)
             
             # タイムスタンプベースのファイル名とID生成
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            now = datetime.now()
+            timestamp = now.strftime("%Y%m%d_%H%M%S")
+            iso_timestamp = now.isoformat()
             
-            # 各問題に一意のIDを付与
+            # 各問題に一意のIDを付与 (要件15.1, 15.2, 15.3)
             for i, question in enumerate(result.questions, 1):
-                question.id = f"q{timestamp}_{i:03d}"
+                question.id = generate_question_id(timestamp, i)
+            
+            # メタデータ情報を設定 (要件17.1, 17.2, 17.3, 17.4)
+            result.generation_timestamp = iso_timestamp
+            result.mcp_server_info = {
+                "server_name": "awslabs.aws-documentation-mcp-server",
+                "version": "latest",
+                "partition": "aws"
+            }
+            result.strands_agent_config = {
+                "model_id": "anthropic.claude-sonnet-4-5-20250929-v1:0",
+                "region": "ap-northeast-1",
+                "tools_count": str(len(tools))
+            }
             
             # ファイル名: questions_{YYYYMMDD}_{HHMMSS}.json
             filename = f"questions_{timestamp}.json"
