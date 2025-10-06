@@ -17,6 +17,7 @@ from mcp import stdio_client, StdioServerParameters
 from strands.tools.mcp import MCPClient
 from strands import Agent
 from strands.models import BedrockModel
+from botocore.config import Config
 
 
 # Pydanticモデル定義
@@ -67,7 +68,7 @@ def create_natural_language_prompt() -> str:
     自然言語での問題生成用プロンプトを作成
     タスク5: AWS CloudOps試験ガイドの内容を直接含めて問題を生成
     """
-    return """AWS CloudOps Engineer Associate試験の問題を10問、日本語で生成してください。
+    return """AWS CloudOps Engineer Associate試験の問題を5問、日本語で生成してください。
 
 【AWS CloudOps Engineer Associate試験ガイド】
 以下は公式試験ガイドの内容です：
@@ -81,90 +82,24 @@ def create_natural_language_prompt() -> str:
 ## Content Domains（出題範囲）
 
 ### Content Domain 1: Monitoring, Logging, Analysis, Remediation, and Performance Optimization (22%)
-**Task Statement 1.1:** CloudWatchを使用してメトリクスとログを監視する
-- CloudWatch Metrics、Logs、Alarms、Dashboards
-- CloudWatch Agent、Custom Metrics
-- CloudWatch Insights、Log Groups
-
-**Task Statement 1.2:** パフォーマンスの問題を特定し、修復する
-- X-Ray、Performance Insights
-- リソース使用率の分析
-- ボトルネックの特定と解決
-
-**Task Statement 1.3:** ログ分析とトラブルシューティング
-- CloudTrail、VPC Flow Logs
-- ログの集約と分析
-- 問題の根本原因分析
+- CloudWatch、CloudTrail、X-Ray
+- パフォーマンス監視とトラブルシューティング
 
 ### Content Domain 2: Reliability and Business Continuity (22%)
-**Task Statement 2.1:** 高可用性とフォルトトレラント設計を実装する
-- Multi-AZ、Auto Scaling
-- Load Balancing、Health Checks
-- 障害復旧戦略
-
-**Task Statement 2.2:** バックアップと復旧戦略を実装する
-- AWS Backup、スナップショット
-- クロスリージョンレプリケーション
-- RTO/RPO要件の実現
-
-**Task Statement 2.3:** 災害復旧計画を策定・実行する
-- Pilot Light、Warm Standby、Multi-Site
-- 災害復旧テスト
-- ビジネス継続性計画
+- 高可用性、Auto Scaling、Load Balancing
+- バックアップ、災害復旧
 
 ### Content Domain 3: Deployment, Provisioning, and Automation (22%)
-**Task Statement 3.1:** Infrastructure as Code（IaC）を使用する
-- CloudFormation、CDK
-- テンプレートの管理とベストプラクティス
-- Change Sets、Stack管理
-
-**Task Statement 3.2:** 自動化とオーケストレーションを実装する
-- Systems Manager、Lambda
-- EventBridge、Step Functions
-- CI/CDパイプライン
-
-**Task Statement 3.3:** 設定管理とパッチ管理を自動化する
-- Systems Manager Patch Manager
-- Configuration Management
-- Compliance管理
+- CloudFormation、Systems Manager
+- インフラ自動化、設定管理
 
 ### Content Domain 4: Security and Compliance (16%)
-**Task Statement 4.1:** セキュリティ監視とコンプライアンスを実装する
-- AWS Config、Security Hub
-- GuardDuty、Inspector
-- コンプライアンスレポート
-
-**Task Statement 4.2:** アクセス制御とアイデンティティ管理
-- IAM、Organizations
-- Resource-based policies
-- 最小権限の原則
-
-**Task Statement 4.3:** データ保護と暗号化
-- KMS、暗号化
-- データ分類とDLP
-- セキュアな通信
+- IAM、Security Hub、GuardDuty
+- セキュリティ監視、コンプライアンス
 
 ### Content Domain 5: Networking and Content Delivery (18%)
-**Task Statement 5.1:** ネットワーク設計と最適化
-- VPC、Subnets、Route Tables
-- NAT Gateway、Internet Gateway
-- ネットワークセキュリティ
-
-**Task Statement 5.2:** コンテンツ配信とパフォーマンス最適化
-- CloudFront、Global Accelerator
-- Route 53、DNS管理
-- エッジロケーション活用
-
-## 主要AWSサービス
-- Amazon EC2、Auto Scaling
-- Amazon RDS、DynamoDB
-- Amazon S3、EBS、EFS
-- Amazon VPC、Route 53、CloudFront
-- AWS CloudFormation、Systems Manager
-- Amazon CloudWatch、CloudTrail、X-Ray
-- AWS Config、Security Hub、GuardDuty
-- AWS Backup、Lambda、EventBridge
-- Application Load Balancer、Network Load Balancer
+- VPC、Route 53、CloudFront
+- ネットワーク設計、コンテンツ配信
 
 【問題生成要件】
 1. 実際の運用シナリオに基づいた実践的な問題
@@ -190,7 +125,7 @@ def create_natural_language_prompt() -> str:
 難易度: [easy/medium/hard]
 関連AWSサービス: [関連するAWSサービス名]
 
-（問題2〜10も同様の形式で）
+（問題2〜5も同様の形式で）
 
 上記の試験ガイドに基づいて、技術的に正確で実践的な問題を生成してください。"""
 
@@ -257,15 +192,30 @@ def create_prompt() -> str:
 def main():
     """メイン実行関数"""
     print("AWS CloudOps試験問題生成ツールを開始します...")
+    print("⏱️  タイムアウト対策: 読み取りタイムアウト15分、リトライ3回で設定済み")
     
     try:
         # Claude Sonnet 4.5をクロスリージョン推論で使用 (要件3.1, デザイン仕様)
         print("🔧 Strands Agentを初期化中...")
+        
+        # タイムアウト対策: boto3のConfigでタイムアウト設定を拡張
+        bedrock_config = Config(
+            read_timeout=900,  # 15分 (デフォルト60秒から拡張)
+            connect_timeout=60,  # 接続タイムアウト60秒
+            retries={
+                'max_attempts': 3,  # 最大3回リトライ
+                'mode': 'adaptive'  # アダプティブリトライモード
+            }
+        )
+        
         bedrock_model = BedrockModel(
             model_id="global.anthropic.claude-sonnet-4-5-20250929-v1:0",
-            region_name="ap-northeast-1"  # 東京リージョン
+            # openai.gpt-oss-120b-1:0 
+            region_name="ap-northeast-1",  # 東京リージョン
+            boto_client_config=bedrock_config  # 正しいパラメータ名に修正
         )
         print("✅ BedrockModel初期化完了 (Claude Sonnet 4.5, クロスリージョン推論)")
+        print("🔧 タイムアウト設定: read_timeout=900秒, connect_timeout=60秒, max_retries=3")
         
         # MCP接続設定 (要件11.1, 11.2, 11.3)
         print("🔗 AWS Document MCPサーバーに接続中...")
@@ -287,8 +237,9 @@ def main():
             print(f"✅ MCPツール取得完了: {len(tools)}個のツールが利用可能")
             
             # Agentを初期化 (要件3.1, 3.2) - modelとtoolsパラメータを正しく渡す
-            agent = Agent(model=bedrock_model, tools=tools)
-            print("✅ Strands Agent初期化完了")
+            # callback_handler=Noneでターミナル出力を無効化
+            agent = Agent(model=bedrock_model, tools=tools, callback_handler=None)
+            print("✅ Strands Agent初期化完了 (ターミナル出力無効化)")
             
             print("🤖 問題生成を開始します...")
             print("📋 AWS Document MCPサーバーの検索機能を活用した構造化出力を実行中...")
@@ -302,32 +253,15 @@ def main():
             natural_result = agent(natural_language_prompt)
             print("✅ 第1段階完了: 自然言語での問題内容が生成されました")
             
-        # 第2段階: MCPクライアントを再初期化して構造化出力で整理
+        # 第2段階: 構造化出力で整理
         print("🔍 第2段階: 生成された問題を構造化出力で整理中...")
-        print("🔧 構造化出力用のMCPクライアントを再初期化中...")
         
-        # 構造化出力用に新しいMCPクライアントとAgentを初期化
-        structure_mcp_client = MCPClient(lambda: stdio_client(
-            StdioServerParameters(
-                command="uvx",
-                args=["awslabs.aws-documentation-mcp-server@latest"],
-                env={
-                    "FASTMCP_LOG_LEVEL": "ERROR",
-                    "AWS_DOCUMENTATION_PARTITION": "aws"
-                }
-            )
-        ))
-        
-        with structure_mcp_client:
-            # 構造化出力用のツールを取得
-            structure_tools = structure_mcp_client.list_tools_sync()
-            print(f"✅ 構造化出力用MCPツール取得完了: {len(structure_tools)}個のツールが利用可能")
+        # 構造化出力用のAgentを初期化（MCPクライアントやtoolsは不要）
+        # callback_handler=Noneでターミナル出力を無効化
+        structure_agent = Agent(model=bedrock_model, callback_handler=None)
+        print("✅ 構造化出力用Agent初期化完了 (ターミナル出力無効化、tools不使用)")
             
-            # 構造化出力用のAgentを初期化
-            structure_agent = Agent(model=bedrock_model, tools=structure_tools)
-            print("✅ 構造化出力用Agent初期化完了")
-            
-            structure_prompt = f"""
+        structure_prompt = f"""
 以下の生成された問題内容を、指定されたJSON形式に構造化してください：
 
 {natural_result}
@@ -342,58 +276,59 @@ def main():
 - 難易度
 - 関連AWSサービス
 """
-            
-            # 構造化出力（再初期化されたAgent使用）
-            result = structure_agent.structured_output(QuestionSet, structure_prompt)
-            print("✅ 第2段階完了: 構造化出力が完了しました")
-            
-            # タイムスタンプベースのファイル名とID生成
-            now = datetime.now()
-            timestamp = now.strftime("%Y%m%d_%H%M%S")
-            iso_timestamp = now.isoformat()
-            
-            # 各問題に一意のIDを付与 (要件15.1, 15.2, 15.3)
-            for i, question in enumerate(result.questions, 1):
-                question.id = generate_question_id(timestamp, i)
-            
-            # メタデータ情報を設定 (要件17.1, 17.2, 17.3, 17.4)
-            result.generation_timestamp = iso_timestamp
-            result.mcp_server_info = {
-                "server_name": "awslabs.aws-documentation-mcp-server",
-                "version": "latest",
-                "partition": "aws"
-            }
-            result.strands_agent_config = {
-                "model_id": "global.anthropic.claude-sonnet-4-5-20250929-v1:0",
-                "region": "ap-northeast-1",
-                "tools_count": str(len(structure_tools))
-            }
-            
-            # ファイル名: questions_{YYYYMMDD}_{HHMMSS}.json
-            filename = f"questions_{timestamp}.json"
-            
-            # JSON出力
-            with open(filename, "w", encoding="utf-8") as f:
-                json.dump(result.model_dump(), f, indent=2, ensure_ascii=False)
-            
-            print(f"✅ 生成完了: {filename} (10問)")
-            print(f"📊 ドメイン配分: {result.domains}")
-            print(f"📈 難易度配分: {result.difficulty_distribution}")
-            
-            # 生成された問題の品質確認ログ (要件18.4)
-            print("\n📋 生成された問題の概要:")
-            for i, question in enumerate(result.questions, 1):
-                print(f"  {i:2d}. [{question.domain}] [{question.difficulty}] {question.question_type}")
-                print(f"      ID: {question.id}")
-                print(f"      AWSサービス: {', '.join(question.aws_services[:3])}{'...' if len(question.aws_services) > 3 else ''}")
-                print(f"      学習リソース: {len(question.learning_resources)}個のリソース")
-            
-            print(f"\n🎯 品質メトリクス:")
-            print(f"   - 総問題数: {len(result.questions)}")
-            print(f"   - ドメインカバレッジ: {len(result.domains)}個のドメイン")
-            print(f"   - 難易度バランス: {len(result.difficulty_distribution)}レベル")
-            print(f"   - 生成時刻: {result.generation_timestamp}")
-            print(f"   - 出力ファイル: {filename}")
+        
+        # 構造化出力（toolsを使わないシンプルなAgent使用）
+        result = structure_agent.structured_output(QuestionSet, structure_prompt)
+        print("✅ 第2段階完了: 構造化出力が完了しました")
+        
+        # タイムスタンプベースのファイル名とID生成
+        now = datetime.now()
+        timestamp = now.strftime("%Y%m%d_%H%M%S")
+        iso_timestamp = now.isoformat()
+        
+        # 各問題に一意のIDを付与 (要件15.1, 15.2, 15.3)
+        for i, question in enumerate(result.questions, 1):
+            question.id = generate_question_id(timestamp, i)
+        
+        # メタデータ情報を設定 (要件17.1, 17.2, 17.3, 17.4)
+        result.generation_timestamp = iso_timestamp
+        result.mcp_server_info = {
+            "server_name": "awslabs.aws-documentation-mcp-server",
+            "version": "latest",
+            "partition": "aws"
+        }
+        result.strands_agent_config = {
+            "model_id": "global.anthropic.claude-sonnet-4-5-20250929-v1:0",
+            # openai.gpt-oss-120b-1:0 
+            "region": "ap-northeast-1",
+            "tools_count": "0"  # 構造化出力ではtools不使用
+        }
+        
+        # ファイル名: questions_{YYYYMMDD}_{HHMMSS}.json
+        filename = f"questions_{timestamp}.json"
+        
+        # JSON出力
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(result.model_dump(), f, indent=2, ensure_ascii=False)
+        
+        print(f"✅ 生成完了: {filename} (5問)")
+        print(f"📊 ドメイン配分: {result.domains}")
+        print(f"📈 難易度配分: {result.difficulty_distribution}")
+        
+        # 生成された問題の品質確認ログ (要件18.4)
+        print("\n📋 生成された問題の概要:")
+        for i, question in enumerate(result.questions, 1):
+            print(f"  {i:2d}. [{question.domain}] [{question.difficulty}] {question.question_type}")
+            print(f"      ID: {question.id}")
+            print(f"      AWSサービス: {', '.join(question.aws_services[:3])}{'...' if len(question.aws_services) > 3 else ''}")
+            print(f"      学習リソース: {len(question.learning_resources)}個のリソース")
+        
+        print(f"\n🎯 品質メトリクス:")
+        print(f"   - 総問題数: {len(result.questions)}")
+        print(f"   - ドメインカバレッジ: {len(result.domains)}個のドメイン")
+        print(f"   - 難易度バランス: {len(result.difficulty_distribution)}レベル")
+        print(f"   - 生成時刻: {result.generation_timestamp}")
+        print(f"   - 出力ファイル: {filename}")
             
     except Exception as e:
         error_msg = str(e).lower()
@@ -407,6 +342,12 @@ def main():
             print("💡 AWS Document MCPサーバーに接続できません:")
             print("   - uvがインストールされているか確認してください")
             print("   - インターネット接続を確認してください")
+        elif "read timed out" in error_msg or "timeout" in error_msg:
+            print("💡 AWS Bedrockでタイムアウトが発生しました:")
+            print("   - 大きなプロンプトや複雑な問題生成でタイムアウトが発生")
+            print("   - タイムアウト設定は900秒(15分)に設定済み")
+            print("   - プロンプトサイズを小さくするか、問題数を減らしてください")
+            print("   - ネットワーク接続が安定しているか確認してください")
         elif "bedrock" in error_msg or "credentials" in error_msg:
             print("💡 AWS認証情報が設定されているか確認してください:")
             print("   - AWS CLI設定: aws configure")
