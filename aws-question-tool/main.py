@@ -45,8 +45,8 @@ class QuestionSet(BaseModel):
     total_questions: int = Field(default=10, description="生成された問題の総数")
     domains: Dict[str, Any] = Field(description="ドメイン配分情報 (ドメイン名: 問題数)")
     difficulty_distribution: Dict[str, int] = Field(description="難易度配分情報 (難易度: 問題数)")
-    mcp_server_info: Dict[str, str] = Field(default_factory=dict, description="使用したAWS Document MCPサーバーの情報")
-    strands_agent_config: Dict[str, str] = Field(default_factory=dict, description="使用したStrands Agentsの設定情報")
+    mcp_server_info: Dict[str, str] = Field(default={}, description="使用したAWS Document MCPサーバーの情報")
+    strands_agent_config: Dict[str, str] = Field(default={}, description="使用したStrands Agentsの設定情報")
 
 
 def generate_question_id(timestamp: str, question_number: int) -> str:
@@ -64,27 +64,18 @@ def generate_question_id(timestamp: str, question_number: int) -> str:
 
 def create_prompt() -> str:
     """問題生成用の詳細なプロンプトを作成"""
-    return """
-AWS CloudOps試験の問題を10問、日本語で生成してください。
+    return """AWS CloudOps試験の問題を10問、日本語で生成してください。
 
-【ドメイン配分】以下の5つのドメインから適切に配分：
-- Content Domain 1: 監視、ログ記録、分析、修復、パフォーマンス最適化 (22%)
-- Content Domain 2: 信頼性とビジネス継続性 (22%)  
-- Content Domain 3: デプロイメント、プロビジョニング、自動化 (22%)
-- Content Domain 4: セキュリティとコンプライアンス (16%)
-- Content Domain 5: ネットワーキングとコンテンツ配信 (18%)
+ドメイン配分：
+1. 監視・ログ記録 (22%)
+2. 信頼性・継続性 (22%)  
+3. デプロイメント・自動化 (22%)
+4. セキュリティ (16%)
+5. ネットワーキング (18%)
 
-【対象レベル】1年のAWS運用経験、システム管理者レベル
-【問題タイプ】単一選択と複数選択を混在
-【難易度】easy、medium、hardを適切に配分
-【除外事項】分散アーキテクチャ設計、CI/CD設計、ソフトウェア開発、コスト分析は含めない
-
-各問題にはタイムスタンプベースの一意のID（q{YYYYMMDD}_{HHMMSS}_{001-010}形式）を付与し、
-AWS公式ドキュメントを参照して正確な情報を使用してください。
-
-generation_timestampには現在の日時を、domainsには実際の配分を、
-difficulty_distributionには難易度の配分を記録してください。
-"""
+対象：1年のAWS運用経験レベル
+形式：単一選択・複数選択混在、easy/medium/hard配分
+AWS公式ドキュメントを参照して正確な情報を使用してください。"""
 
 
 def main():
@@ -92,37 +83,39 @@ def main():
     print("AWS CloudOps試験問題生成ツールを開始します...")
     
     try:
-        # Claude Sonnet 4.5を東京リージョンで使用
+        # Claude Sonnet 4.5をクロスリージョン推論で使用 (要件3.1, デザイン仕様)
+        print("🔧 Strands Agentを初期化中...")
         bedrock_model = BedrockModel(
-            model_id="anthropic.claude-sonnet-4-5-20250929-v1:0",
+            model_id="global.anthropic.claude-sonnet-4-5-20250929-v1:0",
             region_name="ap-northeast-1"  # 東京リージョン
         )
+        print("✅ BedrockModel初期化完了 (Claude Sonnet 4.5, クロスリージョン推論)")
         
-        # MCP接続設定
+        # MCP接続設定 (要件11.1, 11.2, 11.3)
+        print("🔗 AWS Document MCPサーバーに接続中...")
         mcp_client = MCPClient(lambda: stdio_client(
             StdioServerParameters(
-                command="uvx",
-                args=["awslabs.aws-documentation-mcp-server@latest"],
+                command="uvx",  # 要件11.2
+                args=["awslabs.aws-documentation-mcp-server@latest"],  # 要件11.2
                 env={
-                    "FASTMCP_LOG_LEVEL": "ERROR",
-                    "AWS_DOCUMENTATION_PARTITION": "aws"
+                    "FASTMCP_LOG_LEVEL": "ERROR",  # 要件11.3
+                    "AWS_DOCUMENTATION_PARTITION": "aws"  # 要件11.3
                 }
             )
         ))
         
-        print("AWS Document MCPサーバーに接続中...")
-        
         with mcp_client:
-            # MCPツールを取得
+            # MCPツールを取得 (要件3.3)
             tools = mcp_client.list_tools_sync()
-            print(f"MCPツール取得完了: {len(tools)}個のツールが利用可能")
+            print(f"✅ MCPツール取得完了: {len(tools)}個のツールが利用可能")
             
-            # Agentを初期化
+            # Agentを初期化 (要件3.1, 3.2)
             agent = Agent(model=bedrock_model, tools=tools)
+            print("✅ Strands Agent初期化完了")
             
-            print("問題生成を開始します...")
+            print("🤖 問題生成を開始します...")
             
-            # 構造化出力で10問生成
+            # 構造化出力で10問生成 (要件3.2, 3.4)
             prompt = create_prompt()
             result = agent.structured_output(QuestionSet, prompt)
             
@@ -143,7 +136,7 @@ def main():
                 "partition": "aws"
             }
             result.strands_agent_config = {
-                "model_id": "anthropic.claude-sonnet-4-5-20250929-v1:0",
+                "model_id": "global.anthropic.claude-sonnet-4-5-20250929-v1:0",
                 "region": "ap-northeast-1",
                 "tools_count": str(len(tools))
             }
@@ -160,9 +153,26 @@ def main():
             print(f"📈 難易度配分: {result.difficulty_distribution}")
             
     except Exception as e:
+        error_msg = str(e).lower()
         print(f"❌ エラーが発生しました: {e}")
-        print("💡 uvがインストールされているか確認してください")
-        print("💡 AWS認証情報が設定されているか確認してください")
+        
+        # MCP接続エラーの詳細診断 (要件11.4)
+        if "uvx" in error_msg or "command not found" in error_msg:
+            print("💡 uvがインストールされていません。以下のコマンドでインストールしてください:")
+            print("   pip install uv")
+        elif "aws-documentation-mcp-server" in error_msg:
+            print("💡 AWS Document MCPサーバーに接続できません:")
+            print("   - uvがインストールされているか確認してください")
+            print("   - インターネット接続を確認してください")
+        elif "bedrock" in error_msg or "credentials" in error_msg:
+            print("💡 AWS認証情報が設定されているか確認してください:")
+            print("   - AWS CLI設定: aws configure")
+            print("   - 環境変数: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY")
+        else:
+            print("💡 一般的な解決方法:")
+            print("   - uvがインストールされているか確認: uv --version")
+            print("   - AWS認証情報が設定されているか確認: aws sts get-caller-identity")
+        
         sys.exit(1)
 
 
