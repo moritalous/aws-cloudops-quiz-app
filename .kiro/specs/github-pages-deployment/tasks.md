@@ -10,23 +10,36 @@
   - 設定変更後の動作確認
   - _Requirements: 1.1, 1.2_
 
-- [ ] 2. GitHub Pages用ビルドスクリプトを作成
-  - [ ] 2.1 ビルドスクリプトファイルの作成
+- [x] 2. GitHub Pages用ビルドスクリプトを作成
+
+
+
+
+
+  - [x] 2.1 ビルドスクリプトファイルの作成
+
+
     - scripts/build-gh-pages.jsファイルを作成
     - 必要なNode.jsモジュールのimport設定
     - _Requirements: 3.1, 3.2_
 
-  - [ ] 2.2 ディレクトリクリア機能の実装
+  - [x] 2.2 ディレクトリクリア機能の実装
+
+
     - 既存../docsディレクトリの削除処理
     - エラーハンドリングの実装
     - _Requirements: 3.1_
 
-  - [ ] 2.3 React Routerビルド実行機能の実装
+  - [x] 2.3 React Routerビルド実行機能の実装
+
+
     - child_processを使用したreact-router buildコマンド実行
     - ビルド成功/失敗の判定処理
     - _Requirements: 1.1, 3.2_
 
-  - [ ] 2.4 ファイルコピー機能の実装
+  - [x] 2.4 ファイルコピー機能の実装
+
+
     - build/clientから../docsへの再帰的コピー
     - ファイル権限とタイムスタンプの保持
     - _Requirements: 1.2, 3.2_
@@ -42,12 +55,22 @@
     - ブラウザ履歴の適切な処理
     - _Requirements: 2.2, 2.3_
 
-- [ ] 4. package.jsonスクリプトの追加
+- [x] 4. package.jsonスクリプトの追加
+
+
+
+
+
   - build:gh-pagesスクリプトの追加
   - スクリプト実行の動作確認
   - _Requirements: 3.3_
 
-- [ ] 5. Vite設定でbase pathを調整
+- [x] 5. Vite設定でbase pathを調整
+
+
+
+
+
   - vite.config.tsでGitHub Pages用のbase設定
   - 本番環境とローカル環境の設定分岐
   - _Requirements: 1.3_
