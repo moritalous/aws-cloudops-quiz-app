@@ -3,7 +3,7 @@
 AWS CloudOps試験問題生成ツール
 
 AWS Document MCPサーバーとStrands Agentsを使用して、
-一度に20問の高品質な試験問題を生成するシンプルなコマンドラインツール。
+一度に10問の高品質な試験問題を生成するシンプルなコマンドラインツール。
 """
 
 import json
@@ -44,7 +44,7 @@ class Question(BaseModel):
 class QuestionSet(BaseModel):
     version: str = "1.0.0"
     generatedAt: str = Field(description="問題生成日時 (ISO 8601形式)")
-    totalQuestions: int = Field(default=20, description="生成された問題の総数")
+    totalQuestions: int = Field(default=10, description="生成された問題の総数")
     domains: Dict[str, int] = Field(description="ドメイン配分情報 (ドメイン名: 問題数)")
     questions: List[Question]
 
@@ -52,7 +52,7 @@ class QuestionSet(BaseModel):
 def generate_question_id(timestamp: str, question_number: int) -> str:
     """
     タイムスタンプベースの一意のID生成
-    形式: "q{YYYYMMDD}_{HHMMSS}_{001-020}"
+    形式: "q{YYYYMMDD}_{HHMMSS}_{001-010}"
     """
     try:
         return f"q{timestamp}_{question_number:03d}"
@@ -66,7 +66,7 @@ def create_natural_language_prompt() -> str:
     自然言語での問題生成用プロンプトを作成
     タスク5: AWS CloudOps試験ガイドの内容を直接含めて問題を生成
     """
-    return """AWS CloudOps Engineer Associate試験の問題を20問、日本語で生成してください。
+    return """AWS CloudOps Engineer Associate試験の問題を10問、日本語で生成してください。
 
 【AWS CloudOps Engineer Associate試験ガイド】
 以下は公式試験ガイドの内容です：
@@ -124,7 +124,7 @@ def create_natural_language_prompt() -> str:
 関連AWSサービス: [関連するAWSサービス名]
 タグ: [問題に関連するキーワード]
 
-（問題2〜20も同様の形式で）
+（問題2〜10も同様の形式で）
 
 上記の試験ガイドに基づいて、技術的に正確で実践的な問題を生成してください。"""
 
@@ -133,7 +133,7 @@ def create_prompt() -> str:
     """
     問題生成用の詳細なプロンプトを作成
     """
-    return """AWS CloudOps試験の問題を20問、日本語で生成してください。
+    return """AWS CloudOps試験の問題を10問、日本語で生成してください。
 
 【重要指示】問題生成前に必ず以下の手順を実行してください：
 1. AWS Document MCPサーバーのsearch_documentation機能を使用して「AWS CloudOps」「CloudOps Engineer Associate」で検索し、試験ガイドの最新情報を取得
@@ -303,7 +303,7 @@ def main():
         with open(filename, "w", encoding="utf-8") as f:
             json.dump(result.model_dump(), f, indent=2, ensure_ascii=False)
         
-        print(f"✅ 生成完了: {filename} (20問)")
+        print(f"✅ 生成完了: {filename} (10問)")
         print(f"📊 ドメイン配分: {result.domains}")
         
         # 生成された問題の品質確認ログ
