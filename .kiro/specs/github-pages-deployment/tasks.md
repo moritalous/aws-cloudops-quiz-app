@@ -1,6 +1,11 @@
 # Implementation Plan
 
-- [ ] 1. React Router設定をSPAモードに変更
+- [x] 1. React Router設定をSPAモードに変更
+
+
+
+
+
   - react-router.config.tsでssr: falseに設定
   - 設定変更後の動作確認
   - _Requirements: 1.1, 1.2_
