@@ -332,7 +332,7 @@ export default function Home() {
         {/* フッター */}
         <footer className="mt-8 sm:mt-12 text-center">
           <p className="text-responsive-xs text-gray-500 dark:text-gray-400">
-            © 2025 AWS CloudOps 試験対策アプリ
+            問題は生成AIで作成しました。正しいかわかりません
           </p>
         </footer>
       </div>

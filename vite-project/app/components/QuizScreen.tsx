@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import type { Question, QuizConfig, SessionData, Answer } from '~/types';
 import { QuestionDisplay } from './QuestionDisplay';
 import { ResultDisplay } from './ResultDisplay';
+import { QuestionSelector } from '~/utils/question-selector';
 
 interface QuizScreenProps {
   questions: Question[];
@@ -10,7 +11,23 @@ interface QuizScreenProps {
 }
 
 export function QuizScreen({ questions, config, onComplete }: QuizScreenProps) {
+  // ランダム化された問題セットを生成（10問セットの場合）
+  const randomizedQuestions = useMemo(() => {
+    if (config.mode === 'set' && config.questionCount) {
+      const filter = config.domain ? { domain: config.domain } : undefined;
+      return QuestionSelector.selectQuestionSet(
+        questions,
+        config.questionCount,
+        filter,
+        { balanceDomains: true }
+      );
+    }
+    // エンドレスモードの場合は元の配列をシャッフル
+    return QuestionSelector.shuffleArray(questions);
+  }, [questions, config.mode, config.questionCount, config.domain]);
+
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | string[]>('');
   const [showResult, setShowResult] = useState(false);
   const [sessionData, setSessionData] = useState<SessionData>({
@@ -21,14 +38,33 @@ export function QuizScreen({ questions, config, onComplete }: QuizScreenProps) {
     currentQuestionIndex: 0,
     answers: [],
     usedQuestionIds: [],
+    domainFilter: config.domain,
   });
+
+  // 現在の問題を設定（エンドレスモードでは動的に選択）
+  useEffect(() => {
+    if (config.mode === 'set') {
+      // 10問セットモードでは事前生成された問題を使用
+      setCurrentQuestion(randomizedQuestions[currentQuestionIndex] || null);
+    } else {
+      // エンドレスモードでは動的にランダム選択
+      const filter = config.domain ? { domain: config.domain } : undefined;
+      const nextQuestion = QuestionSelector.selectRandomQuestion(
+        questions,
+        sessionData.usedQuestionIds,
+        filter,
+        { avoidRecentQuestions: true, recentQuestionWindow: 5 }
+      );
+      setCurrentQuestion(nextQuestion);
+    }
+  }, [currentQuestionIndex, randomizedQuestions, config.mode, config.domain, questions, sessionData.usedQuestionIds]);
 
   // Touch gesture handling
   const touchStartX = useRef<number>(0);
   const touchStartY = useRef<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const currentQuestion = questions[currentQuestionIndex];
+
 
   // Reset selected answer when question changes
   useEffect(() => {
@@ -122,15 +158,23 @@ export function QuizScreen({ questions, config, onComplete }: QuizScreenProps) {
       return;
     }
 
-    if (nextIndex >= questions.length) {
+    if (config.mode === 'set' && nextIndex >= randomizedQuestions.length) {
       onComplete(sessionData);
       return;
     }
 
     // Move to next question
     setCurrentQuestionIndex(nextIndex);
-    const nextQuestion = questions[nextIndex];
-    setSelectedAnswer(nextQuestion?.type === 'multiple' ? [] : '');
+    
+    // Reset answer selection
+    if (config.mode === 'set') {
+      const nextQuestion = randomizedQuestions[nextIndex];
+      setSelectedAnswer(nextQuestion?.type === 'multiple' ? [] : '');
+    } else {
+      // エンドレスモードでは useEffect で新しい問題が選択される
+      setSelectedAnswer('');
+    }
+    
     setShowResult(false);
   };
 
